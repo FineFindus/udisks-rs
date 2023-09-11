@@ -1,0 +1,34 @@
+[package]
+name = "udisks"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+libc = "0.2"
+bitflags = "2.2"
+glib = { git = "https://github.com/gtk-rs/gtk-rs-core" }
+gio = { git = "https://github.com/gtk-rs/gtk-rs-core" }
+
+[dependencies.ffi]
+package = "udisks-sys"
+path = "./udisks-sys"
+
+[package.metadata.docs.rs]
+all-features = true
+# For build.rs scripts
+rustc-args = ["--cfg", "docsrs"]
+# For rustdoc
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+v2_1 = ["ffi/v2_1"]
+v2_1_1 = ["ffi/v2_1_1", "v2_1"]
+v2_1_3 = ["ffi/v2_1_3", "v2_1_1"]
+v2_1_7 = ["ffi/v2_1_7", "v2_1_3"]
+v2_3 = ["ffi/v2_3", "v2_1_7"]
+v2_6_3 = ["ffi/v2_6_3", "v2_3"]
+v2_7_1 = ["ffi/v2_7_1", "v2_6_3"]
+v2_7_2 = ["ffi/v2_7_2", "v2_7_1"]
+v2_7_3 = ["ffi/v2_7_3", "v2_7_2"]
+v2_8 = ["ffi/v2_8", "v2_7_3"]
+v2_9 = ["ffi/v2_9", "v2_8"]
