@@ -1,5 +1,6 @@
 mod ata;
 mod block;
+mod client;
 mod controller;
 mod drive;
 mod encrypted;
@@ -14,3 +15,4 @@ mod nvme;
 mod partition;
 mod partitiontable;
 mod swapspace;
+pub use client::Client;
