@@ -14,7 +14,8 @@ use zbus::dbus_proxy;
 
 #[dbus_proxy(
     interface = "org.freedesktop.UDisks2.Swapspace",
-    assume_defaults = true
+    default_service = "org.freedesktop.UDisks2",
+    default_path = "/org/freedesktop/UDisks2/Swapspace"
 )]
 trait Swapspace {
     /// SetLabel method
