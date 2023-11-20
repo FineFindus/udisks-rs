@@ -12,6 +12,10 @@
 
 use zbus::dbus_proxy;
 
+pub mod controller;
+pub mod fabrics;
+pub mod namespace;
+
 #[dbus_proxy(
     interface = "org.freedesktop.UDisks2.Manager.NVMe",
     assume_defaults = true
