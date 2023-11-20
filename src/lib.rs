@@ -9,6 +9,8 @@ pub mod r#loop;
 pub mod manager;
 pub mod mdraid;
 pub mod nvme;
+mod object;
+pub use object::Object;
 pub mod partition;
 pub mod partitiontable;
 pub mod swapspace;
