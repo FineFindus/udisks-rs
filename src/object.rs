@@ -14,8 +14,9 @@ pub struct Object {
 }
 
 macro_rules! get_interface {
-    ( $name:ident, $type:ty, $key:literal) => {
-        #[doc = "Retruns the `"]
+    ($($name:ident, $type:ty, $key:literal);+) => {
+        $(
+        #[doc = "Returns the `"]
         #[doc = $key]
         #[doc = "` interface."]
         ///
@@ -33,7 +34,7 @@ macro_rules! get_interface {
                 .path(self.path.clone())?
                 .build()
                 .await
-        }
+        })+
     };
 }
 
@@ -51,94 +52,21 @@ impl Object {
     }
 
     get_interface!(
-        block,
-        block::BlockProxy<'_>,
-        "org.freedesktop.UDisks2.Block"
-    );
-
-    get_interface!(
-        drive,
-        drive::DriveProxy<'_>,
-        "org.freedesktop.UDisks2.Drive"
-    );
-
-    get_interface!(
-        partition_table,
-        partitiontable::PartitionTableProxy<'_>,
-        "org.freedesktop.UDisks2.PartitionTable"
-    );
-
-    get_interface!(
-        drive_ata,
-        ata::AtaProxy<'_>,
-        "org.freedesktop.UDisks2.Drive.Ata"
-    );
-
-    get_interface!(
-        filesystem,
-        filesystem::FilesystemProxy<'_>,
-        "org.freedesktop.UDisks2.Filesystem"
-    );
-
-    get_interface!(job, job::JobProxy<'_>, "org.freedesktop.UDisks2.Job");
-
-    get_interface!(
-        swapspace,
-        swapspace::SwapspaceProxy<'_>,
-        "org.freedesktop.UDisks2.Swapspace"
-    );
-
-    get_interface!(
-        encrypted,
-        encrypted::EncryptedProxy<'_>,
-        "org.freedesktop.UDisks2.Encrypted"
-    );
-
-    get_interface!(
-        r#loop,
-        r#loop::LoopProxy<'_>,
-        "org.freedesktop.UDisks2.Loop"
-    );
-
-    get_interface!(
-        manager_nvme,
-        crate::nvme::NVMeProxy<'_>,
-        "org.freedesktop.UDisks2.Manager.Nvme"
-    );
-
-    get_interface!(
-        partition,
-        partition::PartitionProxy<'_>,
-        "org.freedesktop.UDisks2.Partition"
-    );
-
-    get_interface!(
-        partitiontable,
-        partitiontable::PartitionTableProxy<'_>,
-        "org.freedesktop.UDisks2.PartitionTable"
-    );
-
-    get_interface!(
-        mdraid,
-        mdraid::MDRaidProxy<'_>,
-        "org.freedesktop.UDisks2.Mdraid"
-    );
-
-    get_interface!(
-        nvme_controller,
-        nvme::controller::ControllerProxy<'_>,
-        "org.freedesktop.UDisks2.Nvme.Controller"
-    );
-
-    get_interface!(
-        nvme_namespace,
-        nvme::namespace::NamespaceProxy<'_>,
-        "org.freedesktop.UDisks2.NVMe.Namespace"
-    );
-
-    get_interface!(
-        nvme_fabrics,
-        nvme::fabrics::FabricsProxy<'_>,
-        "org.freedesktop.UDisks2.Nvme.Fabrics"
+        block, block::BlockProxy<'_>, "org.freedesktop.UDisks2.Block";
+        drive, drive::DriveProxy<'_>, "org.freedesktop.UDisks2.Drive";
+        partition_table, partitiontable::PartitionTableProxy<'_>, "org.freedesktop.UDisks2.PartitionTable";
+        drive_ata, ata::AtaProxy<'_>, "org.freedesktop.UDisks2.Drive.Ata";
+        filesystem, filesystem::FilesystemProxy<'_>, "org.freedesktop.UDisks2.Filesystem";
+        job, job::JobProxy<'_>, "org.freedesktop.UDisks2.Job";
+        swapspace, swapspace::SwapspaceProxy<'_>, "org.freedesktop.UDisks2.Swapspace";
+        encrypted, encrypted::EncryptedProxy<'_>, "org.freedesktop.UDisks2.Encrypted";
+        r#loop, r#loop::LoopProxy<'_>, "org.freedesktop.UDisks2.Loop";
+        manager_nvme, nvme::NVMeProxy<'_>, "org.freedesktop.UDisks2.Manager.Nvme";
+        partition, partition::PartitionProxy<'_>, "org.freedesktop.UDisks2.Partition";
+        partitiontable, partitiontable::PartitionTableProxy<'_>, "org.freedesktop.UDisks2.PartitionTable";
+        mdraid, mdraid::MDRaidProxy<'_>, "org.freedesktop.UDisks2.Mdraid";
+        nvme_controller, nvme::controller::ControllerProxy<'_>, "org.freedesktop.UDisks2.Nvme.Controller";
+        nvme_namespace, nvme::namespace::NamespaceProxy<'_>, "org.freedesktop.UDisks2.NVMe.Namespace";
+        nvme_fabrics, nvme::fabrics::FabricsProxy<'_>, "org.freedesktop.UDisks2.Nvme.Fabrics"
     );
 }
