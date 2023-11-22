@@ -49,8 +49,8 @@ impl Client {
     ///
     /// # Errors
     /// Returns an error if the given object path cannot be converted to an [zbus::zvariant::OwnedObjectPath]
-    pub async fn object(&self, object_path: &str) -> zbus::Result<Object> {
-        let path = OwnedObjectPath::try_from(object_path)?;
+    pub fn object<P: TryInto<OwnedObjectPath>>(&self, object_path: P) -> Result<Object, P::Error> {
+        let path = object_path.try_into()?;
         Ok(Object::new(
             path,
             self.object_manager.clone(),
