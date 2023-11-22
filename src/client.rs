@@ -82,7 +82,7 @@ impl Client {
             "md-raid-add-device" => String::from("Adding Device to Array"),
             "md-raid-set-bitmap" => String::from("Setting Write-Intent Bitmap"),
             "md-raid-create" => String::from("Creating RAID Array"),
-            _ => format!("Unkown ({})", operation),
+            _ => format!("Unknown ({})", operation),
         }
     }
 
