@@ -1,10 +1,10 @@
-use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath, Connection};
+use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
-use crate::{job, manager};
+use crate::{job, manager, object::Object};
 
 /// Utility routines for accessing the UDisks service
 pub struct Client {
-    connection: Connection,
+    connection: zbus::Connection,
     object_manager: zbus::fdo::ObjectManagerProxy<'static>,
     manager: manager::ManagerProxy<'static>,
 }
