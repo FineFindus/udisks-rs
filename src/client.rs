@@ -45,6 +45,19 @@ impl Client {
         &self.manager
     }
 
+    /// Convenience function for looking up an [Object] for `object_path`.
+    ///
+    /// # Errors
+    /// Returns an error if the given object path cannot be converted to an [zbus::zvariant::OwnedObjectPath]
+    pub async fn object(&self, object_path: &str) -> zbus::Result<Object> {
+        let path = OwnedObjectPath::try_from(object_path)?;
+        Ok(Object::new(
+            path,
+            self.object_manager.clone(),
+            self.connection.clone(),
+        ))
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
