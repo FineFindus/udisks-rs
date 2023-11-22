@@ -13,6 +13,19 @@ pub struct Object {
     object_manager: ObjectManagerProxy<'static>,
 }
 
+/// Generate functions to get the interfaces of the given paths.
+///
+/// # Examples
+///
+/// ```
+/// # #[macro_use] extern crate udisk_rs;
+/// # fn main() {
+/// get_interface!(
+///  block, block::BlockProxy<'_>, "org.freedesktop.UDisks2.Block";
+/// );
+///
+/// # }
+/// ```
 macro_rules! get_interface {
     ($($name:ident, $type:ty, $key:literal);+) => {
         $(
