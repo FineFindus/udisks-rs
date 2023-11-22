@@ -35,8 +35,8 @@ impl Client {
         })
     }
 
-    /// Returns the object manger used by the client.
-    pub fn object_manager(&self) -> &ObjectManagerProxy<'_> {
+    /// Returns the [`zbus::fdo::ObjectManagerProxy`] used by the [Client].
+    pub fn object_manager(&self) -> &zbus::fdo::ObjectManagerProxy<'_> {
         &self.object_manager
     }
 
