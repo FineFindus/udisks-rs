@@ -1,4 +1,5 @@
-use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
+use zbus::fdo::ObjectManagerProxy;
+use zbus::zvariant::OwnedObjectPath;
 
 use crate::nvme;
 use crate::{
@@ -7,6 +8,7 @@ use crate::{
 };
 
 /// Utility struct for easily accessing interfaces.
+#[derive(Debug, Clone)]
 pub struct Object {
     connection: zbus::Connection,
     path: OwnedObjectPath,
@@ -67,7 +69,6 @@ impl Object {
     get_interface!(
         block, block::BlockProxy<'_>, "org.freedesktop.UDisks2.Block";
         drive, drive::DriveProxy<'_>, "org.freedesktop.UDisks2.Drive";
-        partition_table, partitiontable::PartitionTableProxy<'_>, "org.freedesktop.UDisks2.PartitionTable";
         drive_ata, ata::AtaProxy<'_>, "org.freedesktop.UDisks2.Drive.Ata";
         filesystem, filesystem::FilesystemProxy<'_>, "org.freedesktop.UDisks2.Filesystem";
         job, job::JobProxy<'_>, "org.freedesktop.UDisks2.Job";
@@ -76,7 +77,7 @@ impl Object {
         r#loop, r#loop::LoopProxy<'_>, "org.freedesktop.UDisks2.Loop";
         manager_nvme, nvme::NVMeProxy<'_>, "org.freedesktop.UDisks2.Manager.Nvme";
         partition, partition::PartitionProxy<'_>, "org.freedesktop.UDisks2.Partition";
-        partitiontable, partitiontable::PartitionTableProxy<'_>, "org.freedesktop.UDisks2.PartitionTable";
+        partition_table, partitiontable::PartitionTableProxy<'_>, "org.freedesktop.UDisks2.PartitionTable";
         mdraid, mdraid::MDRaidProxy<'_>, "org.freedesktop.UDisks2.Mdraid";
         nvme_controller, nvme::controller::ControllerProxy<'_>, "org.freedesktop.UDisks2.Nvme.Controller";
         nvme_namespace, nvme::namespace::NamespaceProxy<'_>, "org.freedesktop.UDisks2.NVMe.Namespace";
