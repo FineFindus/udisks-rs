@@ -1,6 +1,6 @@
 use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
-use crate::{job, manager, object::Object};
+use crate::{block, job, manager, object::Object, partition, partitiontable};
 
 /// Utility routines for accessing the UDisks service
 pub struct Client {
@@ -104,5 +104,32 @@ impl Client {
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
     pub async fn job_description(&self, job: job::JobProxy<'_>) -> zbus::Result<String> {
         Ok(self.job_description_from_operation(&job.operation().await?))
+    }
+
+    /// Gets all  the [`block::BlockProxy`] instances with the given label.
+    ///
+    /// If no instances are found, the returned vector is empty.
+    pub async fn block_for_label(&self, label: &str) -> Vec<block::BlockProxy> {
+        //TODO refactor once it is possible to use iterators with async
+
+        let mut blocks = Vec::new();
+
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.block().await else {
+                continue;
+            };
+
+            if Ok(label) == block.id_label().await.as_deref() {
+                blocks.push(block);
+            }
+        }
+        blocks
     }
 }
