@@ -132,4 +132,17 @@ impl Client {
         }
         blocks
     }
+
+    /// Returns the [`partitiontable::PartitionTableProxy`] for the given partition.
+    ///
+    /// # Errors
+    /// Returns an error if it is unable to get the table or the [`Object`] for the table.
+    pub async fn partition_table(
+        &self,
+        partition: partition::PartitionProxy<'_>,
+    ) -> zbus::Result<partitiontable::PartitionTableProxy<'_>> {
+        self.object(partition.table().await?)?
+            .partition_table()
+            .await
+    }
 }
