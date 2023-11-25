@@ -200,4 +200,28 @@ impl Client {
         }
         None
     }
+
+    /// Gets all the [`block::BlockProxy`]s for the given `uuid`.
+    ///
+    /// If no blocks are found, the returned vector is empty.
+    pub async fn block_for_uuid(&self, uuid: &str) -> Vec<block::BlockProxy> {
+        let mut blocks = Vec::new();
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.block().await else {
+                continue;
+            };
+
+            if Ok(uuid) == block.id_uuid().await.as_deref() {
+                blocks.push(block);
+            }
+        }
+        blocks
+    }
 }
