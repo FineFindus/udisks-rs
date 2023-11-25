@@ -66,6 +66,10 @@ impl Object {
         }
     }
 
+    pub fn object_path(&self) -> &OwnedObjectPath {
+        &self.path
+    }
+
     get_interface!(
         block, block::BlockProxy<'static>, "org.freedesktop.UDisks2.Block";
         drive, drive::DriveProxy<'static>, "org.freedesktop.UDisks2.Drive";
