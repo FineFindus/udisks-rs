@@ -1,6 +1,6 @@
 use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
-use crate::{block, job, manager, object::Object, partition, partitiontable};
+use crate::{block, drive, job, manager, object::Object, partition, partitiontable};
 
 /// Utility routines for accessing the UDisks service
 pub struct Client {
@@ -176,5 +176,28 @@ impl Client {
             );
         }
         blocks
+    }
+
+    /// Gets the [`block::BlockProxy`] for the given `block_device_number`.
+    ///
+    /// If no block is found, [`None`] is returned,
+    pub async fn block_for_dev(&self, block_device_number: u64) -> Option<block::BlockProxy> {
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.block().await else {
+                continue;
+            };
+
+            if Ok(block_device_number) == block.device_number().await {
+                return Some(block);
+            }
+        }
+        None
     }
 }
