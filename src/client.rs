@@ -145,4 +145,36 @@ impl Client {
             .partition_table()
             .await
     }
+
+    /// Gets all  the [`job::JobProxy`] instances for the given object.
+    ///
+    /// If no instances are found, the returned vector is empty.
+    pub async fn jobs_for_object(&self, object: Object) -> Vec<OwnedObjectPath> {
+        //TODO: maybe this should be moved to object directly?
+        let object_path = object.object_path();
+
+        let mut blocks = Vec::new();
+
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(job) = object.job().await else {
+                continue;
+            };
+
+            blocks.extend(
+                job.objects()
+                    .await
+                    .into_iter()
+                    .flatten()
+                    .filter(|job_object_path| job_object_path == object_path),
+            );
+        }
+        blocks
+    }
 }
