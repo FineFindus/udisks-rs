@@ -62,6 +62,7 @@ trait MDRaid {
 
     /// ActiveDevices property
     #[dbus_proxy(property)]
+    #[allow(clippy::type_complexity)]
     fn active_devices(
         &self,
     ) -> zbus::Result<

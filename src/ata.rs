@@ -43,6 +43,7 @@ trait Ata {
     ) -> zbus::Result<()>;
 
     /// SmartGetAttributes method
+    #[allow(clippy::type_complexity)]
     fn smart_get_attributes(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
