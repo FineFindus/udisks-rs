@@ -19,7 +19,6 @@ use zbus::dbus_proxy;
 )]
 trait PartitionTable {
     /// CreatePartition method
-    #[allow(clippy::too_many_arguments)]
     fn create_partition(
         &self,
         offset: u64,
