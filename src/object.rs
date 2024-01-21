@@ -66,6 +66,7 @@ impl Object {
         }
     }
 
+    /// Returns the [OwnedObjectPath] used by the object.
     pub fn object_path(&self) -> &OwnedObjectPath {
         &self.path
     }
