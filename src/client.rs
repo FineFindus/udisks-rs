@@ -1,4 +1,4 @@
-use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
+use zbus::{fdo::ObjectManagerProxy, names::OwnedInterfaceName, zvariant::OwnedObjectPath};
 
 use crate::{block, drive, job, manager, object::Object, partition, partitiontable};
 
@@ -58,6 +58,119 @@ impl Client {
         ))
     }
 
+    /// Gets all  the [`job::JobProxy`] instances for the given object.
+    ///
+    /// If no instances are found, the returned vector is empty.
+    pub async fn jobs_for_object(&self, object: Object) -> Vec<OwnedObjectPath> {
+        //TODO: maybe this should be moved to object directly?
+        let object_path = object.object_path();
+
+        let mut blocks = Vec::new();
+
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(job) = object.job().await else {
+                continue;
+            };
+
+            blocks.extend(
+                job.objects()
+                    .await
+                    .into_iter()
+                    .flatten()
+                    .filter(|job_object_path| job_object_path == object_path),
+            );
+        }
+        blocks
+    }
+
+    /// Gets a human-readable and localized text string describing the operation of job.
+    ///
+    /// For known job types, see the documentation for [`job::JobProxy::operation`].
+    pub async fn job_description(&self, job: job::JobProxy<'_>) -> zbus::Result<String> {
+        Ok(self.job_description_from_operation(&job.operation().await?))
+    }
+
+    /// Gets the [`block::BlockProxy`] for the given `block_device_number`.
+    ///
+    /// If no block is found, [`None`] is returned,
+    pub async fn block_for_dev(&self, block_device_number: u64) -> Option<block::BlockProxy> {
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.block().await else {
+                continue;
+            };
+
+            if Ok(block_device_number) == block.device_number().await {
+                return Some(block);
+            }
+        }
+        None
+    }
+
+    /// Gets all  the [`block::BlockProxy`] instances with the given label.
+    ///
+    /// If no instances are found, the returned vector is empty.
+    pub async fn block_for_label(&self, label: &str) -> Vec<block::BlockProxy> {
+        //TODO refactor once it is possible to use iterators with async
+
+        let mut blocks = Vec::new();
+
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.block().await else {
+                continue;
+            };
+
+            if Ok(label) == block.id_label().await.as_deref() {
+                blocks.push(block);
+            }
+        }
+        blocks
+    }
+
+    /// Gets all the [`block::BlockProxy`]s for the given `uuid`.
+    ///
+    /// If no blocks are found, the returned vector is empty.
+    pub async fn block_for_uuid(&self, uuid: &str) -> Vec<block::BlockProxy> {
+        let mut blocks = Vec::new();
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.block().await else {
+                continue;
+            };
+
+            if Ok(uuid) == block.id_uuid().await.as_deref() {
+                blocks.push(block);
+            }
+        }
+        blocks
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
@@ -99,40 +212,6 @@ impl Client {
         }
     }
 
-    /// Gets a human-readable and localized text string describing the operation of job.
-    ///
-    /// For known job types, see the documentation for [`job::JobProxy::operation`].
-    pub async fn job_description(&self, job: job::JobProxy<'_>) -> zbus::Result<String> {
-        Ok(self.job_description_from_operation(&job.operation().await?))
-    }
-
-    /// Gets all  the [`block::BlockProxy`] instances with the given label.
-    ///
-    /// If no instances are found, the returned vector is empty.
-    pub async fn block_for_label(&self, label: &str) -> Vec<block::BlockProxy> {
-        //TODO refactor once it is possible to use iterators with async
-
-        let mut blocks = Vec::new();
-
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
-            let Ok(block) = object.block().await else {
-                continue;
-            };
-
-            if Ok(label) == block.id_label().await.as_deref() {
-                blocks.push(block);
-            }
-        }
-        blocks
-    }
-
     /// Returns the [`partitiontable::PartitionTableProxy`] for the given partition.
     ///
     /// # Errors
@@ -146,65 +225,10 @@ impl Client {
             .await
     }
 
-    /// Gets all  the [`job::JobProxy`] instances for the given object.
+    /// Returns all top-level [`Object`]s for the given drive.
     ///
-    /// If no instances are found, the returned vector is empty.
-    pub async fn jobs_for_object(&self, object: Object) -> Vec<OwnedObjectPath> {
-        //TODO: maybe this should be moved to object directly?
-        let object_path = object.object_path();
-
-        let mut blocks = Vec::new();
-
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
-            let Ok(job) = object.job().await else {
-                continue;
-            };
-
-            blocks.extend(
-                job.objects()
-                    .await
-                    .into_iter()
-                    .flatten()
-                    .filter(|job_object_path| job_object_path == object_path),
-            );
-        }
-        blocks
-    }
-
-    /// Gets the [`block::BlockProxy`] for the given `block_device_number`.
-    ///
-    /// If no block is found, [`None`] is returned,
-    pub async fn block_for_dev(&self, block_device_number: u64) -> Option<block::BlockProxy> {
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
-            let Ok(block) = object.block().await else {
-                continue;
-            };
-
-            if Ok(block_device_number) == block.device_number().await {
-                return Some(block);
-            }
-        }
-        None
-    }
-
-    /// Gets all the [`block::BlockProxy`]s for the given `uuid`.
-    ///
-    /// If no blocks are found, the returned vector is empty.
-    pub async fn block_for_uuid(&self, uuid: &str) -> Vec<block::BlockProxy> {
+    /// Top-level blocks are blocks that do not have a partition associated with it.
+    async fn top_level_blocks_for_drive(&self, drive_object_path: OwnedObjectPath) -> Vec<Object> {
         let mut blocks = Vec::new();
         for object in self
             .object_manager
@@ -214,12 +238,15 @@ impl Client {
             .flatten()
             .filter_map(|(object_path, _)| self.object(object_path).ok())
         {
-            let Ok(block) = object.block().await else {
+            let Ok(block) = object.clone().block().await else {
                 continue;
             };
 
-            if Ok(uuid) == block.id_uuid().await.as_deref() {
-                blocks.push(block);
+            //TODO: check if it is possible to avoid cloning
+            if block.drive().await.as_deref() == Ok(&drive_object_path)
+                && object.clone().partition().await.is_err()
+            {
+                blocks.push(object);
             }
         }
         blocks
