@@ -1,6 +1,6 @@
 use zbus::{fdo::ObjectManagerProxy, names::OwnedInterfaceName, zvariant::OwnedObjectPath};
 
-use crate::{block, drive, job, manager, object::Object, partition, partitiontable};
+use crate::{block, job, manager, object::Object, partition, partition_types, partitiontable};
 
 /// Utility routines for accessing the UDisks service
 pub struct Client {
@@ -250,5 +250,19 @@ impl Client {
             }
         }
         blocks
+    }
+
+    /// Returns, if exists, the human-readable localized name of the [PartitionType].
+    pub fn partition_type_for_display(
+        &self,
+        partition_table_type: &str,
+        partition_type: &str,
+    ) -> Option<&'static str> {
+        partition_types::PARTITION_TYPES
+            .iter()
+            .find(|pt| pt.table_type == partition_table_type && pt.ty == partition_type)
+            //TODO: C version calls gettext here
+            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2653C26-L2653C26
+            .map(|partition_type| partition_type.name)
     }
 }
