@@ -1,6 +1,8 @@
 use zbus::{fdo::ObjectManagerProxy, names::OwnedInterfaceName, zvariant::OwnedObjectPath};
 
-use crate::{block, job, manager, object::Object, partition, partition_types, partitiontable};
+use crate::{
+    block, drive, job, manager, object::Object, partition, partition_types, partitiontable,
+};
 
 /// Utility routines for accessing the UDisks service
 pub struct Client {
@@ -171,6 +173,75 @@ impl Client {
         blocks
     }
 
+    /// Returns all top-level [`Object`]s for the given drive.
+    ///
+    /// Top-level blocks are blocks that do not have a partition associated with it.
+    async fn top_level_blocks_for_drive(&self, drive_object_path: &OwnedObjectPath) -> Vec<Object> {
+        let mut blocks = Vec::new();
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.clone().block().await else {
+                continue;
+            };
+
+            //TODO: check if it is possible to avoid cloning
+            if block.drive().await.as_deref() == Ok(drive_object_path)
+                && object.clone().partition().await.is_err()
+            {
+                blocks.push(object);
+            }
+        }
+        blocks
+    }
+
+    async fn object_for_interface<P: TryInto<OwnedInterfaceName>>(
+        &self,
+        interface: P,
+    ) -> zbus::Result<Object> {
+        let managed_objects = self.object_manager.get_managed_objects().await?;
+
+        let interface = interface
+            .try_into()
+            .map_err(|_| zbus::Error::InterfaceNotFound)?;
+
+        managed_objects
+            .into_iter()
+            .filter(|(_, interfaces)| interfaces.contains_key(&interface))
+            .find_map(|(path, _)| self.object(path).ok())
+            .ok_or(zbus::Error::InterfaceNotFound)
+    }
+
+    /// Gets the [`block::BlockProxy`] for the given `block_device_number`.
+    ///
+    /// If no block is found, [`None`] is returned.
+    pub async fn block_for_drive(
+        &self,
+        drive: drive::DriveProxy<'_>,
+        _physical: bool,
+    ) -> Option<block::BlockProxy> {
+        let object = self
+            .object_for_interface(drive.interface().clone())
+            .await
+            .ok()?;
+
+        for object in self
+            .top_level_blocks_for_drive(object.object_path())
+            .await
+            .iter()
+        {
+            if let Ok(block) = object.clone().block().await {
+                return Some(block);
+            };
+        }
+        None
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
@@ -223,33 +294,6 @@ impl Client {
         self.object(partition.table().await?)?
             .partition_table()
             .await
-    }
-
-    /// Returns all top-level [`Object`]s for the given drive.
-    ///
-    /// Top-level blocks are blocks that do not have a partition associated with it.
-    async fn top_level_blocks_for_drive(&self, drive_object_path: OwnedObjectPath) -> Vec<Object> {
-        let mut blocks = Vec::new();
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
-            let Ok(block) = object.clone().block().await else {
-                continue;
-            };
-
-            //TODO: check if it is possible to avoid cloning
-            if block.drive().await.as_deref() == Ok(&drive_object_path)
-                && object.clone().partition().await.is_err()
-            {
-                blocks.push(object);
-            }
-        }
-        blocks
     }
 
     /// Returns, if exists, the human-readable localized name of the [PartitionType].
