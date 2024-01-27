@@ -1,7 +1,10 @@
 use zbus::{fdo::ObjectManagerProxy, names::OwnedInterfaceName, zvariant::OwnedObjectPath};
 
 use crate::{
-    block, drive, job, manager, object::Object, partition, partition_types, partitiontable,
+    block::{self, BlockProxy},
+    drive, job, manager,
+    object::Object,
+    partition, partition_types, partitiontable,
 };
 
 /// Utility routines for accessing the UDisks service
@@ -217,9 +220,14 @@ impl Client {
             .ok_or(zbus::Error::InterfaceNotFound)
     }
 
-    /// Gets the [`block::BlockProxy`] for the given `block_device_number`.
+    /// Gets the [`block::BlockProxy`], if exists, for the given [`drive::DriveProxy`]
     ///
-    /// If no block is found, [`None`] is returned.
+    /// The returned block is for the whole disk drive, so [`partition::PartitionProxy`] is never
+    /// returned.
+    ///
+    /// If `physical` is set to true, a block that is able to send low-level SCSI commands is
+    /// returned. If `physical` is set to false, a block device that can read/write data is
+    /// returned.
     pub async fn block_for_drive(
         &self,
         drive: drive::DriveProxy<'_>,
