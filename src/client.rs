@@ -250,6 +250,17 @@ impl Client {
         None
     }
 
+    /// Gets the [`drive::DriveProxy`] for the given [`block::BlockProxy`].
+    ///
+    /// If no block is found, [`None`] is returned.
+    pub async fn drive_for_block(
+        &self,
+        block: BlockProxy<'_>,
+    ) -> zbus::Result<drive::DriveProxy<'static>> {
+        let drive = block.drive().await?;
+        self.object(drive)?.drive().await
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
