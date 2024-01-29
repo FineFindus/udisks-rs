@@ -261,6 +261,29 @@ impl Client {
         self.object(drive)?.drive().await
     }
 
+    /// If the given [`block::BlockProxy`] is an encrypted device, returns the cleartext device.
+    ///
+    /// If no block is found, [`None`] is returned.
+    pub async fn cleartext_block(&self, block: BlockProxy<'_>) -> Option<block::BlockProxy<'_>> {
+        let object_path = block.path().to_owned().into();
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.block().await else {
+                continue;
+            };
+            if block.crypto_backing_device().await.as_ref() == Ok(&object_path) {
+                return Some(block);
+            }
+        }
+        None
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
