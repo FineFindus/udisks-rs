@@ -284,6 +284,21 @@ impl Client {
         None
     }
 
+    /// Returns the [`partitiontable::PartitionTableProxy`] for the given partition.
+    ///
+    /// # Errors
+    /// Returns an error if it is unable to get the table or the [`Object`] for the table.
+    pub async fn partition_table(
+        &self,
+        partition: partition::PartitionProxy<'_>,
+    ) -> zbus::Result<partitiontable::PartitionTableProxy<'_>> {
+        //TODO: C version docs do not mention that it can return NULL?
+        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1429
+        self.object(partition.table().await?)?
+            .partition_table()
+            .await
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
@@ -323,19 +338,6 @@ impl Client {
             "md-raid-create" => String::from("Creating RAID Array"),
             _ => format!("Unknown ({})", operation),
         }
-    }
-
-    /// Returns the [`partitiontable::PartitionTableProxy`] for the given partition.
-    ///
-    /// # Errors
-    /// Returns an error if it is unable to get the table or the [`Object`] for the table.
-    pub async fn partition_table(
-        &self,
-        partition: partition::PartitionProxy<'_>,
-    ) -> zbus::Result<partitiontable::PartitionTableProxy<'_>> {
-        self.object(partition.table().await?)?
-            .partition_table()
-            .await
     }
 
     /// Returns, if exists, the human-readable localized name of the [PartitionType].
