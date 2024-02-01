@@ -4,7 +4,7 @@ use crate::{
     block::{self, BlockProxy},
     drive, job, manager,
     object::Object,
-    partition, partition_types, partitiontable,
+    partition, partition_types, partitiontable, r#loop,
 };
 
 /// Utility routines for accessing the UDisks service
@@ -296,6 +296,31 @@ impl Client {
         self.object(partition.table().await?)?
             .partition_table()
             .await
+    }
+
+    /// Returns the [`r#loop::LoopProxy`] for the given [`block::BlockProxy`].
+    ///
+    /// This only works if the block is a loop deivce, or a partition of a loop device.
+    ///
+    /// # Errors
+    /// Returns an error if it is unable to get the loop interface.
+    pub async fn loop_for_block(
+        &self,
+        block: block::BlockProxy<'_>,
+    ) -> zbus::Result<r#loop::LoopProxy> {
+        let object = self.object_for_interface(block.interface().clone()).await?;
+
+        if let Ok(loop_proxy) = object.r#loop().await {
+            return Ok(loop_proxy);
+        }
+
+        // possibly partition of a loop device
+        let partition = object.partition().await?;
+        let partitiontable = self.partition_table(partition).await?;
+        let partitiontable_object = self
+            .object_for_interface(partitiontable.interface().clone())
+            .await?;
+        partitiontable_object.r#loop().await
     }
 
     /// Gets a human-readable and localized text string describing the operation of job.
