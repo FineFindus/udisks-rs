@@ -189,13 +189,12 @@ impl Client {
             .flatten()
             .filter_map(|(object_path, _)| self.object(object_path).ok())
         {
-            let Ok(block) = object.clone().block().await else {
+            let Ok(block) = object.block().await else {
                 continue;
             };
 
-            //TODO: check if it is possible to avoid cloning
             if block.drive().await.as_deref() == Ok(drive_object_path)
-                && object.clone().partition().await.is_err()
+                && object.partition().await.is_err()
             {
                 blocks.push(object);
             }
@@ -243,7 +242,7 @@ impl Client {
             .await
             .iter()
         {
-            if let Ok(block) = object.clone().block().await {
+            if let Ok(block) = object.block().await {
                 return Some(block);
             };
         }

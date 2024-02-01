@@ -37,7 +37,7 @@ macro_rules! get_interface {
         ///
         /// # Errors
         /// Returns [zbus::Error::InterfaceNotFound] if the interface could not be acquired.
-        pub async fn $name(self) -> zbus::Result<$type> {
+        pub async fn $name(&self) -> zbus::Result<$type> {
             let objects = self.object_manager.get_managed_objects().await?;
             let interfaces = objects
                 .get(&self.path)
