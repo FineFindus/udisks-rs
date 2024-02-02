@@ -353,6 +353,38 @@ impl Client {
         partitions
     }
 
+    /// Returns all [`partition::PartitionProxy`] of the given [`partitiontable::PartitionTableProxy`].
+    pub async fn drive_siblings(&self, drive: drive::DriveProxy<'_>) -> Vec<drive::DriveProxy<'_>> {
+        let mut drive_siblings = Vec::new();
+        let sibling_id = drive.sibling_id().await;
+
+        if sibling_id.is_err() || sibling_id.as_ref().unwrap().is_empty() {
+            return drive_siblings;
+        }
+
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(iter_drive) = object.drive().await else {
+                continue;
+            };
+
+            if
+            // TODO: C version checks if we're the same drive
+            // rust version doesn't implement partial_cmp
+            // iter_drive != drive &&
+            iter_drive.sibling_id().await.as_ref() == sibling_id.as_ref() {
+                drive_siblings.push(iter_drive);
+            }
+        }
+        drive_siblings
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
