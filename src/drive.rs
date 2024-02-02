@@ -12,7 +12,11 @@
 
 use zbus::dbus_proxy;
 
-#[dbus_proxy(interface = "org.freedesktop.UDisks2.Drive", assume_defaults = true)]
+#[dbus_proxy(
+    interface = "org.freedesktop.UDisks2.Drive",
+    default_service = "org.freedesktop.UDisks2",
+    default_path = "/org/freedesktop/UDisks2/Drive"
+)]
 trait Drive {
     /// Eject method
     fn eject(

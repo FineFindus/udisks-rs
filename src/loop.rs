@@ -12,7 +12,11 @@
 
 use zbus::dbus_proxy;
 
-#[dbus_proxy(interface = "org.freedesktop.UDisks2.Loop", assume_defaults = true)]
+#[dbus_proxy(
+    interface = "org.freedesktop.UDisks2.Loop",
+    default_service = "org.freedesktop.UDisks2",
+    default_path = "/org/freedesktop/UDisks2/Loop"
+)]
 trait Loop {
     /// Delete method
     fn delete(

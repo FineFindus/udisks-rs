@@ -12,7 +12,10 @@
 
 use zbus::dbus_proxy;
 
-#[dbus_proxy(interface = "org.freedesktop.UDisks2.MDRaid", assume_defaults = true)]
+#[dbus_proxy(interface = "org.freedesktop.UDisks2.MDRaid",
+    default_service = "org.freedesktop.UDisks2",
+    default_path = "/org/freedesktop/UDisks2/MDRaid"
+)]
 trait MDRaid {
     /// AddDevice method
     fn add_device(

@@ -14,7 +14,8 @@ use zbus::dbus_proxy;
 
 #[dbus_proxy(
     interface = "org.freedesktop.UDisks2.Encrypted",
-    assume_defaults = true
+    default_service = "org.freedesktop.UDisks2",
+    default_path = "/org/freedesktop/UDisks2/Encrypted"
 )]
 trait Encrypted {
     /// ChangePassphrase method

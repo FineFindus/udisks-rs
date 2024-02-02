@@ -18,7 +18,8 @@ pub mod namespace;
 
 #[dbus_proxy(
     interface = "org.freedesktop.UDisks2.Manager.NVMe",
-    assume_defaults = true
+    default_service = "org.freedesktop.UDisks2",
+    default_path = "/org/freedesktop/UDisks2/Manager"
 )]
 trait NVMe {
     /// Connect method

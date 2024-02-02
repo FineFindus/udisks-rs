@@ -12,7 +12,10 @@
 
 use zbus::dbus_proxy;
 
-#[dbus_proxy(interface = "org.freedesktop.UDisks2.Job", assume_defaults = true)]
+#[dbus_proxy(interface = "org.freedesktop.UDisks2.Job",
+    default_service = "org.freedesktop.UDisks2",
+    default_path = "/org/freedesktop/UDisks2/Jop"
+)]
 trait Job {
     /// Cancel method
     fn cancel(

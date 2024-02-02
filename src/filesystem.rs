@@ -14,14 +14,9 @@ use zbus::dbus_proxy;
 
 #[dbus_proxy(
     interface = "org.freedesktop.UDisks2.Filesystem",
-    assume_defaults = true
+    default_service = "org.freedesktop.UDisks2",
+    default_path = "/org/freedesktop/UDisks2/Filesystem"
 )]
-
-// #[dbus_proxy(
-//     interface = "org.freedesktop.UDisks2.Filesystem",
-//     default_service = "org.freedesktop.UDisks2",
-//     default_path = "/org/freedesktop/UDisks2/Filesystem"
-// )]
 trait Filesystem {
     /// Check method
     fn check(
