@@ -323,6 +323,36 @@ impl Client {
         partitiontable_object.r#loop().await
     }
 
+    /// Returns all [`partition::PartitionProxy`] of the given [`partitiontable::PartitionTableProxy`].
+    pub async fn partitions(
+        &self,
+        table: partitiontable::PartitionTableProxy<'_>,
+    ) -> Vec<partition::PartitionProxy<'_>> {
+        let mut partitions = Vec::new();
+        let Ok(table_object) = self.object_for_interface(table.interface().clone()).await else {
+            return partitions;
+        };
+        let table_object_path = table_object.object_path();
+
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(partition) = object.partition().await else {
+                continue;
+            };
+
+            if partition.table().await.as_ref() == Ok(table_object_path) {
+                partitions.push(partition);
+            }
+        }
+        partitions
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
