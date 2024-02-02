@@ -298,7 +298,7 @@ impl Client {
             .await
     }
 
-    /// Returns the [`r#loop::LoopProxy`] for the given [`block::BlockProxy`].
+    /// Returns the [`loop::LoopProxy`] for the given [`block::BlockProxy`].
     ///
     /// This only works if the block is a loop deivce, or a partition of a loop device.
     ///
