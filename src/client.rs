@@ -388,6 +388,9 @@ impl Client {
     async fn block_or_blocks_for_mdraid(
         &self,
         mdraid: mdraid::MDRaidProxy<'_>,
+        //TODO: pass in a function
+        // member_get: impl Fn(&block::BlockProxy<'a>) -> Future<Output = zbus::Result<OwnedObjectPath>> + 'a,
+        members: bool,
         only_first_one: bool,
         skip_partitions: bool,
     ) -> Vec<block::BlockProxy> {
@@ -415,9 +418,14 @@ impl Client {
                 continue;
             }
 
-            //TODO: C version takes in a function, but it's only used with BlockProxy::mdraid
-            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1027
-            if block.mdraid().await.as_ref() == Ok(raid_objpath) {
+            // if member_get(&block).await.as_ref() == Ok(raid_objpath) {
+            let block_objpath = if members {
+                block.mdraid().await
+            } else {
+                block.mdraid_member().await
+            };
+
+            if block_objpath.as_ref() == Ok(raid_objpath) {
                 blocks.push(block);
                 if only_first_one {
                     break;
@@ -440,7 +448,7 @@ impl Client {
         &self,
         mdraid: mdraid::MDRaidProxy<'_>,
     ) -> Option<BlockProxy<'_>> {
-        self.block_or_blocks_for_mdraid(mdraid, true, true)
+        self.block_or_blocks_for_mdraid(mdraid, false, true, true)
             .await
             .first()
             .cloned()
@@ -453,8 +461,18 @@ impl Client {
     pub async fn all_blocks_for_mdraid(
         &self,
         mdraid: mdraid::MDRaidProxy<'_>,
-    ) -> Vec<BlockProxy<'_>> {
-        self.block_or_blocks_for_mdraid(mdraid, false, true).await
+    ) -> Vec<block::BlockProxy<'_>> {
+        self.block_or_blocks_for_mdraid(mdraid, false, false, true)
+            .await
+    }
+
+    /// returns the physical block devices that are part of the given raid.
+    pub async fn members_for_mdraid(
+        &self,
+        mdraid: mdraid::MDRaidProxy<'_>,
+    ) -> Vec<block::BlockProxy<'_>> {
+        self.block_or_blocks_for_mdraid(mdraid, true, false, false)
+            .await
     }
 
     /// Gets a human-readable and localized text string describing the operation of job.
