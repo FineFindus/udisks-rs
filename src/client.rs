@@ -1,4 +1,3 @@
-
 use zbus::{fdo::ObjectManagerProxy, names::OwnedInterfaceName, zvariant::OwnedObjectPath};
 
 use crate::{
@@ -445,6 +444,17 @@ impl Client {
             .await
             .first()
             .cloned()
+    }
+
+    /// Returns all RAID devices (e.g. `/dev/md0` and `/dev/md1`) for the given mdraid.
+    ///
+    /// This is usually only useful [split-brain syndrome](https://en.wikipedia.org/wiki/Split-brain_(computing)),
+    /// and is normally used only to convey the problem in an user interface. See [`Client::block_for_mdraid`] for an example.
+    pub async fn all_blocks_for_mdraid(
+        &self,
+        mdraid: mdraid::MDRaidProxy<'_>,
+    ) -> Vec<BlockProxy<'_>> {
+        self.block_or_blocks_for_mdraid(mdraid, false, true).await
     }
 
     /// Gets a human-readable and localized text string describing the operation of job.
