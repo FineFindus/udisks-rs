@@ -475,6 +475,19 @@ impl Client {
             .await
     }
 
+    /// Returns the [`mdraid::MDRaidProxy`] that the given block is the block device for.
+    ///
+    /// # Errors
+    /// Returns an error if no [`mdraid::MDRaidProxy`] for the block is found, or the block is not
+    /// a MD-RAID block deivce.
+    pub async fn mdraid_for_block(
+        &self,
+        block: BlockProxy<'_>,
+    ) -> zbus::Result<mdraid::MDRaidProxy<'_>> {
+        let object = self.object(block.mdraid().await?)?;
+        object.mdraid().await
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
