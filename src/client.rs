@@ -1,8 +1,9 @@
+
 use zbus::{fdo::ObjectManagerProxy, names::OwnedInterfaceName, zvariant::OwnedObjectPath};
 
 use crate::{
     block::{self, BlockProxy},
-    drive, job, manager,
+    drive, job, manager, mdraid,
     object::Object,
     partition, partition_types, partitiontable, r#loop,
 };
@@ -383,6 +384,67 @@ impl Client {
             }
         }
         drive_siblings
+    }
+
+    async fn block_or_blocks_for_mdraid(
+        &self,
+        mdraid: mdraid::MDRaidProxy<'_>,
+        only_first_one: bool,
+        skip_partitions: bool,
+    ) -> Vec<block::BlockProxy> {
+        let mut blocks = Vec::new();
+        let Ok(raid_object) = self.object_for_interface(mdraid.interface().clone()).await else {
+            return blocks;
+        };
+
+        let raid_objpath = raid_object.object_path();
+
+        for object in self
+            .object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+        {
+            let Ok(block) = object.block().await else {
+                continue;
+            };
+
+            // skip partitions
+            if skip_partitions && object.partition().await.is_ok() {
+                continue;
+            }
+
+            //TODO: C version takes in a function, but it's only used with BlockProxy::mdraid
+            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1027
+            if block.mdraid().await.as_ref() == Ok(raid_objpath) {
+                blocks.push(block);
+                if only_first_one {
+                    break;
+                }
+            }
+        }
+
+        blocks
+    }
+
+    /// Returns the RAID device (e.g. `/dev/md0`) for the given mdraid.
+    ///
+    /// In the case of a [split-brain syndrome](https://en.wikipedia.org/wiki/Split-brain_(computing)),
+    /// it is undefined which RAID device is returned. For example this can happen if `/dev/sda` and `/dev/sdb`
+    /// are components of a two-disk RAID-1 and `/dev/md0` and `/dev/md1` are two degraded arrays,
+    /// each one using exactly one of the two devices. Use [`Client::all_blocks_for_mdraid`] to get all RAID devices.
+    ///
+    /// If no RAID device is running, [`Option::None`] is returned.
+    pub async fn block_for_mdraid(
+        &self,
+        mdraid: mdraid::MDRaidProxy<'_>,
+    ) -> Option<BlockProxy<'_>> {
+        self.block_or_blocks_for_mdraid(mdraid, true, true)
+            .await
+            .first()
+            .cloned()
     }
 
     /// Gets a human-readable and localized text string describing the operation of job.
