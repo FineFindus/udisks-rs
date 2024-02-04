@@ -289,7 +289,7 @@ impl Client {
     /// Returns an error if it is unable to get the table or the [`Object`] for the table.
     pub async fn partition_table(
         &self,
-        partition: partition::PartitionProxy<'_>,
+        partition: &partition::PartitionProxy<'_>,
     ) -> zbus::Result<partitiontable::PartitionTableProxy<'_>> {
         //TODO: C version docs do not mention that it can return NULL?
         //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1429
@@ -316,7 +316,7 @@ impl Client {
 
         // possibly partition of a loop device
         let partition = object.partition().await?;
-        let partitiontable = self.partition_table(partition).await?;
+        let partitiontable = self.partition_table(&partition).await?;
         let partitiontable_object = self
             .object_for_interface(partitiontable.interface().clone())
             .await?;
@@ -486,6 +486,85 @@ impl Client {
     ) -> zbus::Result<mdraid::MDRaidProxy<'_>> {
         let object = self.object(block.mdraid().await?)?;
         object.mdraid().await
+    }
+
+
+    /// Returns informating about the given partition that is suitable for presentation in an user
+    /// interface in a single line of text.
+    ///
+    /// The returned string is localized and includes things like thte partition type, flags (if
+    /// any) and name (if any).
+    ///
+    /// # Errors
+    /// Returns an errors if it fails to read any of the aformentioned information.
+    pub async fn partition_info(
+        &self,
+        partition: partition::PartitionProxy<'_>,
+    ) -> zbus::Result<String> {
+        //TODO: C version is not marked as returning NULL
+        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1169
+        let flags = partition.flags().await?;
+        let table = self.partition_table(&partition).await?;
+        let mut flags_str = String::new();
+
+        //TODO: use gettext for flags descriptions
+        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1193C1-L1193C103
+        match table.type_().await.as_deref() {
+            Ok("dos") => {
+                if flags & 0x80 != 0 {
+                    // Translators: Corresponds to the DOS/Master-Boot-Record "bootable" flag for a partition
+                    flags_str.push_str(&format!(", {}", "Bootable"))
+                }
+            }
+            Ok("gpt") => {
+                //TODO: se safer abstraction
+                if flags & (1 << 0) != 0 {
+                    // Translators: Corresponds to the GPT "system" flag for a partition,
+                    // see http://en.wikipedia.org/wiki/GUID_Partition_Table
+                    flags_str.push_str(&format!(", {}", "System"))
+                }
+                if flags & (1 << 2) != 0 {
+                    // Translators: Corresponds to the GPT "legacy bios bootable" flag for a partition,
+                    // see http://en.wikipedia.org/wiki/GUID_Partition_Table
+                    flags_str.push_str(&format!(", {}", "Legacy BIOS Bootable"))
+                }
+                if flags & (1 << 60) != 0 {
+                    // Translators: Corresponds to the GPT "read-only" flag for a partition,
+                    // see http://en.wikipedia.org/wiki/GUID_Partition_Table
+                    flags_str.push_str(&format!(", {}", "Read-only"))
+                }
+                if flags & (1 << 62) != 0 {
+                    // Translators: Corresponds to the GPT "hidden" flag for a partition,
+                    // see http://en.wikipedia.org/wiki/GUID_Partition_Table
+                    flags_str.push_str(&format!(", {}", "Hidden"))
+                }
+                if flags & (1 << 63) != 0 {
+                    // Translators: Corresponds to the GPT "no automount" flag for a partition,
+                    // see http://en.wikipedia.org/wiki/GUID_Partition_Table
+                    flags_str.push_str(&format!(", {}", "No Automaount"))
+                }
+            }
+            _ => {}
+        };
+        let type_str = match self
+            .partition_type_for_display(&table.type_().await?, &partition.type_().await?)
+        {
+            Some(val) => val.to_owned(),
+            _ => partition.type_().await?,
+        };
+
+        let partition_info;
+        if !flags_str.is_empty() {
+            // Translators: Partition info. First {} is the type, second {} is a list of flags
+            partition_info = format!("{} ({})", type_str, flags_str)
+        } else if type_str.is_empty() {
+            // Translators: The Partition info when unknown
+            partition_info = "Unknown".to_string();
+        } else {
+            partition_info = type_str;
+        }
+
+        Ok(partition_info)
     }
 
     /// Gets a human-readable and localized text string describing the operation of job.
