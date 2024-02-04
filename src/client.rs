@@ -7,6 +7,16 @@ use crate::{
     partition, partition_types, partitiontable, r#loop,
 };
 
+const KILOBYTE_FACTOR: f64 = 1000.0;
+const MEGABYTE_FACTOR: f64 = 1000.0 * 1000.0;
+const GIGABYTE_FACTOR: f64 = 1000.0 * 1000.0 * 1000.0;
+const TERABYTE_FACTOR: f64 = 1000.0 * 1000.0 * 1000.0 * 1000.0;
+
+const KIBIBYTE_FACTOR: f64 = 1024.0;
+const MEBIBYTE_FACTOR: f64 = 1024.0 * 1024.0;
+const GIBIBYTE_FACTOR: f64 = 1024.0 * 1024.0 * 1024.0;
+const TEBIBYTE_FACTOR: f64 = 1024.0 * 1024.0 * 1024.0 * 10242.0;
+
 /// Utility routines for accessing the UDisks service
 pub struct Client {
     connection: zbus::Connection,
@@ -565,6 +575,98 @@ impl Client {
         }
 
         Ok(partition_info)
+    }
+
+    fn pow2_size(&self, size: u64) -> String {
+        //TODO: refactor
+        let size = size as f64;
+
+        let display_size;
+        let unit;
+        if size < MEBIBYTE_FACTOR {
+            display_size = size / KIBIBYTE_FACTOR;
+            //TODO: use gettext to translate like in C version
+            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1728
+            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
+            unit = "KiB";
+        } else if size < GIBIBYTE_FACTOR {
+            display_size = size / MEBIBYTE_FACTOR;
+            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
+            unit = "MiB";
+        } else if size < TEBIBYTE_FACTOR {
+            display_size = size / GIBIBYTE_FACTOR;
+            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
+            unit = "GiB";
+        } else {
+            display_size = size / TEBIBYTE_FACTOR;
+            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
+            unit = "TiB";
+        }
+
+        let digits = if display_size < 10.0 { 1 } else { 0 };
+
+        format!("{:.digits$} {}", display_size, unit)
+    }
+
+    fn pow10_size(&self, size: u64) -> String {
+        let size = size as f64;
+
+        let display_size;
+        let unit;
+        if size < MEGABYTE_FACTOR {
+            display_size = size / KILOBYTE_FACTOR;
+            //TODO: use gettext to translate like in C version
+            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1770
+            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
+            unit = "KB";
+        } else if size < GIGABYTE_FACTOR {
+            display_size = size / MEGABYTE_FACTOR;
+            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
+            unit = "MB";
+        } else if size < TERABYTE_FACTOR {
+            display_size = size / GIGABYTE_FACTOR;
+            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
+            unit = "GB";
+        } else {
+            display_size = size / TERABYTE_FACTOR;
+            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
+            unit = "TB";
+        }
+
+        let digits = if display_size < 10.0 { 1 } else { 0 };
+
+        format!("{:.digits$} {}", display_size, unit)
+    }
+
+    /// Utility function to get a human-readable string that represents the given size.
+    ///
+    /// When `use_pow2` is set to true power-of-two units are used instead of power-of-ten
+    /// units.
+    /// Set `long_str` to true, to produce a long string.
+    pub fn size_for_display(&self, size: u64, use_pow2: bool, long_str: bool) -> String {
+        //TODO: refactor
+        let display;
+        if long_str {
+            let size_str = format!("{}", size);
+            if use_pow2 {
+                let pow_str = self.pow2_size(size);
+                // Translators: The first %s is the size in power-of-2 units, e.g. '64 KiB'
+                // the second %s is the size as a number e.g. '65,536' (always > 1)
+                display = format!("{} ({} bytes)", pow_str, size_str);
+            } else {
+                let pow_str = self.pow10_size(size);
+                // Translators: The first %s is the size in power-of-10 units, e.g. '100 kB'
+                // the second %s is the size as a number e.g. '100,000' (always > 1)
+                display = format!("{} ({} bytes)", pow_str, size_str);
+            }
+        } else {
+            if use_pow2 {
+                display = self.pow2_size(size);
+            } else {
+                display = self.pow10_size(size);
+            }
+        }
+        display
     }
 
     /// Gets a human-readable and localized text string describing the operation of job.
