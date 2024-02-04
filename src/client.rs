@@ -300,7 +300,7 @@ impl Client {
 
     /// Returns the [`loop::LoopProxy`] for the given [`block::BlockProxy`].
     ///
-    /// This only works if the block is a loop deivce, or a partition of a loop device.
+    /// This only works if the block is a loop device, or a partition of a loop device.
     ///
     /// # Errors
     /// Returns an error if it is unable to get the loop interface.
@@ -479,7 +479,7 @@ impl Client {
     ///
     /// # Errors
     /// Returns an error if no [`mdraid::MDRaidProxy`] for the block is found, or the block is not
-    /// a MD-RAID block deivce.
+    /// a MD-RAID block device.
     pub async fn mdraid_for_block(
         &self,
         block: BlockProxy<'_>,
@@ -492,11 +492,11 @@ impl Client {
     /// Returns informating about the given partition that is suitable for presentation in an user
     /// interface in a single line of text.
     ///
-    /// The returned string is localized and includes things like thte partition type, flags (if
+    /// The returned string is localized and includes things like the partition type, flags (if
     /// any) and name (if any).
     ///
     /// # Errors
-    /// Returns an errors if it fails to read any of the aformentioned information.
+    /// Returns an errors if it fails to read any of the aforementioned information.
     pub async fn partition_info(
         &self,
         partition: partition::PartitionProxy<'_>,
@@ -517,7 +517,7 @@ impl Client {
                 }
             }
             Ok("gpt") => {
-                //TODO: se safer abstraction
+                //TODO: use safer abstraction
                 if flags & (1 << 0) != 0 {
                     // Translators: Corresponds to the GPT "system" flag for a partition,
                     // see http://en.wikipedia.org/wiki/GUID_Partition_Table
