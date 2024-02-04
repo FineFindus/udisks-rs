@@ -11,6 +11,7 @@ pub mod mdraid;
 pub mod nvme;
 mod object;
 pub(crate) mod partition_types;
+mod id;
 pub use object::Object;
 pub mod partition;
 pub mod partitiontable;

@@ -2,7 +2,9 @@ use zbus::{fdo::ObjectManagerProxy, names::OwnedInterfaceName, zvariant::OwnedOb
 
 use crate::{
     block::{self, BlockProxy},
-    drive, job, manager, mdraid,
+    drive,
+    id::ID_TYPES,
+    job, manager, mdraid,
     object::Object,
     partition, partition_types, partitiontable, r#loop,
 };
@@ -667,6 +669,59 @@ impl Client {
             }
         }
         display
+    }
+
+    pub fn id_for_display(&self, usage: &str, ty: &str, version: &str, long_str: bool) -> String {
+        //TODO: refactor
+        //TODO: use gettext https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2088
+        ID_TYPES
+            .iter()
+            .filter(|id| id.usage == usage && id.ty == ty)
+            .find_map(|id| {
+                if id.version.is_none() && version.is_empty() {
+                    return Some(if long_str {
+                        id.long_name.to_owned()
+                    } else {
+                        id.short_name.to_owned()
+                    });
+                } else if !version.is_empty()
+                    && (id.version == Some(version) || id.version == Some("*"))
+                {
+                    return Some(if long_str {
+                        id.long_name.replace("%s", version)
+                    } else {
+                        id.short_name.replace("%s", version)
+                    });
+                }
+                None
+            })
+            .unwrap_or_else(|| {
+                let id_type;
+                if long_str {
+                    if !version.is_empty() {
+                        // Translators: Shown for unknown filesystem types.
+                        // First %s is the raw filesystem type obtained from udev, second %s is version.
+                        id_type = format!("Unknown ({} {})", ty, version);
+                    } else {
+                        if !ty.is_empty() {
+                            // Translators: Shown for unknown filesystem types.
+                            // First %s is the raw filesystem type obtained from udev.
+                            id_type = format!("Unknown ({})", ty);
+                        } else {
+                            // Translators: Shown for unknown filesystem types.
+                            id_type = "Unknown".to_string();
+                        }
+                    }
+                } else {
+                    if !ty.is_empty() {
+                        id_type = ty.to_string();
+                    } else {
+                        // Translators: Shown for unknown filesystem types.
+                        id_type = "Unknown".to_string();
+                    }
+                }
+                id_type
+            })
     }
 
     /// Gets a human-readable and localized text string describing the operation of job.
