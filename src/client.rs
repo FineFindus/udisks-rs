@@ -724,6 +724,112 @@ impl Client {
             })
     }
 
+    /// Returns a human-readable, localized string of the media described by the given `media_compat`.
+    ///
+    /// If the media is unkown, [`Option::None`] is returned.
+    pub fn media_compat_for_display(&self, media_compat: &[&str]) -> Option<String> {
+        //TODO: use gettext
+        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1902
+        let mut optical_cd = false;
+        let mut optical_dvd = false;
+        let mut optical_bd = false;
+        let mut optical_hddvd = false;
+        let mut media_desc: String = media_compat
+            .iter()
+            .filter_map(|&media| match media {
+                "flash_cf" => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("CompactFlash")
+                }
+                "flash_ms" => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("MemoryStick")
+                }
+                "flash_sm" => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("SmartMedia")
+                }
+                "flash_sd" => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("SecureDigital")
+                }
+                "flash_sdhc" => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("SD High Capacity")
+                }
+                "floppy" => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("Floppy")
+                }
+                "floppy_zip" => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("Zip")
+                }
+                "floppy_jaz" => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("Jaz")
+                }
+                val if val.starts_with("flash") => {
+                    // Translators: This word is used to describe the media inserted into a device
+                    Some("Flash")
+                }
+                val => {
+                    if val.starts_with("optical_cd") {
+                        optical_cd = true;
+                    } else if val.starts_with("optical_dvd") {
+                        optical_dvd = true;
+                    } else if val.starts_with("optical_bd") {
+                        optical_bd = true;
+                    } else if val.starts_with("optical_hddvd") {
+                        optical_hddvd = true;
+                    }
+                    None
+                }
+            })
+            //TODO: replace with intersperse
+            .collect::<Vec<_>>()
+            .join(",");
+
+        let add_separator = |str: &mut String| {
+            if !str.is_empty() {
+                str.push('/');
+            }
+        };
+
+        if optical_cd {
+            add_separator(&mut media_desc);
+            //Translators: This word is used to describe the optical disc type, it may appear
+            // in a slash-separated list e.g. 'CD/DVD/Blu-Ray'
+            media_desc.push_str("CD");
+        }
+        if optical_dvd {
+            add_separator(&mut media_desc);
+            //Translators: This word is used to describe the optical disc type, it may appear
+            // in a slash-separated list e.g. 'CD/DVD/Blu-Ray'
+            media_desc.push_str("DVD");
+        }
+        if optical_bd {
+            add_separator(&mut media_desc);
+            //Translators: This word is used to describe the optical disc type, it may appear
+            // in a slash-separated list e.g. 'CD/DVD/Blu-Ray'
+            media_desc.push_str("Blu-Ray");
+        }
+        if optical_hddvd {
+            add_separator(&mut media_desc);
+            //Translators: This word is used to describe the optical disc type, it may appear
+            // in a slash-separated list e.g. 'CD/DVD/Blu-Ray'
+            media_desc.push_str("HDDVD");
+        }
+
+        //return none, if the string is empty, to clearly idicate that the media is unknown
+        //it is also closer to the C API
+        if media_desc.is_empty() {
+            None
+        } else {
+            Some(media_desc)
+        }
+    }
+
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
