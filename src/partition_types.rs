@@ -13,20 +13,30 @@ pub enum PartitionTypeInfoFlags {
     /// attributes/flags for a partition.
     Hidden = (1 << 2),
     /// Partition type can only be used when creating a partition
-    /// and e.g. should not be selectable in a PartitionType::new("change partition type"
-    /// user interface (e.g. 'dos' type 0x05, 0x0f and 0x85 ff
+    /// and e.g. should not be selectable in a "change partition type"
+    /// user interface (e.g. 'dos' type 0x05, 0x0f and 0x85
     /// for extended partitions).
     CreateOnly = (1 << 3),
     /// Partition type indicates the partition is part of the system / bootloader (e.g. 'dos' types 0xee, 0xff, 'gpt' types for 'EFI System partition' and 'BIOS Boot partition').
     System = (1 << 4),
 }
 
+/// Detailed information about a partion type.
+///
+/// `table_subtype` is used to break the set of partition types for
+/// `table_type` into a logical subsets. It is typically only used in
+/// user interfaces where the partition type is selected.
 #[derive(Debug)]
 pub(crate) struct PartitionType {
+    /// A partition table type e.g. `dos` or `gpt`
     pub table_type: &'static str,
+    /// A partition table sub-type
     pub table_subtype: &'static str,
+    /// A partition type
     pub ty: &'static str,
-    pub name: &'static str,
+    /// Name of the partition
+    pub(crate) name: &'static str,
+    /// Flags descibing the partition type
     pub flags: PartitionTypeInfoFlags,
 }
 
