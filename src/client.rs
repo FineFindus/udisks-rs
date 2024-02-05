@@ -6,7 +6,9 @@ use crate::{
     id::ID_TYPES,
     job, manager, mdraid,
     object::Object,
-    partition, partition_types, partitiontable, r#loop,
+    partition,
+    partition_types::{self, PartitionTypeInfo, PARTITION_TYPES},
+    partitiontable, r#loop,
 };
 
 const KILOBYTE_FACTOR: f64 = 1000.0;
@@ -828,6 +830,28 @@ impl Client {
         } else {
             Some(media_desc)
         }
+    }
+
+    /// Returns information about all known partition types for `partition_table_type` (e.g. `dos` or `gpt`) and `partition_table_subtype`.
+    ///
+    /// If `partition_table_subtype` is [`None`], it is equivalent to all known types.
+    pub fn partition_type_infos(
+        &self,
+        partition_table_type: &str,
+        partition_table_subtype: Option<&str>,
+    ) -> Vec<&PartitionTypeInfo> {
+        //TODO: use enum for table type?
+        //TODO: C version uses a custom type, which appears to be the same as `PartitionTypeInfo`,
+        //but without the name
+        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2604
+        PARTITION_TYPES
+            .iter()
+            .filter(|pti| {
+                pti.table_type == partition_table_type
+                    && (partition_table_subtype.is_none()
+                        || Some(pti.table_subtype) == partition_table_subtype)
+            })
+            .collect()
     }
 
     /// Gets a human-readable and localized text string describing the operation of job.
