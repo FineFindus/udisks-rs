@@ -10,6 +10,7 @@ pub mod manager;
 pub mod mdraid;
 pub mod nvme;
 mod object;
+mod partition_subtypes;
 pub(crate) mod partition_types;
 mod id;
 pub use object::Object;

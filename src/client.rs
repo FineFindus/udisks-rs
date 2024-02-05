@@ -897,7 +897,7 @@ impl Client {
     }
 
     /// Returns information about all known subtypes for `partition_table_type` (e.g. `dos` or `gpt`) and `partition_table_subtype`.
-    pub fn partition_table_subtypes(&self, partition_table_type: &str) -> &[&str] {
+    pub fn partition_table_subtypes(&self, partition_table_type: &str) -> Vec<&str> {
         PARTITION_TABLE_SUBTYPES
             .iter()
             .filter(|pt| pt.ty == partition_table_type)
