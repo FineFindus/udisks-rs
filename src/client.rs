@@ -905,7 +905,7 @@ impl Client {
             .collect()
     }
 
-    /// Returns, if exists, the human-readable localized name of the [PartitionType].
+    /// Returns, if exists, the human-readable localized name of the [PartitionTypeInfo].
     pub fn partition_type_for_display(
         &self,
         partition_table_type: &str,
@@ -917,5 +917,26 @@ impl Client {
             //TODO: C version calls gettext here
             //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2653C26-L2653C26
             .map(|partition_type| partition_type.name)
+    }
+
+    /// Returns, if existing, the human-readable localized name of the [`PartitionTypeInfo`].
+    ///
+    /// It is similar to [`Client::partition_type_for_display`], but also accounts for the `partition_table_subtype`, if available.
+    /// This can be useful for scenarios, where different subtypes are using the same partition
+    /// type.
+    pub fn partition_type_and_subtype_for_display(
+        &self,
+        partition_table_type: &str,
+        partition_table_subtype: Option<&str>,
+        partition_type: &str,
+    ) -> Option<String> {
+        //TODO: user gettext
+        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2696
+        PARTITION_TYPES
+            .iter()
+            .filter(|pt| pt.table_type == partition_table_type && pt.ty == partition_type)
+            .filter(|pt| partition_table_subtype.is_some_and(|subtype| subtype == pt.table_subtype))
+            .map(|pt| pt.name.to_string())
+            .next()
     }
 }
