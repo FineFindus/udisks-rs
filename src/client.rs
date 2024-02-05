@@ -7,6 +7,7 @@ use crate::{
     job, manager, mdraid,
     object::Object,
     partition,
+    partition_subtypes::PARTITION_TABLE_SUBTYPES,
     partition_types::{self, PartitionTypeInfo, PARTITION_TYPES},
     partitiontable, r#loop,
 };
@@ -851,6 +852,15 @@ impl Client {
                     && (partition_table_subtype.is_none()
                         || Some(pti.table_subtype) == partition_table_subtype)
             })
+            .collect()
+    }
+
+    /// Returns information about all known subtypes for `partition_table_type` (e.g. `dos` or `gpt`) and `partition_table_subtype`.
+    pub fn partition_table_subtypes(&self, partition_table_type: &str) -> &[&str] {
+        PARTITION_TABLE_SUBTYPES
+            .iter()
+            .filter(|pt| pt.ty == partition_table_type)
+            .map(|pt| pt.subtype)
             .collect()
     }
 
