@@ -939,4 +939,22 @@ impl Client {
             .map(|pt| pt.name.to_string())
             .next()
     }
+
+    /// Returns, if exists, the human-readable localized string for `partition_table_type` (e.g.
+    /// `dos` or `gpt`).
+    pub fn partition_table_type_for_display(&self, partition_table_type: &str) -> Option<String> {
+        //TODO: use enum
+        //TODO: use gettext
+        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2192
+        [
+            ("dos", "Master Boot Record"),
+            ("gpt", "GUID Partition Table"),
+            ("apm", "Apple Partition Map"),
+        ]
+        .iter()
+        .find(|(ty, _)| ty == &partition_table_type)
+        //TODO: C version calls gettext here
+        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2653C26-L2653C26
+        .map(|(_, name)| name.to_string())
+    }
 }
