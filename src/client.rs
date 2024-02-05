@@ -6,8 +6,7 @@ use crate::{
     id::ID_TYPES,
     job, manager, mdraid,
     object::Object,
-    partition,
-    partition_subtypes::PARTITION_TABLE_SUBTYPES,
+    partition, partition_subtypes,
     partition_types::{self, PartitionTypeInfo, PARTITION_TYPES},
     partitiontable, r#loop,
 };
@@ -898,7 +897,7 @@ impl Client {
 
     /// Returns information about all known subtypes for `partition_table_type` (e.g. `dos` or `gpt`) and `partition_table_subtype`.
     pub fn partition_table_subtypes(&self, partition_table_type: &str) -> Vec<&str> {
-        PARTITION_TABLE_SUBTYPES
+        partition_subtypes::PARTITION_TABLE_SUBTYPES
             .iter()
             .filter(|pt| pt.ty == partition_table_type)
             .map(|pt| pt.subtype)
@@ -956,5 +955,21 @@ impl Client {
         //TODO: C version calls gettext here
         //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2653C26-L2653C26
         .map(|(_, name)| name.to_string())
+    }
+
+    /// Returns a human-readable localized description for `partition_table_type` (e.g. `dos` or `gpt`)
+    /// and `partition_table_subtype` (e.g. `dos` or `gpt`).
+    pub fn partition_table_subtype_for_display(
+        &self,
+        partition_table_type: &str,
+        partition_table_subtype: &str,
+    ) -> Option<String> {
+        //TODO: C version docs for subtype and type are identical, bug?
+        partition_subtypes::PARTITION_TABLE_SUBTYPES
+            .iter()
+            .find(|pt| pt.ty == partition_table_type && pt.subtype == partition_table_subtype)
+            //TODO: use gettext
+            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2280
+            .map(|pt| pt.name.to_string())
     }
 }
