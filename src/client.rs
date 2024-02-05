@@ -80,7 +80,7 @@ impl Client {
     /// Gets all  the [`job::JobProxy`] instances for the given object.
     ///
     /// If no instances are found, the returned vector is empty.
-    pub async fn jobs_for_object(&self, object: Object) -> Vec<OwnedObjectPath> {
+    pub async fn jobs_for_object(&self, object: &Object) -> Vec<OwnedObjectPath> {
         //TODO: maybe this should be moved to object directly?
         let object_path = object.object_path();
 
@@ -153,7 +153,7 @@ impl Client {
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
-    pub async fn job_description(&self, job: job::JobProxy<'_>) -> zbus::Result<String> {
+    pub async fn job_description(&self, job: &job::JobProxy<'_>) -> zbus::Result<String> {
         Ok(self.job_description_from_operation(&job.operation().await?))
     }
 
@@ -284,7 +284,7 @@ impl Client {
     /// returned.
     pub async fn block_for_drive(
         &self,
-        drive: drive::DriveProxy<'_>,
+        drive: &drive::DriveProxy<'_>,
         _physical: bool,
     ) -> Option<block::BlockProxy> {
         let object = self
@@ -309,7 +309,7 @@ impl Client {
     /// If no block is found, [`None`] is returned.
     pub async fn drive_for_block(
         &self,
-        block: BlockProxy<'_>,
+        block: &block::BlockProxy<'_>,
     ) -> zbus::Result<drive::DriveProxy<'static>> {
         let drive = block.drive().await?;
         self.object(drive)?.drive().await
@@ -318,7 +318,10 @@ impl Client {
     /// If the given [`block::BlockProxy`] is an encrypted device, returns the cleartext device.
     ///
     /// If no block is found, [`None`] is returned.
-    pub async fn cleartext_block(&self, block: BlockProxy<'_>) -> Option<block::BlockProxy<'_>> {
+    pub async fn cleartext_block(
+        &self,
+        block: &block::BlockProxy<'_>,
+    ) -> Option<block::BlockProxy<'_>> {
         let object_path = block.path().to_owned().into();
         for object in self
             .object_manager
@@ -361,7 +364,7 @@ impl Client {
     /// Returns an error if it is unable to get the loop interface.
     pub async fn loop_for_block(
         &self,
-        block: block::BlockProxy<'_>,
+        block: &block::BlockProxy<'_>,
     ) -> zbus::Result<r#loop::LoopProxy> {
         let object = self.object_for_interface(block.interface().clone()).await?;
 
@@ -381,7 +384,7 @@ impl Client {
     /// Returns all [`partition::PartitionProxy`] of the given [`partitiontable::PartitionTableProxy`].
     pub async fn partitions(
         &self,
-        table: partitiontable::PartitionTableProxy<'_>,
+        table: &partitiontable::PartitionTableProxy<'_>,
     ) -> Vec<partition::PartitionProxy<'_>> {
         let mut partitions = Vec::new();
         let Ok(table_object) = self.object_for_interface(table.interface().clone()).await else {
@@ -409,7 +412,10 @@ impl Client {
     }
 
     /// Returns all [`partition::PartitionProxy`] of the given [`partitiontable::PartitionTableProxy`].
-    pub async fn drive_siblings(&self, drive: drive::DriveProxy<'_>) -> Vec<drive::DriveProxy<'_>> {
+    pub async fn drive_siblings(
+        &self,
+        drive: &drive::DriveProxy<'_>,
+    ) -> Vec<drive::DriveProxy<'_>> {
         let mut drive_siblings = Vec::new();
         let sibling_id = drive.sibling_id().await;
 
@@ -442,7 +448,7 @@ impl Client {
 
     async fn block_or_blocks_for_mdraid(
         &self,
-        mdraid: mdraid::MDRaidProxy<'_>,
+        mdraid: &mdraid::MDRaidProxy<'_>,
         //TODO: pass in a function
         // member_get: impl Fn(&block::BlockProxy<'a>) -> Future<Output = zbus::Result<OwnedObjectPath>> + 'a,
         members: bool,
@@ -501,7 +507,7 @@ impl Client {
     /// If no RAID device is running, [`Option::None`] is returned.
     pub async fn block_for_mdraid(
         &self,
-        mdraid: mdraid::MDRaidProxy<'_>,
+        mdraid: &mdraid::MDRaidProxy<'_>,
     ) -> Option<BlockProxy<'_>> {
         self.block_or_blocks_for_mdraid(mdraid, false, true, true)
             .await
@@ -515,7 +521,7 @@ impl Client {
     /// and is normally used only to convey the problem in an user interface. See [`Client::block_for_mdraid`] for an example.
     pub async fn all_blocks_for_mdraid(
         &self,
-        mdraid: mdraid::MDRaidProxy<'_>,
+        mdraid: &mdraid::MDRaidProxy<'_>,
     ) -> Vec<block::BlockProxy<'_>> {
         self.block_or_blocks_for_mdraid(mdraid, false, false, true)
             .await
@@ -524,7 +530,7 @@ impl Client {
     /// returns the physical block devices that are part of the given raid.
     pub async fn members_for_mdraid(
         &self,
-        mdraid: mdraid::MDRaidProxy<'_>,
+        mdraid: &mdraid::MDRaidProxy<'_>,
     ) -> Vec<block::BlockProxy<'_>> {
         self.block_or_blocks_for_mdraid(mdraid, true, false, false)
             .await
@@ -554,12 +560,12 @@ impl Client {
     /// Returns an errors if it fails to read any of the aforementioned information.
     pub async fn partition_info(
         &self,
-        partition: partition::PartitionProxy<'_>,
+        partition: &partition::PartitionProxy<'_>,
     ) -> zbus::Result<String> {
         //TODO: C version is not marked as returning NULL
         //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1169
         let flags = partition.flags().await?;
-        let table = self.partition_table(&partition).await?;
+        let table = self.partition_table(partition).await?;
         let mut flags_str = String::new();
 
         //TODO: use gettext for flags descriptions
