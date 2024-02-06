@@ -72,6 +72,8 @@ impl ObjectInfo {
 
         let mut partition_number = None;
         if let Some(partition) = partition {
+            //TODO: we're expecting it here to to be fine to load,
+            //but further down we handle the error???
             partition_number = partition.number().await.ok();
 
             // Translators: Used to describe a partition of a block device.
