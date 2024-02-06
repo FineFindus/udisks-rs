@@ -812,7 +812,7 @@ impl Client {
 
     /// Returns a human-readable, localized string of the media described by the given `media_compat`.
     ///
-    /// If the media is unkown, [`Option::None`] is returned.
+    /// If the media is unknown, [`Option::None`] is returned.
     pub fn media_compat_for_display(&self, media_compat: &[&str]) -> Option<String> {
         //TODO: use gettext
         //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1902
@@ -907,7 +907,7 @@ impl Client {
             media_desc.push_str("HDDVD");
         }
 
-        //return none, if the string is empty, to clearly idicate that the media is unknown
+        //return none, if the string is empty, to clearly indicate that the media is unknown
         //it is also closer to the C API
         if media_desc.is_empty() {
             None

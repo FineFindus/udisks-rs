@@ -21,7 +21,7 @@ pub enum PartitionTypeInfoFlags {
     System = (1 << 4),
 }
 
-/// Detailed information about a partion type.
+/// Detailed information about a partition type.
 ///
 /// `table_subtype` is used to break the set of partition types for
 /// `table_type` into a logical subsets. It is typically only used in
@@ -36,7 +36,7 @@ pub struct PartitionTypeInfo {
     pub ty: &'static str,
     /// Name of the partition
     pub(crate) name: &'static str,
-    /// Flags descibing the partition type
+    /// Flags describing the partition type
     pub flags: PartitionTypeInfoFlags,
 }
 

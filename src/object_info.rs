@@ -99,9 +99,9 @@ impl ObjectInfo {
 
         self.sort_key = Some(format!(
             "02_block_{}_{}",
-            // safe to unwrap, object apth always have at least one `/`
+            // safe to unwrap, object path always have at least one `/`
             self.object.object_path().split('/').last().unwrap(),
-            //TODO: use asnyc closure when stable
+            //TODO: use async closure when stable
             partition_number.unwrap_or(0)
         ))
     }
@@ -167,9 +167,9 @@ impl ObjectInfo {
 
         self.sort_key = Some(format!(
             "03_loop_{}_{}",
-            // safe to unwrap, object apth always have at least one `/`
+            // safe to unwrap, object path always have at least one `/`
             self.object.object_path().split('/').last().unwrap(),
-            //TODO: use asnyc closure when stable
+            //TODO: use async closure when stable
             partition_number.unwrap_or(0)
         ));
     }
