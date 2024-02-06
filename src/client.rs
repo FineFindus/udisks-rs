@@ -6,6 +6,7 @@ use crate::{
     id::ID_TYPES,
     job, manager, mdraid,
     object::Object,
+    object_info::{self, ObjectInfo},
     partition, partition_subtypes,
     partition_types::{self, PartitionTypeInfo, PARTITION_TYPES},
     partitiontable, r#loop,
@@ -543,12 +544,48 @@ impl Client {
     /// a MD-RAID block device.
     pub async fn mdraid_for_block(
         &self,
-        block: BlockProxy<'_>,
+        block: &block::BlockProxy<'_>,
     ) -> zbus::Result<mdraid::MDRaidProxy<'_>> {
         let object = self.object(block.mdraid().await?)?;
         object.mdraid().await
     }
 
+    /// Returns information about the given object for presentation in a user information.
+    ///
+    /// The returned information is localized.
+    pub async fn object_info(&self, object: &Object) -> ObjectInfo {
+        let mut object_info = ObjectInfo::new(object.clone()).await;
+
+        //populate object_info
+        if let Ok(drive) = object.drive().await {
+            object_info.info_for_drive(self, &drive, None);
+        } else if let Ok(mdraid) = object.mdraid().await {
+            object_info.info_for_mdraid(mdraid);
+        } else if let Ok(block) = object.block().await {
+            let partition = object.partition().await;
+            let drive = self.drive_for_block(&block);
+            if let Ok(drive) = drive.await {
+                object_info.info_for_drive(self, &drive, partition.ok());
+                return object_info;
+            }
+
+            let mdraid = self.mdraid_for_block(&block);
+            if let Ok(mdraid) = mdraid.await {
+                object_info.info_for_mdraid(mdraid);
+                return object_info;
+            }
+
+            if let Ok(loop_proxy) = object.r#loop().await {
+                object_info.info_for_loop(loop_proxy);
+            } else {
+                object_info
+                    .info_for_block(self, block, partition.ok())
+                    .await;
+            }
+        }
+
+        object_info
+    }
 
     /// Returns informating about the given partition that is suitable for presentation in an user
     /// interface in a single line of text.
