@@ -560,9 +560,10 @@ impl Client {
         if let Ok(drive) = object.drive().await {
             object_info.info_for_drive(self, &drive, None);
         } else if let Ok(mdraid) = object.mdraid().await {
-            object_info.info_for_mdraid(mdraid);
+            object_info.info_for_mdraid(self, mdraid, None).await;
         } else if let Ok(block) = object.block().await {
             let partition = object.partition().await;
+
             let drive = self.drive_for_block(&block);
             if let Ok(drive) = drive.await {
                 object_info.info_for_drive(self, &drive, partition.ok());
@@ -571,12 +572,16 @@ impl Client {
 
             let mdraid = self.mdraid_for_block(&block);
             if let Ok(mdraid) = mdraid.await {
-                object_info.info_for_mdraid(mdraid);
+                object_info
+                    .info_for_mdraid(self, mdraid, partition.ok())
+                    .await;
                 return object_info;
             }
 
             if let Ok(loop_proxy) = object.r#loop().await {
-                object_info.info_for_loop(self, loop_proxy, block, partition.ok()).await;
+                object_info
+                    .info_for_loop(self, loop_proxy, block, partition.ok())
+                    .await;
             } else {
                 object_info
                     .info_for_block(self, block, partition.ok())
