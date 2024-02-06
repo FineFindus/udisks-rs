@@ -576,7 +576,7 @@ impl Client {
             }
 
             if let Ok(loop_proxy) = object.r#loop().await {
-                object_info.info_for_loop(loop_proxy);
+                object_info.info_for_loop(self, loop_proxy, block, partition.ok()).await;
             } else {
                 object_info
                     .info_for_block(self, block, partition.ok())

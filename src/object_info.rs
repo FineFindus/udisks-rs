@@ -106,6 +106,74 @@ impl ObjectInfo {
         ))
     }
 
+    pub(crate) async fn info_for_loop(
+        &mut self,
+        client: &Client,
+        loop_proxy: r#loop::LoopProxy<'_>,
+        block: block::BlockProxy<'_>,
+        partition: Option<partition::PartitionProxy<'_>>,
+    ) {
+        //TODO: use gettext
+        //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L303
+        self.icon = Some(GIcon("drive-removable-media"));
+        self.icon_symbolic = Some(GIcon("drive-removable-media-symbolic"));
+        self.name = loop_proxy
+            .backing_file()
+            .await
+            .ok()
+            .and_then(|file| String::from_utf8(file).ok());
+
+        let size = block.size().await;
+        if let Ok(size) = size {
+            let size = client.size_for_display(size, false, false);
+            self.description = Some(format!("{} Loop Device", size));
+        } else {
+            self.description = Some("Loop Device".to_owned());
+        }
+
+        let mut partition_number = None;
+        if let Some(partition) = partition {
+            //TODO: we're expecting it here to to be fine to load,
+            //but further down we handle the error???
+            partition_number = partition.number().await.ok();
+
+            // Translators: Used to describe a partition of a loop device.
+            //              The %u is the partition number.
+            //              The %s is the description for the block device (e.g. "5 GB Loop Device").
+            self.description = Some(format!(
+                "Partition {} of {}",
+                partition_number.expect("Failed to read partition number"),
+                //Safe to unwrap, we have previously set this
+                self.description.as_ref().unwrap()
+            ));
+        }
+
+        // Translators: String used for one-liner description of a loop device.
+        //              The first %s is the description of the object (e.g. "2 GB Loop Device").
+        //              The second %s is the name of the backing file (e.g. "/home/davidz/file.iso").
+        //              The third %s is the special device file (e.g. "/dev/loop2").
+        self.one_liner = Some(format!(
+            "{} — {} ({})",
+            self.description.as_ref().unwrap(),
+            //safe to unwrap, has been set previously
+            self.name.as_ref().unwrap(),
+            block
+                .preferred_device()
+                .await
+                .ok()
+                .and_then(|dev| String::from_utf8(dev).ok())
+                .unwrap_or_default()
+        ));
+
+        self.sort_key = Some(format!(
+            "03_loop_{}_{}",
+            // safe to unwrap, object apth always have at least one `/`
+            self.object.object_path().split('/').last().unwrap(),
+            //TODO: use asnyc closure when stable
+            partition_number.unwrap_or(0)
+        ));
+    }
+
     pub(crate) fn info_for_drive(
         &self,
         client: &Client,
@@ -116,10 +184,6 @@ impl ObjectInfo {
     }
 
     pub(crate) fn info_for_mdraid(&self, mdraid: mdraid::MDRaidProxy<'_>) {
-        todo!()
-    }
-
-    pub(crate) fn info_for_loop(&self, loop_proxy: r#loop::LoopProxy<'_>) {
         todo!()
     }
 }
