@@ -9,6 +9,7 @@ pub mod job;
 pub mod r#loop;
 pub mod manager;
 pub mod mdraid;
+mod media;
 pub mod nvme;
 mod object;
 mod object_info;

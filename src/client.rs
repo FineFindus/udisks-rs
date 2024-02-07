@@ -6,7 +6,7 @@ use crate::{
     id::ID_TYPES,
     job, manager, mdraid,
     object::Object,
-    object_info::{self, ObjectInfo},
+    object_info::ObjectInfo,
     partition, partition_subtypes,
     partition_types::{self, PartitionTypeInfo, PARTITION_TYPES},
     partitiontable, r#loop,
@@ -258,7 +258,7 @@ impl Client {
         blocks
     }
 
-    async fn object_for_interface<P: TryInto<OwnedInterfaceName>>(
+    pub(crate) async fn object_for_interface<P: TryInto<OwnedInterfaceName>>(
         &self,
         interface: P,
     ) -> zbus::Result<Object> {
@@ -558,7 +558,7 @@ impl Client {
 
         //populate object_info
         if let Ok(drive) = object.drive().await {
-            object_info.info_for_drive(self, &drive, None);
+            object_info.info_for_drive(self, &drive, None).await;
         } else if let Ok(mdraid) = object.mdraid().await {
             object_info.info_for_mdraid(self, mdraid, None).await;
         } else if let Ok(block) = object.block().await {
@@ -566,7 +566,9 @@ impl Client {
 
             let drive = self.drive_for_block(&block);
             if let Ok(drive) = drive.await {
-                object_info.info_for_drive(self, &drive, partition.ok());
+                object_info
+                    .info_for_drive(self, &drive, partition.ok())
+                    .await;
                 return object_info;
             }
 

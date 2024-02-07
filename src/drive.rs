@@ -117,6 +117,7 @@ trait Drive {
 
     /// RotationRate property
     #[dbus_proxy(property)]
+    //TODO: use enum
     fn rotation_rate(&self) -> zbus::Result<i32>;
 
     /// Seat property
