@@ -181,7 +181,7 @@ impl Client {
         None
     }
 
-    /// Gets all  the [`block::BlockProxy`] instances with the given label.
+    /// Gets all the [`block::BlockProxy`] instances with the given label.
     ///
     /// If no instances are found, the returned vector is empty.
     pub async fn block_for_label(&self, label: &str) -> Vec<block::BlockProxy> {
