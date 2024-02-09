@@ -177,7 +177,7 @@ impl ObjectInfo {
         partition: Option<partition::PartitionProxy<'_>>,
     ) {
         let name = mdraid.name().await.unwrap_or_default();
-        self.name = Some(name.split(":").last().unwrap_or_else(|| &name).to_string());
+        self.name = Some(name.split(':').last().unwrap_or_else(|| &name).to_string());
         self.icon = Some(GIcon("drive-multidisk".to_owned()));
         self.icon_symbolic = Some(GIcon("drive-multidisk-symbolic".to_owned()));
 
