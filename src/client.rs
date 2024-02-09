@@ -39,10 +39,8 @@ impl Client {
     /// Creates a new client based on the given [`zbus::Connection`].
     pub async fn new_for_connection(connection: zbus::Connection) -> zbus::Result<Self> {
         let object_manager = ObjectManagerProxy::builder(&connection)
-            .destination("org.freedesktop.UDisks2")
-            .unwrap()
-            .path("/org/freedesktop/UDisks2")
-            .unwrap()
+            .destination("org.freedesktop.UDisks2")?
+            .path("/org/freedesktop/UDisks2")?
             .build()
             .await?;
 
