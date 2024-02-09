@@ -9,21 +9,51 @@ use crate::{
 //TODO: use sensible version for Rust
 pub struct GIcon(String);
 
+/// Detailed information about the D-Bus interfaces (such as [`block::BlockProxy`] and [`drive::DriveProxy`])
+/// on a [`Object`] that is suitable to display in an user interface.
 #[derive(Debug, Clone)]
 pub struct ObjectInfo {
     /// The [`Object`] that the info is about
     //TODO: use reference?
     pub object: Object,
+
+    /// Name of the object
+    pub name: Option<String>,
+
+    /// Description of the object
+    pub description: Option<String>,
+
+    /// Icon associated with the object
     ///
-    name: Option<String>,
-    description: Option<String>,
+    /// The returned icon may be influenced by [`block::BlockProxy::hint_name()`].
     pub icon: Option<GIcon>,
+
+    /// Symbolic icon associated with the object
     pub icon_symbolic: Option<GIcon>,
-    media_description: Option<String>,
-    media_icon: Option<GIcon>,
-    media_icon_symbolic: Option<GIcon>,
-    one_liner: Option<String>,
-    sort_key: Option<String>,
+
+    /// Description of media associated with the object
+    pub media_description: Option<String>,
+
+    /// Icon associated with media
+    ///
+    /// The returned icon may be influenced by [`block::BlockProxy::hint_name()`].
+    pub media_icon: Option<GIcon>,
+
+    /// Symbolic icon associated with media
+    pub media_icon_symbolic: Option<GIcon>,
+
+    /// Single-line description
+    ///
+    /// A single line string, containing enough detail to be used as a comprehensive
+    /// representation of the `object`. For instance, in the case of block devices
+    /// or drives, it includes critical information like the device's special file
+    /// path, such as `/dev/sda`.
+    pub one_liner: Option<String>,
+
+    /// Sort key
+    ///
+    /// This can be used to sort objects.
+    pub sort_key: Option<String>,
 }
 
 impl ObjectInfo {
