@@ -347,7 +347,9 @@ impl ObjectInfo {
                     if self.media_description.is_none() {
                         self.media_description = Some(match media_data.media_type {
                             //TODO: why is this unreachable?
-                            media::DriveType::Unset => unreachable!(),
+                            media::DriveType::Unset => {
+                                unreachable!("MEDIA_DATA should not contain DriveType::Unset")
+                            }
                             media::DriveType::Drive => {
                                 //Translators: Used to describe drive without removable media. The %s is the type, e.g. 'Thumb'
                                 format!("{} Drive", media_data.media_name)
