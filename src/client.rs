@@ -22,7 +22,9 @@ const MEBIBYTE_FACTOR: f64 = 1024.0 * 1024.0;
 const GIBIBYTE_FACTOR: f64 = 1024.0 * 1024.0 * 1024.0;
 const TEBIBYTE_FACTOR: f64 = 1024.0 * 1024.0 * 1024.0 * 10242.0;
 
-/// Utility routines for accessing the UDisks service
+/// Utility routines for accessing the UDisks service.
+///
+/// It should be used for accessing the UDisks service from a client program.
 pub struct Client {
     connection: zbus::Connection,
     object_manager: zbus::fdo::ObjectManagerProxy<'static>,
