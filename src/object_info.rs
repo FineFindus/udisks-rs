@@ -394,7 +394,8 @@ impl ObjectInfo {
                         "Drive".to_owned()
                     }
                 } else {
-                    //TODO: is this a NULL check or actually check against 0
+                    //0 means that it is a non-rotating media
+                    //https://storaged.org/doc/udisks2-api/latest/gdbus-org.freedesktop.UDisks2.Drive.html#gdbus-property-org-freedesktop-UDisks2-Drive.RotationRate
                     if rotation_rate == 0 {
                         if let Some(size) = size {
                             // Translators: Used to describe a non-rotating drive (rotation rate either unknown
