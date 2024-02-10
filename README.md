@@ -30,4 +30,4 @@ async fn main() -> Result<()> {
 
 ## Documentation
 
-While this crate provides documentation for the hadnwritten code, the genreated types may be lacking. In this case it is recommended to use the official [documentation](https://storaged.org/doc/udisks2-api/latest/).
+While this crate provides documentation for the handwritten code, the generated types may be lacking. In this case it is recommended to use the official [documentation](https://storaged.org/doc/udisks2-api/latest/).
