@@ -19,7 +19,7 @@ pub(crate) struct MediaData {
 }
 
 impl MediaData {
-    pub(crate) const fn new(
+    const fn new(
         id: &'static str,
         media_name: &'static str,
         media_family: &'static str,
