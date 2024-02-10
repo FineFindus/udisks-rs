@@ -19,6 +19,9 @@ pub(crate) struct MediaData {
 }
 
 impl MediaData {
+    //just used to generate a nicer interface for the `MEDIA_DATA` below, no need for builder
+    //pattern or secondary struct
+    #[allow(clippy::too_many_arguments)]
     const fn new(
         id: &'static str,
         media_name: &'static str,
