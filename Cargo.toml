@@ -2,12 +2,18 @@
 name = "udisks-rs"
 version = "0.1.0"
 edition = "2021"
+rust-version = "1.75"
+description = " Unofficial crate for interacting with the UDisks2 API"
+readme = "README.md"
+license = "LGPL-2.1"
+repository = "https://github.com/FineFindus/udisk-rs"
+keywords = ["udisks", "udisks2", "manipulating-disk", "storage"]
+categories = ["api-bindings", "hardware-support", "os::linux-apis"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-zbus = { version = "3.15.0", features = ["tokio"] }
-#example and testing
+zbus = "3.15.0"
 
 [dev-dependencies]
-tokio = { version = "1.0", features = ["full"] }
+tokio = { version = "1.36", features = ["full"] }
