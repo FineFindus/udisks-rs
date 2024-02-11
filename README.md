@@ -9,11 +9,9 @@ Udisks allows accessing and manipulating disks, storages devices and similar tec
 ## Example
 
 ```rust
-use zbus::Result;
-
 // we use tokio in this example, but you can use any runtime
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() -> zbus::Result<()> {
     let client = udisks_rs::Client::new().await?;
     let object = client
         .object("/org/freedesktop/UDisks2/block_devices/sda")
