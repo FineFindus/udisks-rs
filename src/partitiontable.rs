@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.PartitionTable",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/PartitionTable"
@@ -42,10 +42,10 @@ trait PartitionTable {
     ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Partitions property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn partitions(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// Type property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn type_(&self) -> zbus::Result<String>;
 }

@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.MDRaid",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/MDRaid"
@@ -65,7 +65,7 @@ trait MDRaid {
     ) -> zbus::Result<()>;
 
     /// ActiveDevices property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     #[allow(clippy::type_complexity)]
     fn active_devices(
         &self,
@@ -80,11 +80,11 @@ trait MDRaid {
     >;
 
     /// BitmapLocation property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn bitmap_location(&self) -> zbus::Result<Vec<u8>>;
 
     /// ChildConfiguration property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn child_configuration(
         &self,
     ) -> zbus::Result<
@@ -95,50 +95,50 @@ trait MDRaid {
     >;
 
     /// ChunkSize property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn chunk_size(&self) -> zbus::Result<u64>;
 
     /// Degraded property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn degraded(&self) -> zbus::Result<u32>;
 
     /// Level property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn level(&self) -> zbus::Result<String>;
 
     /// Name property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn name(&self) -> zbus::Result<String>;
 
     /// NumDevices property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn num_devices(&self) -> zbus::Result<u32>;
 
     /// Running property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn running(&self) -> zbus::Result<bool>;
 
     /// Size property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn size(&self) -> zbus::Result<u64>;
 
     /// SyncAction property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn sync_action(&self) -> zbus::Result<String>;
 
     /// SyncCompleted property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn sync_completed(&self) -> zbus::Result<f64>;
 
     /// SyncRate property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn sync_rate(&self) -> zbus::Result<u64>;
 
     /// SyncRemainingTime property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn sync_remaining_time(&self) -> zbus::Result<u64>;
 
     /// UUID property
-    #[dbus_proxy(property, name = "UUID")]
+    #[zbus(property, name = "UUID")]
     fn uuid(&self) -> zbus::Result<String>;
 }

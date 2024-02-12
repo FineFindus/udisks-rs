@@ -289,7 +289,7 @@ impl Client {
         _physical: bool,
     ) -> Option<block::BlockProxy> {
         let object = self
-            .object_for_interface(drive.interface().clone())
+            .object_for_interface(drive.inner().interface().clone())
             .await
             .ok()?;
 
@@ -323,7 +323,7 @@ impl Client {
         &self,
         block: &block::BlockProxy<'_>,
     ) -> Option<block::BlockProxy<'_>> {
-        let object_path = block.path().to_owned().into();
+        let object_path = block.inner().path().to_owned().into();
         for object in self
             .object_manager
             .get_managed_objects()
@@ -367,7 +367,9 @@ impl Client {
         &self,
         block: &block::BlockProxy<'_>,
     ) -> zbus::Result<r#loop::LoopProxy> {
-        let object = self.object_for_interface(block.interface().clone()).await?;
+        let object = self
+            .object_for_interface(block.inner().interface().clone())
+            .await?;
 
         if let Ok(loop_proxy) = object.r#loop().await {
             return Ok(loop_proxy);
@@ -377,7 +379,7 @@ impl Client {
         let partition = object.partition().await?;
         let partitiontable = self.partition_table(&partition).await?;
         let partitiontable_object = self
-            .object_for_interface(partitiontable.interface().clone())
+            .object_for_interface(partitiontable.inner().interface().clone())
             .await?;
         partitiontable_object.r#loop().await
     }
@@ -388,7 +390,10 @@ impl Client {
         table: &partitiontable::PartitionTableProxy<'_>,
     ) -> Vec<partition::PartitionProxy<'_>> {
         let mut partitions = Vec::new();
-        let Ok(table_object) = self.object_for_interface(table.interface().clone()).await else {
+        let Ok(table_object) = self
+            .object_for_interface(table.inner().interface().clone())
+            .await
+        else {
             return partitions;
         };
         let table_object_path = table_object.object_path();
@@ -457,7 +462,10 @@ impl Client {
         skip_partitions: bool,
     ) -> Vec<block::BlockProxy> {
         let mut blocks = Vec::new();
-        let Ok(raid_object) = self.object_for_interface(mdraid.interface().clone()).await else {
+        let Ok(raid_object) = self
+            .object_for_interface(mdraid.inner().interface().clone())
+            .await
+        else {
             return blocks;
         };
 

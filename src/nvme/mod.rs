@@ -10,13 +10,13 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
 pub mod controller;
 pub mod fabrics;
 pub mod namespace;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Manager.NVMe",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Manager"
@@ -32,7 +32,7 @@ trait NVMe {
     ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// SetHostID method
-    #[dbus_proxy(name = "SetHostID")]
+    #[zbus(name = "SetHostID")]
     fn set_host_id(
         &self,
         hostid: &[u8],
@@ -40,7 +40,7 @@ trait NVMe {
     ) -> zbus::Result<()>;
 
     /// SetHostNQN method
-    #[dbus_proxy(name = "SetHostNQN")]
+    #[zbus(name = "SetHostNQN")]
     fn set_host_nqn(
         &self,
         hostnqn: &[u8],
@@ -48,10 +48,10 @@ trait NVMe {
     ) -> zbus::Result<()>;
 
     /// HostID property
-    #[dbus_proxy(property, name = "HostID")]
+    #[zbus(property, name = "HostID")]
     fn host_id(&self) -> zbus::Result<Vec<u8>>;
 
     /// HostNQN property
-    #[dbus_proxy(property, name = "HostNQN")]
+    #[zbus(property, name = "HostNQN")]
     fn host_nqn(&self) -> zbus::Result<Vec<u8>>;
 }

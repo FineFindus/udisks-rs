@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/NVMe"
@@ -51,58 +51,58 @@ trait Controller {
     ) -> zbus::Result<()>;
 
     /// ControllerID property
-    #[dbus_proxy(property, name = "ControllerID")]
+    #[zbus(property, name = "ControllerID")]
     fn controller_id(&self) -> zbus::Result<u16>;
 
     /// FGUID property
-    #[dbus_proxy(property, name = "FGUID")]
+    #[zbus(property, name = "FGUID")]
     fn fguid(&self) -> zbus::Result<String>;
 
     /// NVMeRevision property
-    #[dbus_proxy(property, name = "NVMeRevision")]
+    #[zbus(property, name = "NVMeRevision")]
     fn nvme_revision(&self) -> zbus::Result<String>;
 
     /// SanitizePercentRemaining property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn sanitize_percent_remaining(&self) -> zbus::Result<i32>;
 
     /// SanitizeStatus property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn sanitize_status(&self) -> zbus::Result<String>;
 
     /// SmartCriticalWarning property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_critical_warning(&self) -> zbus::Result<Vec<String>>;
 
     /// SmartPowerOnHours property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_power_on_hours(&self) -> zbus::Result<u64>;
 
     /// SmartSelftestPercentRemaining property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_selftest_percent_remaining(&self) -> zbus::Result<i32>;
 
     /// SmartSelftestStatus property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_selftest_status(&self) -> zbus::Result<String>;
 
     /// SmartTemperature property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_temperature(&self) -> zbus::Result<u16>;
 
     /// SmartUpdated property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_updated(&self) -> zbus::Result<u64>;
 
     /// State property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn state(&self) -> zbus::Result<String>;
 
     /// SubsystemNQN property
-    #[dbus_proxy(property, name = "SubsystemNQN")]
+    #[zbus(property, name = "SubsystemNQN")]
     fn subsystem_nqn(&self) -> zbus::Result<Vec<u8>>;
 
     /// UnallocatedCapacity property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn unallocated_capacity(&self) -> zbus::Result<u64>;
 }

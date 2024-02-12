@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Block",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Block"
@@ -102,7 +102,7 @@ trait Block {
     ) -> zbus::Result<()>;
 
     /// Configuration property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn configuration(
         &self,
     ) -> zbus::Result<
@@ -113,98 +113,98 @@ trait Block {
     >;
 
     /// CryptoBackingDevice property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn crypto_backing_device(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Device property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn device(&self) -> zbus::Result<Vec<u8>>;
 
     /// DeviceNumber property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn device_number(&self) -> zbus::Result<u64>;
 
     /// Drive property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn drive(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// HintAuto property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hint_auto(&self) -> zbus::Result<bool>;
 
     /// HintIconName property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hint_icon_name(&self) -> zbus::Result<String>;
 
     /// HintIgnore property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hint_ignore(&self) -> zbus::Result<bool>;
 
     /// HintName property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hint_name(&self) -> zbus::Result<String>;
 
     /// HintPartitionable property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hint_partitionable(&self) -> zbus::Result<bool>;
 
     /// HintSymbolicIconName property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hint_symbolic_icon_name(&self) -> zbus::Result<String>;
 
     /// HintSystem property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hint_system(&self) -> zbus::Result<bool>;
 
     /// Id property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn id(&self) -> zbus::Result<String>;
 
     /// IdLabel property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn id_label(&self) -> zbus::Result<String>;
 
     /// IdType property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn id_type(&self) -> zbus::Result<String>;
 
     /// IdUUID property
-    #[dbus_proxy(property, name = "IdUUID")]
+    #[zbus(property, name = "IdUUID")]
     fn id_uuid(&self) -> zbus::Result<String>;
 
     /// IdUsage property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn id_usage(&self) -> zbus::Result<String>;
 
     /// IdVersion property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn id_version(&self) -> zbus::Result<String>;
 
     /// MDRaid property
-    #[dbus_proxy(property, name = "MDRaid")]
+    #[zbus(property, name = "MDRaid")]
     fn mdraid(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// MDRaidMember property
-    #[dbus_proxy(property, name = "MDRaidMember")]
+    #[zbus(property, name = "MDRaidMember")]
     fn mdraid_member(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// PreferredDevice property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn preferred_device(&self) -> zbus::Result<Vec<u8>>;
 
     /// ReadOnly property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn read_only(&self) -> zbus::Result<bool>;
 
     /// Size property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn size(&self) -> zbus::Result<u64>;
 
     /// Symlinks property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn symlinks(&self) -> zbus::Result<Vec<Vec<u8>>>;
 
     /// UserspaceMountOptions property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn userspace_mount_options(&self) -> zbus::Result<Vec<String>>;
 }

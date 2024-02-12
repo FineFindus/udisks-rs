@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Fabrics",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/NVMe"
@@ -25,18 +25,18 @@ trait Fabrics {
     ) -> zbus::Result<()>;
 
     /// HostID property
-    #[dbus_proxy(property, name = "HostID")]
+    #[zbus(property, name = "HostID")]
     fn host_id(&self) -> zbus::Result<Vec<u8>>;
 
     /// HostNQN property
-    #[dbus_proxy(property, name = "HostNQN")]
+    #[zbus(property, name = "HostNQN")]
     fn host_nqn(&self) -> zbus::Result<Vec<u8>>;
 
     /// Transport property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn transport(&self) -> zbus::Result<String>;
 
     /// TransportAddress property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn transport_address(&self) -> zbus::Result<Vec<u8>>;
 }

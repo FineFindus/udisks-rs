@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Loop",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Loop"
@@ -32,14 +32,14 @@ trait Loop {
     ) -> zbus::Result<()>;
 
     /// Autoclear property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn autoclear(&self) -> zbus::Result<bool>;
 
     /// BackingFile property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn backing_file(&self) -> zbus::Result<Vec<u8>>;
 
     /// SetupByUID property
-    #[dbus_proxy(property, name = "SetupByUID")]
+    #[zbus(property, name = "SetupByUID")]
     fn setup_by_uid(&self) -> zbus::Result<u32>;
 }

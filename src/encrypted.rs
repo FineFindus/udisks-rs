@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Encrypted",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Encrypted"
@@ -47,7 +47,7 @@ trait Encrypted {
     ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// ChildConfiguration property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn child_configuration(
         &self,
     ) -> zbus::Result<
@@ -58,14 +58,14 @@ trait Encrypted {
     >;
 
     /// CleartextDevice property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn cleartext_device(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// HintEncryptionType property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hint_encryption_type(&self) -> zbus::Result<String>;
 
     /// MetadataSize property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn metadata_size(&self) -> zbus::Result<u64>;
 }

@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Manager",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Manager"
@@ -45,12 +45,12 @@ trait Manager {
     /// LoopSetup method
     fn loop_setup(
         &self,
-        fd: zbus::zvariant::Fd,
+        fd: zbus::zvariant::Fd<'_>,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// MDRaidCreate method
-    #[dbus_proxy(name = "MDRaidCreate")]
+    #[zbus(name = "MDRaidCreate")]
     fn mdraid_create(
         &self,
         blocks: &[zbus::zvariant::ObjectPath<'_>],
@@ -68,18 +68,18 @@ trait Manager {
     ) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// DefaultEncryptionType property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn default_encryption_type(&self) -> zbus::Result<String>;
 
     /// SupportedEncryptionTypes property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn supported_encryption_types(&self) -> zbus::Result<Vec<String>>;
 
     /// SupportedFilesystems property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn supported_filesystems(&self) -> zbus::Result<Vec<String>>;
 
     /// Version property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn version(&self) -> zbus::Result<String>;
 }

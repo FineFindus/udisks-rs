@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Partition",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Partition"
@@ -53,7 +53,7 @@ trait Partition {
     ) -> zbus::Result<()>;
 
     /// SetUUID method
-    #[dbus_proxy(name = "SetUUID")]
+    #[zbus(name = "SetUUID")]
     fn set_uuid(
         &self,
         uuid: &str,
@@ -61,42 +61,42 @@ trait Partition {
     ) -> zbus::Result<()>;
 
     /// Flags property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn flags(&self) -> zbus::Result<u64>;
 
     /// IsContained property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn is_contained(&self) -> zbus::Result<bool>;
 
     /// IsContainer property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn is_container(&self) -> zbus::Result<bool>;
 
     /// Name property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn name(&self) -> zbus::Result<String>;
 
     /// Number property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn number(&self) -> zbus::Result<u32>;
 
     /// Offset property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn offset(&self) -> zbus::Result<u64>;
 
     /// Size property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn size(&self) -> zbus::Result<u64>;
 
     /// Table property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn table(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Type property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn type_(&self) -> zbus::Result<String>;
 
     /// UUID property
-    #[dbus_proxy(property, name = "UUID")]
+    #[zbus(property, name = "UUID")]
     fn uuid(&self) -> zbus::Result<String>;
 }

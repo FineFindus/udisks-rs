@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Swapspace",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Swapspace"
@@ -26,7 +26,7 @@ trait Swapspace {
     ) -> zbus::Result<()>;
 
     /// SetUUID method
-    #[dbus_proxy(name = "SetUUID")]
+    #[zbus(name = "SetUUID")]
     fn set_uuid(
         &self,
         uuid: &str,
@@ -46,6 +46,6 @@ trait Swapspace {
     ) -> zbus::Result<()>;
 
     /// Active property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn active(&self) -> zbus::Result<bool>;
 }

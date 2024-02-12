@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Drive.Ata",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Drive"
@@ -88,102 +88,102 @@ trait Ata {
     ) -> zbus::Result<()>;
 
     /// AamEnabled property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn aam_enabled(&self) -> zbus::Result<bool>;
 
     /// AamSupported property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn aam_supported(&self) -> zbus::Result<bool>;
 
     /// AamVendorRecommendedValue property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn aam_vendor_recommended_value(&self) -> zbus::Result<i32>;
 
     /// ApmEnabled property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn apm_enabled(&self) -> zbus::Result<bool>;
 
     /// ApmSupported property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn apm_supported(&self) -> zbus::Result<bool>;
 
     /// PmEnabled property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn pm_enabled(&self) -> zbus::Result<bool>;
 
     /// PmSupported property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn pm_supported(&self) -> zbus::Result<bool>;
 
     /// ReadLookaheadEnabled property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn read_lookahead_enabled(&self) -> zbus::Result<bool>;
 
     /// ReadLookaheadSupported property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn read_lookahead_supported(&self) -> zbus::Result<bool>;
 
     /// SecurityEnhancedEraseUnitMinutes property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn security_enhanced_erase_unit_minutes(&self) -> zbus::Result<i32>;
 
     /// SecurityEraseUnitMinutes property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn security_erase_unit_minutes(&self) -> zbus::Result<i32>;
 
     /// SecurityFrozen property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn security_frozen(&self) -> zbus::Result<bool>;
 
     /// SmartEnabled property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_enabled(&self) -> zbus::Result<bool>;
 
     /// SmartFailing property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_failing(&self) -> zbus::Result<bool>;
 
     /// SmartNumAttributesFailedInThePast property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_num_attributes_failed_in_the_past(&self) -> zbus::Result<i32>;
 
     /// SmartNumAttributesFailing property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_num_attributes_failing(&self) -> zbus::Result<i32>;
 
     /// SmartNumBadSectors property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_num_bad_sectors(&self) -> zbus::Result<i64>;
 
     /// SmartPowerOnSeconds property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_power_on_seconds(&self) -> zbus::Result<u64>;
 
     /// SmartSelftestPercentRemaining property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_selftest_percent_remaining(&self) -> zbus::Result<i32>;
 
     /// SmartSelftestStatus property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_selftest_status(&self) -> zbus::Result<String>;
 
     /// SmartSupported property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_supported(&self) -> zbus::Result<bool>;
 
     /// SmartTemperature property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_temperature(&self) -> zbus::Result<f64>;
 
     /// SmartUpdated property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn smart_updated(&self) -> zbus::Result<u64>;
 
     /// WriteCacheEnabled property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn write_cache_enabled(&self) -> zbus::Result<bool>;
 
     /// WriteCacheSupported property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn write_cache_supported(&self) -> zbus::Result<bool>;
 }

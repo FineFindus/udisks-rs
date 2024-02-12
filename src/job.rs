@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.UDisks2.Job",
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Jop"
@@ -25,46 +25,46 @@ trait Job {
     ) -> zbus::Result<()>;
 
     /// Completed signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn completed(&self, success: bool, message: &str) -> zbus::Result<()>;
 
     /// Bytes property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn bytes(&self) -> zbus::Result<u64>;
 
     /// Cancelable property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn cancelable(&self) -> zbus::Result<bool>;
 
     /// ExpectedEndTime property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn expected_end_time(&self) -> zbus::Result<u64>;
 
     /// Objects property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn objects(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// Operation property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn operation(&self) -> zbus::Result<String>;
 
     /// Progress property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn progress(&self) -> zbus::Result<f64>;
 
     /// ProgressValid property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn progress_valid(&self) -> zbus::Result<bool>;
 
     /// Rate property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn rate(&self) -> zbus::Result<u64>;
 
     /// StartTime property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn start_time(&self) -> zbus::Result<u64>;
 
     /// StartedByUID property
-    #[dbus_proxy(property, name = "StartedByUID")]
+    #[zbus(property, name = "StartedByUID")]
     fn started_by_uid(&self) -> zbus::Result<u32>;
 }
