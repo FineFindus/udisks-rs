@@ -1,5 +1,8 @@
 #![doc = include_str!("../README.md")]
 
+//re-eport zbus
+pub use zbus;
+
 pub mod ata;
 pub mod block;
 mod client;
