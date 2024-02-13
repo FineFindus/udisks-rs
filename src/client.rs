@@ -747,29 +747,23 @@ impl Client {
     /// units.
     /// Set `long_str` to true, to produce a long string.
     pub fn size_for_display(&self, size: u64, use_pow2: bool, long_str: bool) -> String {
-        //TODO: refactor
-        let display;
-        if long_str {
-            let size_str = format!("{}", size);
-            if use_pow2 {
-                let pow_str = self.pow2_size(size);
-                // Translators: The first %s is the size in power-of-2 units, e.g. '64 KiB'
-                // the second %s is the size as a number e.g. '65,536' (always > 1)
-                display = format!("{} ({} bytes)", pow_str, size_str);
-            } else {
-                let pow_str = self.pow10_size(size);
-                // Translators: The first %s is the size in power-of-10 units, e.g. '100 kB'
-                // the second %s is the size as a number e.g. '100,000' (always > 1)
-                display = format!("{} ({} bytes)", pow_str, size_str);
-            }
+        let pow_size = if use_pow2 {
+            self.pow2_size(size)
         } else {
-            if use_pow2 {
-                display = self.pow2_size(size);
-            } else {
-                display = self.pow10_size(size);
-            }
+            self.pow10_size(size)
+        };
+
+        if !long_str {
+            return pow_size;
         }
-        display
+
+        // Translators: The first %s is the size in power-of-2 units, e.g. '64 KiB'
+        // the second %s is the size as a number e.g. '65,536' (always > 1)
+        // TODO: figure out a good way to support both translator comments
+        //https://github.com/storaged-project/udisks/blob/8b15d24d09a050fd1e3cfb48a32953543af1a168/udisks/udisksclient.c#L1829
+        // Translators: The first %s is the size in power-of-10 units, e.g. '100 kB'
+        // the second %s is the size as a number e.g. '100,000' (always > 1)
+        format!("{} ({} bytes)", pow_size, size)
     }
 
     pub fn id_for_display(&self, usage: &str, ty: &str, version: &str, long_str: bool) -> String {
