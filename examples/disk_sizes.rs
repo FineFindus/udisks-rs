@@ -1,6 +1,6 @@
 #[tokio::main]
 async fn main() -> zbus::Result<()> {
-    let client = udisks_rs::Client::new().await?;
+    let client = udisks2::Client::new().await?;
 
     for object in client
         .object_manager()

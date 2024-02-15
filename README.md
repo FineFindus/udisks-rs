@@ -12,7 +12,7 @@ Udisks allows accessing and manipulating disks, storages devices and similar tec
 // we use tokio in this example, but you can use any runtime
 #[tokio::main]
 async fn main() -> zbus::Result<()> {
-    let client = udisks_rs::Client::new().await?;
+    let client = udisks2::Client::new().await?;
     let object = client
         .object("/org/freedesktop/UDisks2/block_devices/sda")
         .expect("No sda device found");

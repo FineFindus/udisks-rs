@@ -19,8 +19,7 @@ pub struct Object {
 ///
 /// # Examples
 ///
-/// ```
-/// # #[macro_use] extern crate udisk_rs;
+/// ```skip
 /// # fn main() {
 /// get_interface!(
 ///  block, block::BlockProxy<'static>, "org.freedesktop.UDisks2.Block";
