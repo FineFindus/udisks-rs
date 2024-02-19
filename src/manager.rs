@@ -34,6 +34,7 @@ trait Manager {
     fn enable_module(&self, name: &str, enable: bool) -> zbus::Result<()>;
 
     /// EnableModules method
+    #[deprecated( note = "Use EnableModule instead")]
     fn enable_modules(&self, enable: bool) -> zbus::Result<()>;
 
     /// GetBlockDevices method
