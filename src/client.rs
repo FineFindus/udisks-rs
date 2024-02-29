@@ -351,8 +351,6 @@ impl Client {
         &self,
         partition: &partition::PartitionProxy<'_>,
     ) -> zbus::Result<partitiontable::PartitionTableProxy<'_>> {
-        //TODO: C version docs do not mention that it can return NULL?
-        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1429
         self.object(partition.table().await?)?
             .partition_table()
             .await
