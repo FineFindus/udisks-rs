@@ -5,9 +5,27 @@ use crate::{
 };
 
 ///stub
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 //TODO: use sensible version for Rust
-pub struct GIcon(String);
+pub struct GIcon {
+    icon: Option<String>,
+    icon_symbolic: Option<String>,
+}
+
+impl GIcon {
+    fn new(icon: Option<String>, icon_symbolic: Option<String>) -> Self {
+        Self {
+            icon,
+            icon_symbolic,
+        }
+    }
+
+    fn set_if_none(&mut self, icon: String, icon_symbolic: String) {
+        self.icon.get_or_insert(icon);
+        self.icon_symbolic.get_or_insert(icon_symbolic);
+    }
+
+}
 
 /// Detailed information about the D-Bus interfaces (such as [`block::BlockProxy`] and [`drive::DriveProxy`])
 /// on a [`Object`] that is suitable to display in an user interface.
@@ -26,10 +44,7 @@ pub struct ObjectInfo {
     /// Icon associated with the object
     ///
     /// The returned icon may be influenced by [`block::BlockProxy::hint_name()`].
-    pub icon: Option<GIcon>,
-
-    /// Symbolic icon associated with the object
-    pub icon_symbolic: Option<GIcon>,
+    pub icon: GIcon,
 
     /// Description of media associated with the object
     pub media_description: Option<String>,
@@ -37,10 +52,7 @@ pub struct ObjectInfo {
     /// Icon associated with media
     ///
     /// The returned icon may be influenced by [`block::BlockProxy::hint_name()`].
-    pub media_icon: Option<GIcon>,
-
-    /// Symbolic icon associated with media
-    pub media_icon_symbolic: Option<GIcon>,
+    pub media_icon: GIcon,
 
     /// Single-line description
     ///
@@ -62,11 +74,9 @@ impl ObjectInfo {
             object,
             name: None,
             description: None,
-            icon: None,
-            icon_symbolic: None,
+            icon: GIcon::default(),
             media_description: None,
-            media_icon: None,
-            media_icon_symbolic: None,
+            media_icon: GIcon::default(),
             one_liner: None,
             sort_key: None,
         }
@@ -80,8 +90,10 @@ impl ObjectInfo {
     ) {
         //TODO: use gettext
         //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L252
-        self.icon = Some(GIcon("drive-removable-media".to_owned()));
-        self.icon_symbolic = Some(GIcon("drive-removable-media_symbolic".to_owned()));
+        self.icon = GIcon::new(
+            Some("drive-removable-media".to_owned()),
+            Some("drive-removable-media-symbolic".to_owned()),
+        );
         self.name = block
             .preferred_device()
             .await
@@ -141,8 +153,10 @@ impl ObjectInfo {
     ) {
         //TODO: use gettext
         //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L303
-        self.icon = Some(GIcon("drive-removable-media".to_owned()));
-        self.icon_symbolic = Some(GIcon("drive-removable-media-symbolic".to_owned()));
+        self.icon = GIcon::new(
+            Some("drive-removable-media".to_owned()),
+            Some("drive-removable-media-symbolic".to_owned()),
+        );
         self.name = loop_proxy
             .backing_file()
             .await
@@ -208,8 +222,10 @@ impl ObjectInfo {
     ) {
         let name = mdraid.name().await.unwrap_or_default();
         self.name = Some(name.split(':').last().unwrap_or_else(|| &name).to_string());
-        self.icon = Some(GIcon("drive-multidisk".to_owned()));
-        self.icon_symbolic = Some(GIcon("drive-multidisk-symbolic".to_owned()));
+        self.icon = GIcon::new(
+            Some("drive-multidisk".to_owned()),
+            Some("drive-multidisk-symbolic".to_owned()),
+        );
 
         let level = mdraid.level().await;
         let size = mdraid.size().await;
@@ -327,10 +343,10 @@ impl ObjectInfo {
         let mut desc_type = DriveType::Unset;
         for media_data in media::MEDIA_DATA {
             if media_compat.contains(&media_data.id.to_string()) {
-                self.icon
-                    .get_or_insert(GIcon(media_data.drive_icon.to_owned()));
-                self.icon_symbolic
-                    .get_or_insert(GIcon(media_data.drive_icon_symbolic.to_owned()));
+                self.icon.set_if_none(
+                    media_data.drive_icon.to_owned(),
+                    media_data.drive_icon_symbolic.to_owned(),
+                );
                 if !desc.contains(media_data.media_family) {
                     if !desc.is_empty() {
                         desc.push('/');
@@ -369,10 +385,10 @@ impl ObjectInfo {
                         });
                     }
 
-                    self.media_icon
-                        .get_or_insert(GIcon(media_data.media_icon.to_owned()));
-                    self.media_icon_symbolic
-                        .get_or_insert(GIcon(media_data.media_icon_symbolic.to_owned()));
+                    self.media_icon.set_if_none(
+                        media_data.media_icon.to_owned(),
+                        media_data.media_icon_symbolic.to_owned(),
+                    );
                 }
             }
         }
@@ -441,67 +457,55 @@ impl ObjectInfo {
             .unwrap_or_default();
 
         //fallback for icon
-        self.icon.get_or_insert_with(|| {
-            GIcon(if media_removable {
-                format!("drive-removable-media{}", hyphenated_connection_bus)
-            } else {
-                if rotation_rate == 0 {
-                    format!("drive-harddisk-solidstate{}", hyphenated_connection_bus)
-                } else {
-                    format!("drive-harddisk{}", hyphenated_connection_bus)
-                }
-            })
-        });
+        let icon_fallback = if media_removable {
+            format!("drive-removable-media{}", hyphenated_connection_bus)
+        } else if rotation_rate == 0 {
+            format!("drive-harddisk-solidstate{}", hyphenated_connection_bus)
+        } else {
+            format!("drive-harddisk{}", hyphenated_connection_bus)
+        };
 
-        //fallback for icon_symbolic
-        self.icon_symbolic.get_or_insert_with(|| {
-            GIcon(if media_removable {
-                format!(
-                    "drive-removable-media{}-symbolic",
-                    hyphenated_connection_bus
-                )
-            } else {
-                if rotation_rate == 0 {
-                    format!(
-                        "drive-harddisk-solidstate{}-symbolic",
-                        hyphenated_connection_bus
-                    )
-                } else {
-                    format!("drive-harddisk{}-symbolic", hyphenated_connection_bus)
-                }
-            })
-        });
+        let icon_symbolic_fallback = if media_removable {
+            format!(
+                "drive-removable-media{}-symbolic",
+                hyphenated_connection_bus
+            )
+        } else if rotation_rate == 0 {
+            format!(
+                "drive-harddisk-solidstate{}-symbolic",
+                hyphenated_connection_bus
+            )
+        } else {
+            format!("drive-harddisk{}-symbolic", hyphenated_connection_bus)
+        };
+        self.icon.set_if_none(icon_fallback, icon_symbolic_fallback);
 
         //fallback for media_icon
-        if media_available && self.media_icon.is_none() {
-            self.media_icon = Some(GIcon(if media_removable {
+        if media_available {
+            let media_icon_fallback = if media_removable {
                 format!("drive-removable-media{}", hyphenated_connection_bus)
+            } else if rotation_rate == 0 {
+                format!("drive-harddisk-solidstate{}", hyphenated_connection_bus)
             } else {
-                if rotation_rate == 0 {
-                    format!("drive-harddisk-solidstate{}", hyphenated_connection_bus)
-                } else {
-                    format!("drive-harddisk{}", hyphenated_connection_bus)
-                }
-            }));
-        }
+                format!("drive-harddisk{}", hyphenated_connection_bus)
+            };
 
-        //fallback for media_icon_symbolic
-        if media_available && self.media_icon_symbolic.is_none() {
-            self.media_icon_symbolic = Some(GIcon(if media_removable {
+            let media_icon_symbolic_fallback = if media_removable {
                 format!(
                     "drive-removable-media{}-symbolic",
                     hyphenated_connection_bus
                 )
+            } else if rotation_rate == 0 {
+                format!(
+                    "drive-harddisk-solidstate{}-symbolic",
+                    hyphenated_connection_bus
+                )
             } else {
-                if rotation_rate == 0 {
-                    format!(
-                        "drive-harddisk-solidstate{}-symbolic",
-                        hyphenated_connection_bus
-                    )
-                } else {
-                    format!("drive-harddisk{}-symbolic", hyphenated_connection_bus)
-                }
-            }));
+                format!("drive-harddisk{}-symbolic", hyphenated_connection_bus)
+            };
+
+            self.media_icon
+                .set_if_none(media_icon_fallback, media_icon_symbolic_fallback);
         }
 
         //TODO: refactor
@@ -550,12 +554,12 @@ impl ObjectInfo {
                 self.media_description = Some(hint);
             }
             if let Ok(hint_icon) = block.hint_icon_name().await {
-                self.icon = Some(GIcon(hint_icon.clone()));
-                self.media_icon = Some(GIcon(hint_icon));
+                self.icon.icon = Some(hint_icon.clone());
+                self.media_icon.icon = Some(hint_icon);
             }
             if let Ok(hint_icon_symbolic) = block.hint_symbolic_icon_name().await {
-                self.icon_symbolic = Some(GIcon(hint_icon_symbolic.clone()));
-                self.media_icon_symbolic = Some(GIcon(hint_icon_symbolic));
+                self.icon.icon_symbolic = Some(hint_icon_symbolic.clone());
+                self.media_icon.icon_symbolic = Some(hint_icon_symbolic);
             }
         }
 
