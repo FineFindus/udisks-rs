@@ -4,27 +4,62 @@ use crate::{
     partition, r#loop, Client, Object,
 };
 
-///stub
+/// Icon
+///
+/// Represents an icon that can be looked up from an icon theme.
+/// An icon may have an symbolic version as well.
 #[derive(Debug, Default, Clone)]
-//TODO: use sensible version for Rust
-pub struct GIcon {
-    icon: Option<String>,
-    icon_symbolic: Option<String>,
+pub struct Icon {
+    name: Option<String>,
+    name_symbolic: Option<String>,
 }
 
-impl GIcon {
-    fn new(icon: Option<String>, icon_symbolic: Option<String>) -> Self {
+impl Icon {
+    fn new(name: Option<String>, name_symbolic: Option<String>) -> Self {
         Self {
-            icon,
-            icon_symbolic,
+            name,
+            name_symbolic,
         }
     }
 
     fn set_if_none(&mut self, icon: String, icon_symbolic: String) {
-        self.icon.get_or_insert(icon);
-        self.icon_symbolic.get_or_insert(icon_symbolic);
+        self.name.get_or_insert(icon);
+        self.name_symbolic.get_or_insert(icon_symbolic);
     }
 
+    /// Name of the icon.
+    ///
+    /// If the [`Object`] has no associated icon, None is returned.
+    pub fn name(&self) -> Option<&String> {
+        self.name.as_ref()
+    }
+
+    /// Name of the symbolic icon.
+    ///
+    /// If the [`Object`] has no associated symbolic icon, None is returned.
+    pub fn name_symbolic(&self) -> Option<&String> {
+        self.name_symbolic.as_ref()
+    }
+
+    #[cfg(feature = "gio")]
+    /// Returns the GIcon version of the icon.
+    ///
+    /// If the [`Object`] has no associated icon, None is returned.
+    pub fn icon(&self) -> Option<gio::ThemedIcon> {
+        self.name
+            .as_ref()
+            .map(|icon| gio::ThemedIcon::with_default_fallbacks(icon))
+    }
+
+    #[cfg(feature = "gio")]
+    /// Returns the GICon version of the icon.
+    ///
+    /// If the [`Object`] has no associated symbolic icon, None is returned.
+    pub fn icon_symbolic(&self) -> Option<gio::ThemedIcon> {
+        self.name_symbolic
+            .as_ref()
+            .map(|icon| gio::ThemedIcon::with_default_fallbacks(icon))
+    }
 }
 
 /// Detailed information about the D-Bus interfaces (such as [`block::BlockProxy`] and [`drive::DriveProxy`])
@@ -44,7 +79,7 @@ pub struct ObjectInfo {
     /// Icon associated with the object
     ///
     /// The returned icon may be influenced by [`block::BlockProxy::hint_name()`].
-    pub icon: GIcon,
+    pub icon: Icon,
 
     /// Description of media associated with the object
     pub media_description: Option<String>,
@@ -52,7 +87,7 @@ pub struct ObjectInfo {
     /// Icon associated with media
     ///
     /// The returned icon may be influenced by [`block::BlockProxy::hint_name()`].
-    pub media_icon: GIcon,
+    pub media_icon: Icon,
 
     /// Single-line description
     ///
@@ -74,9 +109,9 @@ impl ObjectInfo {
             object,
             name: None,
             description: None,
-            icon: GIcon::default(),
+            icon: Icon::default(),
             media_description: None,
-            media_icon: GIcon::default(),
+            media_icon: Icon::default(),
             one_liner: None,
             sort_key: None,
         }
@@ -90,7 +125,7 @@ impl ObjectInfo {
     ) {
         //TODO: use gettext
         //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L252
-        self.icon = GIcon::new(
+        self.icon = Icon::new(
             Some("drive-removable-media".to_owned()),
             Some("drive-removable-media-symbolic".to_owned()),
         );
@@ -153,7 +188,7 @@ impl ObjectInfo {
     ) {
         //TODO: use gettext
         //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L303
-        self.icon = GIcon::new(
+        self.icon = Icon::new(
             Some("drive-removable-media".to_owned()),
             Some("drive-removable-media-symbolic".to_owned()),
         );
@@ -222,7 +257,7 @@ impl ObjectInfo {
     ) {
         let name = mdraid.name().await.unwrap_or_default();
         self.name = Some(name.split(':').last().unwrap_or_else(|| &name).to_string());
-        self.icon = GIcon::new(
+        self.icon = Icon::new(
             Some("drive-multidisk".to_owned()),
             Some("drive-multidisk-symbolic".to_owned()),
         );
@@ -554,12 +589,12 @@ impl ObjectInfo {
                 self.media_description = Some(hint);
             }
             if let Ok(hint_icon) = block.hint_icon_name().await {
-                self.icon.icon = Some(hint_icon.clone());
-                self.media_icon.icon = Some(hint_icon);
+                self.icon.name = Some(hint_icon.clone());
+                self.media_icon.name = Some(hint_icon);
             }
             if let Ok(hint_icon_symbolic) = block.hint_symbolic_icon_name().await {
-                self.icon.icon_symbolic = Some(hint_icon_symbolic.clone());
-                self.media_icon.icon_symbolic = Some(hint_icon_symbolic);
+                self.icon.name_symbolic = Some(hint_icon_symbolic.clone());
+                self.media_icon.name_symbolic = Some(hint_icon_symbolic);
             }
         }
 

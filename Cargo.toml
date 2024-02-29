@@ -11,9 +11,13 @@ keywords = ["udisks", "udisks2", "manipulating-disk", "storage"]
 categories = ["api-bindings", "hardware-support", "os::linux-apis"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default-features = ["gio"]
+gio = ["dep:gio"]
 
 [dependencies]
 zbus = "4.0.0"
+gio = { version = "0.19.2", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.36", features = ["full"] }
