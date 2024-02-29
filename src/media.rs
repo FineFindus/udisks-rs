@@ -1,6 +1,5 @@
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum DriveType {
-    Unset,
     Drive,
     Disk,
     Card,

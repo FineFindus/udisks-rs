@@ -375,7 +375,7 @@ impl ObjectInfo {
         let media_compat = drive.media_compatibility().await.unwrap_or_default();
 
         let mut desc = String::new();
-        let mut desc_type = DriveType::Unset;
+        let mut desc_type = None;
         for media_data in media::MEDIA_DATA {
             if media_compat.contains(&media_data.id.to_string()) {
                 self.icon.set_if_none(
@@ -389,7 +389,7 @@ impl ObjectInfo {
                     //TODO gettext
                     desc.push_str(media_data.media_family);
                 }
-                desc_type = media_data.media_type;
+                desc_type = Some(media_data.media_type);
             }
 
             if media_removable && media_available {
@@ -397,10 +397,6 @@ impl ObjectInfo {
                 if media == media_data.id {
                     if self.media_description.is_none() {
                         self.media_description = Some(match media_data.media_type {
-                            //TODO: why is this unreachable?
-                            media::DriveType::Unset => {
-                                unreachable!("MEDIA_DATA should not contain DriveType::Unset")
-                            }
                             media::DriveType::Drive => {
                                 //Translators: Used to describe drive without removable media. The %s is the type, e.g. 'Thumb'
                                 format!("{} Drive", media_data.media_name)
@@ -435,7 +431,7 @@ impl ObjectInfo {
             .map(|size| client.size_for_display(size, false, false));
         let rotation_rate = drive.rotation_rate().await.unwrap_or_default();
         self.description = Some(match desc_type {
-            DriveType::Unset => {
+            None => {
                 if media_removable {
                     if let Some(size) = size {
                         // Translators: Used to describe a drive. The %s is the size, e.g. '20 GB'
@@ -469,11 +465,11 @@ impl ObjectInfo {
                     }
                 }
             }
-            DriveType::Card => {
+            Some(DriveType::Card) => {
                 // Translators: Used to describe a card reader. The %s is the card type e.g. 'CompactFlash'.
                 format!("{} Card Reader", desc)
             }
-            DriveType::Drive | DriveType::Disk | DriveType::Disc => {
+            Some(DriveType::Drive) | Some(DriveType::Disk) | Some(DriveType::Disc) => {
                 if size.as_ref().is_some_and(|_| !media_removable) {
                     // Translators: Used to describe drive. The first %s is the size e.g. '20 GB' and the
                     // second %s is the drive type e.g. 'Thumb'.
