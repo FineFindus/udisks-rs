@@ -65,10 +65,9 @@ impl Icon {
 /// Detailed information about the D-Bus interfaces (such as [`block::BlockProxy`] and [`drive::DriveProxy`])
 /// on a [`Object`] that is suitable to display in an user interface.
 #[derive(Debug, Clone)]
-pub struct ObjectInfo {
+pub struct ObjectInfo<'a> {
     /// The [`Object`] that the info is about
-    //TODO: use reference?
-    pub object: Object,
+    pub object: &'a Object,
 
     /// Name of the object
     pub name: Option<String>,
@@ -103,8 +102,8 @@ pub struct ObjectInfo {
     pub sort_key: Option<String>,
 }
 
-impl ObjectInfo {
-    pub(crate) async fn new(object: Object) -> Self {
+impl<'a> ObjectInfo<'a> {
+    pub(crate) fn new(object: &'a Object) -> Self {
         Self {
             object,
             name: None,

@@ -562,8 +562,8 @@ impl Client {
     /// Returns information about the given object for presentation in a user information.
     ///
     /// The returned information is localized.
-    pub async fn object_info(&self, object: &Object) -> ObjectInfo {
-        let mut object_info = ObjectInfo::new(object.clone()).await;
+    pub async fn object_info<'a>(&self, object: &'a Object) -> ObjectInfo<'a> {
+        let mut object_info = ObjectInfo::new(object);
 
         //populate object_info
         if let Ok(drive) = object.drive().await {
