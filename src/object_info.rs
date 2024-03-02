@@ -319,30 +319,28 @@ impl<'a> ObjectInfo<'a> {
                     self.description.as_deref().unwrap_or_default()
                 ));
             }
-        } else {
-            if let Some(block) = block {
-                let preferred_device = block
-                    .preferred_device()
-                    .await
-                    .ok()
-                    .and_then(|dev| String::from_utf8(dev).ok())
-                    .expect("Failed to get preferred device");
+        } else if let Some(block) = block {
+            let preferred_device = block
+                .preferred_device()
+                .await
+                .ok()
+                .and_then(|dev| String::from_utf8(dev).ok())
+                .expect("Failed to get preferred device");
 
-                // Translators: String used for one-liner description of running RAID array.
-                //              The first %s is the array name (e.g. "AlphaGo").
-                //              The second %s is the size and level (e.g. "2 TB RAID-5").
-                //              The third %s is the special device file (e.g. "/dev/sda").
-                self.one_liner = Some(format!(
-                    "{} — {}",
-                    self.description.as_deref().unwrap_or_default(),
-                    preferred_device,
-                ));
-            } else {
-                // Translators: String used for one-liner description of non-running RAID array.
-                //              The first %s is the array name (e.g. "AlphaGo").
-                //              The second %s is the size and level (e.g. "2 TB RAID-5").
-                self.one_liner = Some(self.description.as_deref().unwrap_or_default().to_string());
-            }
+            // Translators: String used for one-liner description of running RAID array.
+            //              The first %s is the array name (e.g. "AlphaGo").
+            //              The second %s is the size and level (e.g. "2 TB RAID-5").
+            //              The third %s is the special device file (e.g. "/dev/sda").
+            self.one_liner = Some(format!(
+                "{} — {}",
+                self.description.as_deref().unwrap_or_default(),
+                preferred_device,
+            ));
+        } else {
+            // Translators: String used for one-liner description of non-running RAID array.
+            //              The first %s is the array name (e.g. "AlphaGo").
+            //              The second %s is the size and level (e.g. "2 TB RAID-5").
+            self.one_liner = Some(self.description.as_deref().unwrap_or_default().to_string());
         }
 
         self.sort_key = Some(format!(
@@ -453,14 +451,12 @@ impl<'a> ObjectInfo<'a> {
                             // size not known.
                             "Disk".to_owned()
                         }
+                    } else if let Some(size) = size {
+                        // Translators: Used to describe a hard-disk drive (HDD). The %s is the size, e.g. '20 GB'.
+                        format!("{} Hard Disk", size)
                     } else {
-                        if let Some(size) = size {
-                            // Translators: Used to describe a hard-disk drive (HDD). The %s is the size, e.g. '20 GB'.
-                            format!("{} Hard Disk", size)
-                        } else {
-                            // Translators: Used to describe a hard-disk drive (HDD) (removable media or size not known)
-                            "Hard Disk".to_owned()
-                        }
+                        // Translators: Used to describe a hard-disk drive (HDD) (removable media or size not known)
+                        "Hard Disk".to_owned()
                     }
                 }
             }

@@ -806,23 +806,19 @@ impl Client {
                         // Translators: Shown for unknown filesystem types.
                         // First %s is the raw filesystem type obtained from udev, second %s is version.
                         id_type = format!("Unknown ({} {})", ty, version);
-                    } else {
-                        if !ty.is_empty() {
-                            // Translators: Shown for unknown filesystem types.
-                            // First %s is the raw filesystem type obtained from udev.
-                            id_type = format!("Unknown ({})", ty);
-                        } else {
-                            // Translators: Shown for unknown filesystem types.
-                            id_type = "Unknown".to_string();
-                        }
-                    }
-                } else {
-                    if !ty.is_empty() {
-                        id_type = ty.to_string();
+                    } else if !ty.is_empty() {
+                        // Translators: Shown for unknown filesystem types.
+                        // First %s is the raw filesystem type obtained from udev.
+                        id_type = format!("Unknown ({})", ty);
                     } else {
                         // Translators: Shown for unknown filesystem types.
                         id_type = "Unknown".to_string();
                     }
+                } else if !ty.is_empty() {
+                    id_type = ty.to_string();
+                } else {
+                    // Translators: Shown for unknown filesystem types.
+                    id_type = "Unknown".to_string();
                 }
                 id_type
             })
