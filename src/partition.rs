@@ -84,7 +84,7 @@ trait Partition {
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<()>;
 
-    /// Flags describing the parition.
+    /// Flags describing the partition.
     ///
     /// See [`PartitionFlags`] for more information.
     #[zbus(property)]
