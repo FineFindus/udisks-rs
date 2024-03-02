@@ -623,34 +623,33 @@ impl Client {
         //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1193C1-L1193C103
         match table.type_().await.as_deref() {
             Ok("dos") => {
-                if flags & 0x80 != 0 {
+                if flags.contains(partition::PartitionFlags::Bootable) {
                     // Translators: Corresponds to the DOS/Master-Boot-Record "bootable" flag for a partition
                     flags_str.push_str(&format!(", {}", "Bootable"))
                 }
             }
             Ok("gpt") => {
-                //TODO: use safer abstraction
-                if flags & (1 << 0) != 0 {
+                if flags.contains(partition::PartitionFlags::SystemPartition) {
                     // Translators: Corresponds to the GPT "system" flag for a partition,
                     // see http://en.wikipedia.org/wiki/GUID_Partition_Table
                     flags_str.push_str(&format!(", {}", "System"))
                 }
-                if flags & (1 << 2) != 0 {
+                if flags.contains(partition::PartitionFlags::LegacyBIOSBootable) {
                     // Translators: Corresponds to the GPT "legacy bios bootable" flag for a partition,
                     // see http://en.wikipedia.org/wiki/GUID_Partition_Table
                     flags_str.push_str(&format!(", {}", "Legacy BIOS Bootable"))
                 }
-                if flags & (1 << 60) != 0 {
+                if flags.contains(partition::PartitionFlags::ReadOnly) {
                     // Translators: Corresponds to the GPT "read-only" flag for a partition,
                     // see http://en.wikipedia.org/wiki/GUID_Partition_Table
                     flags_str.push_str(&format!(", {}", "Read-only"))
                 }
-                if flags & (1 << 62) != 0 {
+                if flags.contains(partition::PartitionFlags::Hidden) {
                     // Translators: Corresponds to the GPT "hidden" flag for a partition,
                     // see http://en.wikipedia.org/wiki/GUID_Partition_Table
                     flags_str.push_str(&format!(", {}", "Hidden"))
                 }
-                if flags & (1 << 63) != 0 {
+                if flags.contains(partition::PartitionFlags::NoAutoMount) {
                     // Translators: Corresponds to the GPT "no automount" flag for a partition,
                     // see http://en.wikipedia.org/wiki/GUID_Partition_Table
                     flags_str.push_str(&format!(", {}", "No Automaount"))
