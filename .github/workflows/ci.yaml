@@ -59,11 +59,13 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
 
-      - name: Build artem
+      - name: Install udisks2
+        run: sudo apt-get install -y udisks2
+
+      - name: Build
         continue-on-error: false
         run: cargo build
 
       - name: Run tests
-        if: contains(${{ matrix.target }}, "x86_64") #arm build can not run tests
         continue-on-error: false
         run: cargo test --locked --verbose
