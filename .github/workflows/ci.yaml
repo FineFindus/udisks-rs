@@ -1,0 +1,69 @@
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+name: Continuous Integration
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check
+    #format does not need to run on all platforms
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+      - name: Run check
+        run: cargo check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+      - name: Install stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Run clippy
+        run: cargo clippy -- -Dwarnigns
+
+  test:
+    name: Test Suite
+    strategy:
+      matrix:
+        platform: [ubuntu-latest] # test only on ubuntu, testing on every platform would take too much time and fail too often due to a few flaky test
+        rust:
+          - 1.75.0 # MSRV
+          - stable
+          - beta
+          - nightly
+      #tests should pass on all platforms
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 25
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install ${{ matrix.rust }} toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+
+      - name: Build artem
+        continue-on-error: false
+        run: cargo build
+
+      - name: Run tests
+        if: contains(${{ matrix.target }}, "x86_64") #arm build can not run tests
+        continue-on-error: false
+        run: cargo test --locked --verbose
