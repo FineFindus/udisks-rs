@@ -29,3 +29,9 @@ async fn main() -> zbus::Result<()> {
 ## Documentation
 
 While this crate provides documentation for the handwritten code, the generated types may be lacking. In this case it is recommended to use the official [documentation](https://storaged.org/doc/udisks2-api/latest/).
+
+## Features
+
+### `gio`
+
+Allows to directly access the `GIcon` associated with [`ObjectInfo`](https://docs.rs/udisks2/0.1.0/udisks2/struct.ObjectInfo.html). Disabled by default, to avoid linking with `gio`, when not necessary.
