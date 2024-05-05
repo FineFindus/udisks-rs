@@ -306,9 +306,10 @@ impl Client {
         None
     }
 
-    /// Gets the [`drive::DriveProxy`] for the given [`block::BlockProxy`].
+    /// Gets the [`drive::DriveProxy`] for the given [`block::BlockProxy`], if any.
     ///
-    /// If no block is found, [`None`] is returned.
+    /// # Errors
+    /// If no drive is found, [`zbus::Error::InterfaceNotFound`] is returned.
     pub async fn drive_for_block(
         &self,
         block: &block::BlockProxy<'_>,
