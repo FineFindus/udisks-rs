@@ -259,6 +259,15 @@ impl Client {
         blocks
     }
 
+    /// Convenience function for looking up an [Object] for `interface`.
+    ///
+    /// This is equivalent to the following C code.
+    /// ```C
+    /// UDISKS_OBJECT (g_dbus_interface_get_object (G_DBUS_INTERFACE (loop))),
+    /// ```
+    ///
+    /// # Errors
+    /// Returns an error if the given object path cannot be converted to an [zbus::zvariant::OwnedInterfaceName]
     pub async fn object_for_interface<P: TryInto<OwnedInterfaceName>>(
         &self,
         interface: P,
