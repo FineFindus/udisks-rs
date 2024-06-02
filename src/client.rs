@@ -259,7 +259,7 @@ impl Client {
         blocks
     }
 
-    pub(crate) async fn object_for_interface<P: TryInto<OwnedInterfaceName>>(
+    pub async fn object_for_interface<P: TryInto<OwnedInterfaceName>>(
         &self,
         interface: P,
     ) -> zbus::Result<Object> {
