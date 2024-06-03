@@ -12,7 +12,6 @@ categories = ["api-bindings", "hardware-support", "os::linux-apis"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [features]
-default-features = ["gio"]
 gio = ["dep:gio"]
 
 [dependencies]
