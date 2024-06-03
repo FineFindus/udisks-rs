@@ -267,7 +267,7 @@ impl Client {
     /// ```
     ///
     /// # Errors
-    /// Returns an error if the given object path cannot be converted to an [zbus::zvariant::OwnedInterfaceName]
+    /// Returns an error if the given object path cannot be converted to an [zbus::names::OwnedInterfaceName]
     pub async fn object_for_interface<P: TryInto<OwnedInterfaceName>>(
         &self,
         interface: P,
