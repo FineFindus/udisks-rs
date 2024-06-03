@@ -785,6 +785,7 @@ impl Client {
         format!("{} ({} bytes)", pow_size, size)
     }
 
+    /// Returns a human readable localized string for `usage`, `type` and `version`.
     pub fn id_for_display(&self, usage: &str, ty: &str, version: &str, long_str: bool) -> String {
         //TODO: refactor
         //TODO: use gettext https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2088
