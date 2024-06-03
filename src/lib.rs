@@ -1,5 +1,7 @@
 #![doc = include_str!("../README.md")]
 
+use std::collections::HashMap;
+
 //re-eport zbus
 pub use zbus;
 
@@ -26,3 +28,14 @@ pub mod partition;
 pub mod partitiontable;
 pub mod swapspace;
 pub use client::Client;
+
+/// Standard Options.
+///
+/// Many functions inlude a parameter `options`, which includes the following options:
+/// - `no_user_auth_interaction` if set to `true`, no user interaction will happen,
+/// when checking if the called function is authorized
+pub fn standard_options(
+    no_user_auth_interaction: bool,
+) -> HashMap<&'static str, zbus::zvariant::Value<'static>> {
+    HashMap::from([("auth.no_user_interaction", no_user_auth_interaction.into())])
+}
