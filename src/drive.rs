@@ -14,7 +14,7 @@ use zbus::{proxy, zvariant::OwnedValue};
 
 /// Rotational rate of a drive.
 #[derive(Debug, Default, PartialEq, Eq)]
-pub enum RatationRate {
+pub enum RotationRate {
     /// The drive is known to be rotating media but rotation rate isn't known.
     Unkown,
     /// The drive is known to be non-rotating media.
@@ -24,14 +24,14 @@ pub enum RatationRate {
     Rotating(i32),
 }
 
-impl TryFrom<OwnedValue> for RatationRate {
+impl TryFrom<OwnedValue> for RotationRate {
     type Error = <i32 as TryFrom<OwnedValue>>::Error;
 
     fn try_from(v: OwnedValue) -> Result<Self, Self::Error> {
         Ok(match v.try_into()? {
-            -1 => RatationRate::Unkown,
-            0 => RatationRate::NonRotating,
-            v => RatationRate::Rotating(v),
+            -1 => RotationRate::Unkown,
+            0 => RotationRate::NonRotating,
+            v => RotationRate::Rotating(v),
         })
     }
 }
@@ -141,7 +141,7 @@ trait Drive {
 
     /// Rotational rate of the drive.
     #[zbus(property)]
-    fn rotation_rate(&self) -> zbus::Result<RatationRate>;
+    fn rotation_rate(&self) -> zbus::Result<RotationRate>;
 
     /// Seat property
     #[zbus(property)]
