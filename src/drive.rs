@@ -10,7 +10,31 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::proxy;
+use zbus::{proxy, zvariant::OwnedValue};
+
+/// Rotational rate of a drive.
+#[derive(Debug, Default, PartialEq, Eq)]
+pub enum RatationRate {
+    /// The drive is known to be rotating media but rotation rate isn't known.
+    Unkown,
+    /// The drive is known to be non-rotating media.
+    #[default]
+    NonRotating,
+    /// The rotation rate in rounds per minute.
+    Rotating(i32),
+}
+
+impl TryFrom<OwnedValue> for RatationRate {
+    type Error = <i32 as TryFrom<OwnedValue>>::Error;
+
+    fn try_from(v: OwnedValue) -> Result<Self, Self::Error> {
+        Ok(match v.try_into()? {
+            -1 => RatationRate::Unkown,
+            0 => RatationRate::NonRotating,
+            v => RatationRate::Rotating(v),
+        })
+    }
+}
 
 #[proxy(
     interface = "org.freedesktop.UDisks2.Drive",
@@ -115,10 +139,9 @@ trait Drive {
     #[zbus(property)]
     fn revision(&self) -> zbus::Result<String>;
 
-    /// RotationRate property
+    /// Rotational rate of the drive.
     #[zbus(property)]
-    //TODO: use enum
-    fn rotation_rate(&self) -> zbus::Result<i32>;
+    fn rotation_rate(&self) -> zbus::Result<RatationRate>;
 
     /// Seat property
     #[zbus(property)]

@@ -1,5 +1,7 @@
 use crate::{
-    block, drive, mdraid,
+    block,
+    drive::{self, RatationRate},
+    mdraid,
     media::{self, DriveType},
     partition, r#loop, Client, Object,
 };
@@ -440,7 +442,7 @@ impl<'a> ObjectInfo<'a> {
                 } else {
                     //0 means that it is a non-rotating media
                     //https://storaged.org/doc/udisks2-api/latest/gdbus-org.freedesktop.UDisks2.Drive.html#gdbus-property-org-freedesktop-UDisks2-Drive.RotationRate
-                    if rotation_rate == 0 {
+                    if rotation_rate == RatationRate::NonRotating {
                         if let Some(size) = size {
                             // Translators: Used to describe a non-rotating drive (rotation rate either unknown
                             // or it's a solid-state drive). The %s is the size, e.g. '20 GB'.
@@ -485,7 +487,7 @@ impl<'a> ObjectInfo<'a> {
         //fallback for icon
         let icon_fallback = if media_removable {
             format!("drive-removable-media{}", hyphenated_connection_bus)
-        } else if rotation_rate == 0 {
+        } else if rotation_rate == RatationRate::NonRotating {
             format!("drive-harddisk-solidstate{}", hyphenated_connection_bus)
         } else {
             format!("drive-harddisk{}", hyphenated_connection_bus)
@@ -496,7 +498,7 @@ impl<'a> ObjectInfo<'a> {
                 "drive-removable-media{}-symbolic",
                 hyphenated_connection_bus
             )
-        } else if rotation_rate == 0 {
+        } else if rotation_rate == RatationRate::NonRotating {
             format!(
                 "drive-harddisk-solidstate{}-symbolic",
                 hyphenated_connection_bus
@@ -510,7 +512,7 @@ impl<'a> ObjectInfo<'a> {
         if media_available {
             let media_icon_fallback = if media_removable {
                 format!("drive-removable-media{}", hyphenated_connection_bus)
-            } else if rotation_rate == 0 {
+            } else if rotation_rate == RatationRate::NonRotating {
                 format!("drive-harddisk-solidstate{}", hyphenated_connection_bus)
             } else {
                 format!("drive-harddisk{}", hyphenated_connection_bus)
@@ -521,7 +523,7 @@ impl<'a> ObjectInfo<'a> {
                     "drive-removable-media{}-symbolic",
                     hyphenated_connection_bus
                 )
-            } else if rotation_rate == 0 {
+            } else if rotation_rate == RatationRate::NonRotating {
                 format!(
                     "drive-harddisk-solidstate{}-symbolic",
                     hyphenated_connection_bus
