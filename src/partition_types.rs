@@ -61,7 +61,7 @@ impl PartitionTypeInfo {
 
 /// Known [PartitionType]s.
 /// see http://en.wikipedia.org/wiki/GUID_Partition_Table
-pub const PARTITION_TYPES: [PartitionTypeInfo; 228] = [
+pub(crate) const PARTITION_TYPES: [PartitionTypeInfo; 228] = [
     // Not associated with any OS
     PartitionTypeInfo::new(
         "gpt",

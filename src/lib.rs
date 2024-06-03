@@ -21,7 +21,7 @@ pub mod nvme;
 mod object;
 mod object_info;
 mod partition_subtypes;
-pub(crate) mod partition_types;
+pub mod partition_types;
 pub use object::Object;
 pub use object_info::ObjectInfo;
 pub mod partition;
