@@ -1,4 +1,4 @@
-use zbus::{fdo::ObjectManagerProxy, names::OwnedInterfaceName, zvariant::OwnedObjectPath};
+use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
 use crate::{
     block::{self, BlockProxy},
@@ -259,32 +259,6 @@ impl Client {
         blocks
     }
 
-    /// Convenience function for looking up an [Object] for `interface`.
-    ///
-    /// This is equivalent to the following C code.
-    /// ```C
-    /// UDISKS_OBJECT (g_dbus_interface_get_object (G_DBUS_INTERFACE (loop))),
-    /// ```
-    ///
-    /// # Errors
-    /// Returns an error if the given object path cannot be converted to an [zbus::names::OwnedInterfaceName]
-    pub async fn object_for_interface<P: TryInto<OwnedInterfaceName>>(
-        &self,
-        interface: P,
-    ) -> zbus::Result<Object> {
-        let managed_objects = self.object_manager.get_managed_objects().await?;
-
-        let interface = interface
-            .try_into()
-            .map_err(|_| zbus::Error::InterfaceNotFound)?;
-
-        managed_objects
-            .into_iter()
-            .filter(|(_, interfaces)| interfaces.contains_key(&interface))
-            .find_map(|(path, _)| self.object(path).ok())
-            .ok_or(zbus::Error::InterfaceNotFound)
-    }
-
     /// Gets the [`block::BlockProxy`], if exists, for the given [`drive::DriveProxy`]
     ///
     /// The returned block is for the whole disk drive, so [`partition::PartitionProxy`] is never
@@ -298,10 +272,7 @@ impl Client {
         drive: &drive::DriveProxy<'_>,
         _physical: bool,
     ) -> Option<block::BlockProxy> {
-        let object = self
-            .object_for_interface(drive.inner().interface().clone())
-            .await
-            .ok()?;
+        let object = self.object(drive.inner().path().clone()).ok()?;
 
         for object in self
             .top_level_blocks_for_drive(object.object_path())
@@ -376,9 +347,7 @@ impl Client {
         &self,
         block: &block::BlockProxy<'_>,
     ) -> zbus::Result<r#loop::LoopProxy> {
-        let object = self
-            .object_for_interface(block.inner().interface().clone())
-            .await?;
+        let object = self.object(block.inner().path().clone())?;
 
         if let Ok(loop_proxy) = object.r#loop().await {
             return Ok(loop_proxy);
@@ -387,9 +356,7 @@ impl Client {
         // possibly partition of a loop device
         let partition = object.partition().await?;
         let partitiontable = self.partition_table(&partition).await?;
-        let partitiontable_object = self
-            .object_for_interface(partitiontable.inner().interface().clone())
-            .await?;
+        let partitiontable_object = self.object(partitiontable.inner().path().clone())?;
         partitiontable_object.r#loop().await
     }
 
@@ -399,10 +366,7 @@ impl Client {
         table: &partitiontable::PartitionTableProxy<'_>,
     ) -> Vec<partition::PartitionProxy<'_>> {
         let mut partitions = Vec::new();
-        let Ok(table_object) = self
-            .object_for_interface(table.inner().interface().clone())
-            .await
-        else {
+        let Ok(table_object) = self.object(table.inner().path().clone()) else {
             return partitions;
         };
         let table_object_path = table_object.object_path();
@@ -471,10 +435,7 @@ impl Client {
         skip_partitions: bool,
     ) -> Vec<block::BlockProxy> {
         let mut blocks = Vec::new();
-        let Ok(raid_object) = self
-            .object_for_interface(mdraid.inner().interface().clone())
-            .await
-        else {
+        let Ok(raid_object) = self.object(mdraid.inner().path().clone()) else {
             return blocks;
         };
 

@@ -589,9 +589,7 @@ impl<'a> ObjectInfo<'a> {
 
         let mut block_for_partition = None;
         if let Some(ref partition) = partition {
-            let object = client
-                .object_for_interface(partition.inner().interface().clone())
-                .await;
+            let object = client.object(partition.inner().path().clone());
             if let Ok(object) = object {
                 block_for_partition = object.block().await.ok();
             }
