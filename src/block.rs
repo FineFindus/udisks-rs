@@ -188,6 +188,8 @@ trait Block {
     #[zbus(property, name = "MDRaidMember")]
     fn mdraid_member(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
+    //TODO: a lot of functions return Strings as c type strings (i.e. vec of u8 with \0 bytes)
+    //they should be updated to return rust strings
     /// PreferredDevice property
     #[zbus(property)]
     fn preferred_device(&self) -> zbus::Result<Vec<u8>>;

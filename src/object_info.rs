@@ -1,3 +1,5 @@
+use std::ffi::CString;
+
 use crate::{
     block,
     drive::{self, RotationRate},
@@ -134,7 +136,8 @@ impl<'a> ObjectInfo<'a> {
             .preferred_device()
             .await
             .ok()
-            .and_then(|dev| String::from_utf8(dev).ok());
+            .and_then(|dev| CString::from_vec_with_nul(dev).ok())
+            .and_then(|dev| dev.to_str().map(|p| p.to_string()).ok());
 
         let size = block.size().await;
         if let Ok(size) = size {
@@ -197,7 +200,8 @@ impl<'a> ObjectInfo<'a> {
             .backing_file()
             .await
             .ok()
-            .and_then(|file| String::from_utf8(file).ok());
+            .and_then(|dev| CString::from_vec_with_nul(dev).ok())
+            .and_then(|dev| dev.to_str().map(|p| p.to_string()).ok());
 
         let size = block.size().await;
         if let Ok(size) = size {
@@ -237,7 +241,8 @@ impl<'a> ObjectInfo<'a> {
                 .preferred_device()
                 .await
                 .ok()
-                .and_then(|dev| String::from_utf8(dev).ok())
+                .and_then(|dev| CString::from_vec_with_nul(dev).ok())
+                .and_then(|dev| dev.to_str().map(|p| p.to_string()).ok())
                 .unwrap_or_default()
         ));
 
@@ -298,7 +303,8 @@ impl<'a> ObjectInfo<'a> {
                     .preferred_device()
                     .await
                     .ok()
-                    .and_then(|dev| String::from_utf8(dev).ok())
+                    .and_then(|dev| CString::from_vec_with_nul(dev).ok())
+                    .and_then(|dev| dev.to_str().map(|p| p.to_string()).ok())
                     .expect("Failed to get preferred device");
 
                 // Translators: String used for one-liner description of running RAID array.
@@ -326,7 +332,8 @@ impl<'a> ObjectInfo<'a> {
                 .preferred_device()
                 .await
                 .ok()
-                .and_then(|dev| String::from_utf8(dev).ok())
+                .and_then(|dev| CString::from_vec_with_nul(dev).ok())
+                .and_then(|dev| dev.to_str().map(|p| p.to_string()).ok())
                 .expect("Failed to get preferred device");
 
             // Translators: String used for one-liner description of running RAID array.
@@ -632,7 +639,8 @@ impl<'a> ObjectInfo<'a> {
                         .preferred_device()
                         .await
                         .ok()
-                        .and_then(|dev| String::from_utf8(dev).ok())
+                        .and_then(|dev| CString::from_vec_with_nul(dev).ok())
+                        .and_then(|dev| dev.to_str().map(|p| p.to_string()).ok())
                         .unwrap_or_default()
                 ));
             } else {
@@ -650,7 +658,8 @@ impl<'a> ObjectInfo<'a> {
                         .preferred_device()
                         .await
                         .ok()
-                        .and_then(|dev| String::from_utf8(dev).ok())
+                        .and_then(|dev| CString::from_vec_with_nul(dev).ok())
+                        .and_then(|dev| dev.to_str().map(|p| p.to_string()).ok())
                         .unwrap_or_default()
                 ));
             }
