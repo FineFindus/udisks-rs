@@ -476,8 +476,9 @@ impl<'a> ObjectInfo<'a> {
 
         let hyphenated_connection_bus = drive
             .connection_bus()
-            .await    .ok()
-    .filter(|bus| !bus.is_empty())
+            .await
+            .ok()
+            .filter(|bus| !bus.is_empty())
             .map(|bus| format!("-{}", bus))
             .unwrap_or_default();
 
