@@ -115,40 +115,39 @@ impl Client {
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
     pub fn job_description_from_operation(&self, operation: &str) -> String {
-        //TODO use gettext to translate the strings
         match operation {
-            "ata-smart-selftest" => String::from("SMART self-test"),
-            "drive-eject" => String::from("Ejecting Medium"),
-            "encrypted-unlock" => String::from("Unlocking Device"),
-            "encrypted-lock" => String::from("Locking Device"),
-            "encrypted-modify" => String::from("Modifying Encrypted Device"),
-            "encrypted-resize" => String::from("Resizing Encrypted Device"),
-            "swapspace-start" => String::from("Starting Swap Device"),
-            "swapspace-stop" => String::from("Stopping Swap Device"),
-            "swapspace-modify" => String::from("Modifying Swap Device"),
-            "filesystem-check" => String::from("Checking Filesystem"),
-            "filesystem-mount" => String::from("Mounting Filesystem"),
-            "filesystem-unmount" => String::from("Unmounting Filesystem"),
-            "filesystem-modify" => String::from("Modifying Filesystem"),
-            "filesystem-repair" => String::from("Repairing Filesystem"),
-            "filesystem-resize" => String::from("Resizing Filesystem"),
-            "format-erase" => String::from("Erasing Device"),
-            "format-mkfs" => String::from("Creating Filesystem"),
-            "loop-setup" => String::from("Setting Up Loop Device"),
-            "partition-modify" => String::from("Modifying Partition"),
-            "partition-delete" => String::from("Deleting Partition"),
-            "partition-create" => String::from("Creating Partition"),
-            "cleanup" => String::from("Cleaning Up"),
-            "ata-secure-erase" => String::from("ATA Secure Erase"),
-            "ata-enhanced-secure-erase" => String::from("ATA Enhanced Secure Erase"),
-            "md-raid-stop" => String::from("Stopping RAID Array"),
-            "md-raid-start" => String::from("Starting RAID Array"),
-            "md-raid-fault-device" => String::from("Marking Device as Faulty"),
-            "md-raid-remove-device" => String::from("Removing Device from Array"),
-            "md-raid-add-device" => String::from("Adding Device to Array"),
-            "md-raid-set-bitmap" => String::from("Setting Write-Intent Bitmap"),
-            "md-raid-create" => String::from("Creating RAID Array"),
-            _ => format!("Unknown ({})", operation),
+            "ata-smart-selftest" => pgettext("job", "SMART self-test"),
+            "drive-eject" => pgettext("job", "Ejecting Medium"),
+            "encrypted-unlock" => pgettext("job", "Unlocking Device"),
+            "encrypted-lock" => pgettext("job", "Locking Device"),
+            "encrypted-modify" => pgettext("job", "Modifying Encrypted Device"),
+            "encrypted-resize" => pgettext("job", "Resizing Encrypted Device"),
+            "swapspace-start" => pgettext("job", "Starting Swap Device"),
+            "swapspace-stop" => pgettext("job", "Stopping Swap Device"),
+            "swapspace-modify" => pgettext("job", "Modifying Swap Device"),
+            "filesystem-check" => pgettext("job", "Checking Filesystem"),
+            "filesystem-mount" => pgettext("job", "Mounting Filesystem"),
+            "filesystem-unmount" => pgettext("job", "Unmounting Filesystem"),
+            "filesystem-modify" => pgettext("job", "Modifying Filesystem"),
+            "filesystem-repair" => pgettext("job", "Repairing Filesystem"),
+            "filesystem-resize" => pgettext("job", "Resizing Filesystem"),
+            "format-erase" => pgettext("job", "Erasing Device"),
+            "format-mkfs" => pgettext("job", "Creating Filesystem"),
+            "loop-setup" => pgettext("job", "Setting Up Loop Device"),
+            "partition-modify" => pgettext("job", "Modifying Partition"),
+            "partition-delete" => pgettext("job", "Deleting Partition"),
+            "partition-create" => pgettext("job", "Creating Partition"),
+            "cleanup" => pgettext("job", "Cleaning Up"),
+            "ata-secure-erase" => pgettext("job", "ATA Secure Erase"),
+            "ata-enhanced-secure-erase" => pgettext("job", "ATA Enhanced Secure Erase"),
+            "md-raid-stop" => pgettext("job", "Stopping RAID Array"),
+            "md-raid-start" => pgettext("job", "Starting RAID Array"),
+            "md-raid-fault-device" => pgettext("job", "Marking Device as Faulty"),
+            "md-raid-remove-device" => pgettext("job", "Removing Device from Array"),
+            "md-raid-add-device" => pgettext("job", "Adding Device to Array"),
+            "md-raid-set-bitmap" => pgettext("job", "Setting Write-Intent Bitmap"),
+            "md-raid-create" => pgettext("job", "Creating RAID Array"),
+            _ => pgettext!("unknown-job", "Unknown ({})", operation),
         }
     }
 
@@ -582,18 +581,14 @@ impl Client {
         &self,
         partition: &partition::PartitionProxy<'_>,
     ) -> error::Result<String> {
-        //TODO: C version is not marked as returning NULL
-        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1169
         let flags = partition.flags().await?;
         let table = self.partition_table(partition).await?;
         let mut flags_str = String::new();
 
-        //TODO: use gettext for flags descriptions
-        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1193C1-L1193C103
         match table.type_().await.as_deref() {
             Ok("dos") if flags.contains(partition::PartitionFlags::Bootable) => {
                 // Translators: Corresponds to the DOS/Master-Boot-Record "bootable" flag for a partition
-                flags_str.push_str(&format!(", {}", "Bootable"))
+                flags_str.push_str(&format!(", {}", pgettext("dos-part-flag", "Bootable")))
             }
             Ok("gpt") => {
                 let flag_map = [
@@ -601,31 +596,31 @@ impl Client {
                         partition::PartitionFlags::SystemPartition,
                         // Translators: Corresponds to the GPT "system" flag for a partition,
                         // see http://en.wikipedia.org/wiki/GUID_Partition_Table
-                        "System".to_owned(),
+                        pgettext("gpt-part-flag", "System"),
                     ),
                     (
                         partition::PartitionFlags::LegacyBIOSBootable,
                         // Translators: Corresponds to the GPT "legacy bios bootable" flag for a partition,
                         // see http://en.wikipedia.org/wiki/GUID_Partition_Table
-                        "Legacy BIOS Bootable".to_owned(),
+                        pgettext("gpt-part-flag", "Legacy BIOS Bootable"),
                     ),
                     (
                         partition::PartitionFlags::ReadOnly,
                         // Translators: Corresponds to the GPT "read-only" flag for a partition,
                         // see http://en.wikipedia.org/wiki/GUID_Partition_Table
-                        "Read-only".to_owned(),
+                        pgettext("gpt-part-flag", "Read-only"),
                     ),
                     (
                         partition::PartitionFlags::Hidden,
                         // Translators: Corresponds to the GPT "hidden" flag for a partition,
                         // see http://en.wikipedia.org/wiki/GUID_Partition_Table
-                        "Hidden".to_owned(),
+                        pgettext("gpt-part-flag", "Hidden"),
                     ),
                     (
                         partition::PartitionFlags::NoAutoMount,
                         // Translators: Corresponds to the GPT "no automount" flag for a partition,
                         // see http://en.wikipedia.org/wiki/GUID_Partition_Table
-                        "No Automaount".to_owned(),
+                        pgettext("gpt-part-flag", "No Automaount"),
                     ),
                 ];
 
@@ -647,10 +642,10 @@ impl Client {
         let partition_info;
         if !flags_str.is_empty() {
             // Translators: Partition info. First {} is the type, second {} is a list of flags
-            partition_info = format!("{} ({})", type_str, flags_str)
+            partition_info = pgettext!("partition-info", "{} ({})", type_str, flags_str)
         } else if type_str.is_empty() {
             // Translators: The Partition info when unknown
-            partition_info = "Unknown".to_string();
+            partition_info = pgettext("partition-info", "Unknown")
         } else {
             partition_info = type_str;
         }
@@ -669,19 +664,19 @@ impl Client {
             //TODO: use gettext to translate like in C version
             //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1728
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = "KiB";
+            unit = pgettext("byte-size-pow2", "KiB");
         } else if size < GIBIBYTE_FACTOR {
             display_size = size / MEBIBYTE_FACTOR;
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = "MiB";
+            unit = pgettext("byte-size-pow2", "MiB");
         } else if size < TEBIBYTE_FACTOR {
             display_size = size / GIBIBYTE_FACTOR;
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = "GiB";
+            unit = pgettext("byte-size-pow2", "GiB");
         } else {
             display_size = size / TEBIBYTE_FACTOR;
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = "TiB";
+            unit = pgettext("byte-size-pow2", "TiB");
         }
 
         let digits = if display_size < 10.0 { 1 } else { 0 };
@@ -699,19 +694,19 @@ impl Client {
             //TODO: use gettext to translate like in C version
             //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1770
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = "KB";
+            unit = pgettext("byte-size-pow10", "KB");
         } else if size < GIGABYTE_FACTOR {
             display_size = size / MEGABYTE_FACTOR;
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = "MB";
+            unit = pgettext("byte-size-pow10", "MB");
         } else if size < TERABYTE_FACTOR {
             display_size = size / GIGABYTE_FACTOR;
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = "GB";
+            unit = pgettext("byte-size-pow10", "GB");
         } else {
             display_size = size / TERABYTE_FACTOR;
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = "TB";
+            unit = pgettext("byte-size-pow10", "TB");
         }
 
         let digits = if display_size < 10.0 { 1 } else { 0 };
@@ -741,30 +736,28 @@ impl Client {
         //https://github.com/storaged-project/udisks/blob/8b15d24d09a050fd1e3cfb48a32953543af1a168/udisks/udisksclient.c#L1829
         // Translators: The first %s is the size in power-of-10 units, e.g. '100 kB'
         // the second %s is the size as a number e.g. '100,000' (always > 1)
-        format!("{} ({} bytes)", pow_size, size)
+        gettext!("{} ({} bytes)", pow_size, size)
     }
 
     /// Returns a human readable localized string for `usage`, `type` and `version`.
     pub fn id_for_display(&self, usage: &str, ty: &str, version: &str, long_str: bool) -> String {
-        //TODO: refactor
-        //TODO: use gettext https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2088
         ID_TYPES
             .iter()
             .filter(|id| id.usage == usage && id.ty == ty)
             .find_map(|id| {
                 if id.version.is_none() && version.is_empty() {
                     return Some(if long_str {
-                        id.long_name.to_owned()
+                        pgettext("fs-type", id.long_name)
                     } else {
-                        id.short_name.to_owned()
+                        pgettext("fs-type", id.short_name)
                     });
                 } else if !version.is_empty()
                     && (id.version == Some(version) || id.version == Some("*"))
                 {
                     return Some(if long_str {
-                        id.long_name.replace("%s", version)
+                        pgettext("fs-type", id.long_name).replace("%s", version)
                     } else {
-                        id.short_name.replace("%s", version)
+                        pgettext("fs-type", id.short_name).replace("%s", version)
                     });
                 }
                 None
@@ -775,20 +768,20 @@ impl Client {
                     if !version.is_empty() {
                         // Translators: Shown for unknown filesystem types.
                         // First %s is the raw filesystem type obtained from udev, second %s is version.
-                        id_type = format!("Unknown ({} {})", ty, version);
+                        id_type = pgettext!("fs-type", "Unknown ({} {})", ty, version);
                     } else if !ty.is_empty() {
                         // Translators: Shown for unknown filesystem types.
                         // First %s is the raw filesystem type obtained from udev.
-                        id_type = format!("Unknown ({})", ty);
+                        id_type = pgettext!("fs-type", "Unknown ({})", ty);
                     } else {
                         // Translators: Shown for unknown filesystem types.
-                        id_type = "Unknown".to_string();
+                        id_type = pgettext("fs-type", "Unknown");
                     }
                 } else if !ty.is_empty() {
                     id_type = ty.to_string();
                 } else {
                     // Translators: Shown for unknown filesystem types.
-                    id_type = "Unknown".to_string();
+                    id_type = pgettext("fs-type", "Unknown");
                 }
                 id_type
             })
@@ -798,8 +791,6 @@ impl Client {
     ///
     /// If the media is unknown, [`Option::None`] is returned.
     pub fn media_compat_for_display(&self, media_compat: &[&str]) -> Option<String> {
-        //TODO: use gettext
-        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1902
         let mut optical_cd = false;
         let mut optical_dvd = false;
         let mut optical_bd = false;
@@ -809,39 +800,39 @@ impl Client {
             .filter_map(|&media| match media {
                 "flash_cf" => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("CompactFlash")
+                    Some(pgettext("media", "CompactFlash"))
                 }
                 "flash_ms" => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("MemoryStick")
+                    Some(pgettext("media", "MemoryStick"))
                 }
                 "flash_sm" => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("SmartMedia")
+                    Some(pgettext("media", "SmartMedia"))
                 }
                 "flash_sd" => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("SecureDigital")
+                    Some(pgettext("media", "SecureDigital"))
                 }
                 "flash_sdhc" => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("SD High Capacity")
+                    Some(pgettext("media", "SD High Capacity"))
                 }
                 "floppy" => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("Floppy")
+                    Some(pgettext("media", "Floppy"))
                 }
                 "floppy_zip" => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("Zip")
+                    Some(pgettext("media", "Zip"))
                 }
                 "floppy_jaz" => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("Jaz")
+                    Some(pgettext("media", "Jaz"))
                 }
                 val if val.starts_with("flash") => {
                     // Translators: This word is used to describe the media inserted into a device
-                    Some("Flash")
+                    Some(pgettext("media", "Flash"))
                 }
                 val => {
                     if val.starts_with("optical_cd") {
@@ -870,25 +861,25 @@ impl Client {
             add_separator(&mut media_desc);
             //Translators: This word is used to describe the optical disc type, it may appear
             // in a slash-separated list e.g. 'CD/DVD/Blu-Ray'
-            media_desc.push_str("CD");
+            media_desc.push_str(&pgettext("disc-type", "CD"));
         }
         if optical_dvd {
             add_separator(&mut media_desc);
             //Translators: This word is used to describe the optical disc type, it may appear
             // in a slash-separated list e.g. 'CD/DVD/Blu-Ray'
-            media_desc.push_str("DVD");
+            media_desc.push_str(&pgettext("disc-type", "DVD"));
         }
         if optical_bd {
             add_separator(&mut media_desc);
             //Translators: This word is used to describe the optical disc type, it may appear
             // in a slash-separated list e.g. 'CD/DVD/Blu-Ray'
-            media_desc.push_str("Blu-Ray");
+            media_desc.push_str(&pgettext("disc-type", "Blu-Ray"));
         }
         if optical_hddvd {
             add_separator(&mut media_desc);
             //Translators: This word is used to describe the optical disc type, it may appear
             // in a slash-separated list e.g. 'CD/DVD/Blu-Ray'
-            media_desc.push_str("HDDVD");
+            media_desc.push_str(&pgettext("disc-type", "HDDVD"));
         }
 
         //return none, if the string is empty, to clearly indicate that the media is unknown
@@ -970,18 +961,19 @@ impl Client {
     /// `dos` or `gpt`).
     pub fn partition_table_type_for_display(&self, partition_table_type: &str) -> Option<String> {
         //TODO: use enum
-        //TODO: use gettext
-        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2192
         [
-            ("dos", "Master Boot Record"),
-            ("gpt", "GUID Partition Table"),
-            ("apm", "Apple Partition Map"),
+            // Translators: name of partition table format
+            ("dos", pgettext("dos", "Master Boot Record")),
+            // Translators: name of partition table format
+            ("gpt", pgettext("gpt", "GUID Partition Table")),
+            // Translators: name of partition table format
+            ("apm", pgettext("apm", "Apple Partition Map")),
         ]
         .iter()
         .find(|(ty, _)| ty == &partition_table_type)
         //TODO: C version calls gettext here
         //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2653C26-L2653C26
-        .map(|(_, name)| name.to_string())
+        .map(|(_, name)| pgettext("part-type",name.to_string()))
     }
 
     /// Returns a human-readable localized description for `partition_table_type` (e.g. `dos` or `gpt`)
