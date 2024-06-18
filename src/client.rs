@@ -955,7 +955,7 @@ impl Client {
     pub fn partition_type_and_subtype_for_display(
         &self,
         partition_table_type: &str,
-        partition_table_subtype: Option<&str>,
+        partition_table_subtype: &str,
         partition_type: &str,
     ) -> Option<String> {
         //TODO: user gettext
@@ -963,7 +963,7 @@ impl Client {
         PARTITION_TYPES
             .iter()
             .filter(|pt| pt.table_type == partition_table_type && pt.ty == partition_type)
-            .filter(|pt| partition_table_subtype.is_some_and(|subtype| subtype == pt.table_subtype))
+            .filter(|pt| partition_table_subtype == pt.table_subtype)
             .map(|pt| pt.name.to_string())
             .next()
     }
