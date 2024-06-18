@@ -1,5 +1,7 @@
 use std::ffi::CString;
 
+use gettextrs::gettext;
+
 use crate::{
     block,
     drive::{self, RotationRate},
@@ -126,8 +128,6 @@ impl<'a> ObjectInfo<'a> {
         block: block::BlockProxy<'_>,
         partition: Option<partition::PartitionProxy<'_>>,
     ) {
-        //TODO: use gettext
-        //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L252
         self.icon = Icon::new(
             Some("drive-removable-media".to_owned()),
             Some("drive-removable-media-symbolic".to_owned()),
@@ -142,9 +142,9 @@ impl<'a> ObjectInfo<'a> {
         let size = block.size().await;
         if let Ok(size) = size {
             let size = client.size_for_display(size, false, false);
-            self.description = Some(format!("{} Block Device", size));
+            self.description = Some(gettext!("{} Block Device", size));
         } else {
-            self.description = Some("Block Device".to_owned());
+            self.description = Some(gettext("Block Device"));
         }
 
         let mut partition_number = None;
@@ -156,7 +156,7 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to describe a partition of a block device.
             //              The %u is the partition number.
             //              The %s is the description for the block device (e.g. "5 GB Block Device").
-            self.description = Some(format!(
+            self.description = Some(gettext!(
                 "Partition {} of {}",
                 partition_number.expect("Failed to read partition number"),
                 //Safe to unwrap, we have previously set this
@@ -168,7 +168,7 @@ impl<'a> ObjectInfo<'a> {
         //              The first %s is the description of the object (e.g. "50 GB Block Device").
         //              The second %s is the special device file (e.g. "/dev/sda2").
         //TODO: C version calls preferred_device again, instead of using name, why?
-        self.one_liner = Some(format!(
+        self.one_liner = Some(gettext!(
             "{} ({})",
             self.description.as_ref().unwrap(),
             self.name.as_ref().unwrap()
@@ -190,8 +190,6 @@ impl<'a> ObjectInfo<'a> {
         block: block::BlockProxy<'_>,
         partition: Option<partition::PartitionProxy<'_>>,
     ) {
-        //TODO: use gettext
-        //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L303
         self.icon = Icon::new(
             Some("drive-removable-media".to_owned()),
             Some("drive-removable-media-symbolic".to_owned()),
@@ -206,7 +204,7 @@ impl<'a> ObjectInfo<'a> {
         let size = block.size().await;
         if let Ok(size) = size {
             let size = client.size_for_display(size, false, false);
-            self.description = Some(format!("{} Loop Device", size));
+            self.description = Some(gettext!("{} Loop Device", size));
         } else {
             self.description = Some("Loop Device".to_owned());
         }
@@ -220,7 +218,7 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to describe a partition of a loop device.
             //              The %u is the partition number.
             //              The %s is the description for the block device (e.g. "5 GB Loop Device").
-            self.description = Some(format!(
+            self.description = Some(gettext!(
                 "Partition {} of {}",
                 partition_number.expect("Failed to read partition number"),
                 //Safe to unwrap, we have previously set this
@@ -232,7 +230,7 @@ impl<'a> ObjectInfo<'a> {
         //              The first %s is the description of the object (e.g. "2 GB Loop Device").
         //              The second %s is the name of the backing file (e.g. "/home/davidz/file.iso").
         //              The third %s is the special device file (e.g. "/dev/loop2").
-        self.one_liner = Some(format!(
+        self.one_liner = Some(gettext!(
             "{} — {} ({})",
             self.description.as_ref().unwrap(),
             //safe to unwrap, has been set previously
@@ -275,7 +273,7 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to format the description for a RAID array.
             //              The first %s is the size (e.g. '42.0 GB').
             //              The second %s is the level (e.g. 'RAID-5 Array').
-            self.description = Some(format!("{} {}", size, self.format_level(level)));
+            self.description = Some(gettext!("{} {}", size, self.format_level(level)));
         } else {
             self.description = Some(self.format_level(level));
         }
@@ -288,7 +286,7 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to describe a partition of a RAID Array.
             //              The %u is the partition number.
             //              The %s is the description for the drive (e.g. "2 TB RAID-5").
-            self.description = Some(format!(
+            self.description = Some(gettext!(
                 "Partition {} of {}",
                 partition_number.expect("Failed to read partition number"),
                 //Safe to unwrap, we have previously set this
@@ -311,7 +309,7 @@ impl<'a> ObjectInfo<'a> {
                 //              The first %s is the array name (e.g. "AlphaGo").
                 //              The second %s is the size and level (e.g. "2 TB RAID-5").
                 //              The third %s is the special device file (e.g. "/dev/sda").
-                self.one_liner = Some(format!(
+                self.one_liner = Some(gettext!(
                     "{} — {} ({})",
                     self.name.as_deref().unwrap(),
                     self.description.as_deref().unwrap_or_default(),
@@ -340,7 +338,7 @@ impl<'a> ObjectInfo<'a> {
             //              The first %s is the array name (e.g. "AlphaGo").
             //              The second %s is the size and level (e.g. "2 TB RAID-5").
             //              The third %s is the special device file (e.g. "/dev/sda").
-            self.one_liner = Some(format!(
+            self.one_liner = Some(gettext!(
                 "{} — {}",
                 self.description.as_deref().unwrap_or_default(),
                 preferred_device,
@@ -349,7 +347,7 @@ impl<'a> ObjectInfo<'a> {
             // Translators: String used for one-liner description of non-running RAID array.
             //              The first %s is the array name (e.g. "AlphaGo").
             //              The second %s is the size and level (e.g. "2 TB RAID-5").
-            self.one_liner = Some(self.description.as_deref().unwrap_or_default().to_string());
+            self.one_liner = Some(gettext(self.description.as_deref().unwrap_or_default()));
         }
 
         self.sort_key = Some(format!(
@@ -392,8 +390,7 @@ impl<'a> ObjectInfo<'a> {
                     if !desc.is_empty() {
                         desc.push('/');
                     }
-                    //TODO gettext
-                    desc.push_str(media_data.media_family);
+                    desc.push_str(&gettext(media_data.media_family));
                 }
                 desc_type = Some(media_data.media_type);
             }
@@ -405,19 +402,19 @@ impl<'a> ObjectInfo<'a> {
                         self.media_description = Some(match media_data.media_type {
                             media::DriveType::Drive => {
                                 //Translators: Used to describe drive without removable media. The %s is the type, e.g. 'Thumb'
-                                format!("{} Drive", media_data.media_name)
+                                gettext!("{} Drive", media_data.media_name)
                             }
                             media::DriveType::Disk => {
                                 //Translators: Used to describe generic media. The %s is the type, e.g. 'Zip' or 'Floppy'
-                                format!("{} Disk", media_data.media_name)
+                                gettext!("{} Disk", media_data.media_name)
                             }
                             media::DriveType::Card => {
                                 //Translators: Used to describe flash media. The %s is the type, e.g. 'SD' or 'CompactFlash'
-                                format!("{} Card", media_data.media_name)
+                                gettext!("{} Card", media_data.media_name)
                             }
                             media::DriveType::Disc => {
                                 //Translators: Used to describe optical discs. The %s is the type, e.g. 'CD-R' or 'DVD-ROM'
-                                format!("{} Disc", media_data.media_name)
+                                gettext!("{} Disc", media_data.media_name)
                             }
                         });
                     }
@@ -441,42 +438,42 @@ impl<'a> ObjectInfo<'a> {
                 if media_removable {
                     if let Some(size) = size {
                         // Translators: Used to describe a drive. The %s is the size, e.g. '20 GB'
-                        format!("{} Drive", size)
+                        gettext!("{} Drive", size)
                     } else {
                         //Translators: Used to describe a drive we know very little about (removable media or size not known)
-                        "Drive".to_owned()
+                        gettext("Drive")
                     }
                 } else if rotation_rate == RotationRate::NonRotating {
                     if let Some(size) = size {
                         // Translators: Used to describe a non-rotating drive (rotation rate either unknown
                         // or it's a solid-state drive). The %s is the size, e.g. '20 GB'.
-                        format!("{} Disk", size)
+                        gettext!("{} Disk", size)
                     } else {
                         // Translators: Used to describe a non-rotating drive (rotation rate either unknown
                         // or it's a solid-state drive). The drive is either using removable media or its
                         // size not known.
-                        "Disk".to_owned()
+                        gettext("Disk")
                     }
                 } else if let Some(size) = size {
                     // Translators: Used to describe a hard-disk drive (HDD). The %s is the size, e.g. '20 GB'.
-                    format!("{} Hard Disk", size)
+                    gettext!("{} Hard Disk", size)
                 } else {
                     // Translators: Used to describe a hard-disk drive (HDD) (removable media or size not known)
-                    "Hard Disk".to_owned()
+                    gettext("Hard Disk")
                 }
             }
             Some(DriveType::Card) => {
                 // Translators: Used to describe a card reader. The %s is the card type e.g. 'CompactFlash'.
-                format!("{} Card Reader", desc)
+                gettext!("{} Card Reader", desc)
             }
             Some(DriveType::Drive) | Some(DriveType::Disk) | Some(DriveType::Disc) => {
                 if size.as_ref().is_some_and(|_| !media_removable) {
                     // Translators: Used to describe drive. The first %s is the size e.g. '20 GB' and the
                     // second %s is the drive type e.g. 'Thumb'.
-                    format!("{} {} Drive", size.unwrap(), desc)
+                    gettext!("{} {} Drive", size.unwrap(), desc)
                 } else {
                     //Translators: Used to describe drive. The first %s is the drive type e.g. 'Thumb'.
-                    format!("{} Drive", desc)
+                    gettext!("{} Drive", desc)
                 }
             }
         });
@@ -545,7 +542,7 @@ impl<'a> ObjectInfo<'a> {
         //prepend a qualifier to the media description, based on the disc state
         if drive.optical_blank().await.unwrap_or_default() {
             // Translators: String used for a blank disc. The %s is the disc type e.g. "CD-RW Disc"
-            self.media_description = Some(format!(
+            self.media_description = Some(gettext!(
                 "Blank {}",
                 self.media_description.as_deref().unwrap_or_default()
             ));
@@ -559,7 +556,7 @@ impl<'a> ObjectInfo<'a> {
                 .is_ok_and(|tracks| tracks > 0)
         {
             // Translators: String used for a mixed disc. The %s is the disc type e.g. "CD-ROM Disc"
-            self.media_description = Some(format!(
+            self.media_description = Some(gettext!(
                 "Mixed {}",
                 self.media_description.as_deref().unwrap_or_default()
             ));
@@ -573,7 +570,7 @@ impl<'a> ObjectInfo<'a> {
                 .is_ok_and(|tracks| tracks == 0)
         {
             // Translators: String used for an audio disc. The %s is the disc type e.g. "CD-ROM Disc"
-            self.media_description = Some(format!(
+            self.media_description = Some(gettext!(
                 "Audio {}",
                 self.media_description.as_deref().unwrap_or_default()
             ));
@@ -615,7 +612,7 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to describe a partition of a drive.
             //                  The %u is the partition number.
             //                  The %s is the description for the drive (e.g. "2 GB Thumb Drive").
-            self.description = Some(format!(
+            self.description = Some(gettext!(
                 "Partition {} of {}",
                 partition.number().await.unwrap_or_default(),
                 self.description.as_deref().unwrap_or_default()
@@ -630,7 +627,7 @@ impl<'a> ObjectInfo<'a> {
                 //  The second %s is the name of the object (e.g. "INTEL SSDSA2MH080G1GC").
                 //  The third %s is the fw revision (e.g "45ABX21").
                 //  The fourth %s is the special device file (e.g. "/dev/sda").
-                self.one_liner = Some(format!(
+                self.one_liner = Some(gettext!(
                     "{} — {} [{}] ({})",
                     self.description.as_deref().unwrap_or_default(),
                     self.name.as_deref().unwrap_or_default(),
@@ -648,7 +645,7 @@ impl<'a> ObjectInfo<'a> {
                 //    The first %s is the description of the object (e.g. "80 GB Disk").
                 //    The second %s is the name of the object (e.g. "INTEL SSDSA2MH080G1GC").
                 //    The third %s is the special device file (e.g. "/dev/sda").
-                self.one_liner = Some(format!(
+                self.one_liner = Some(gettext!(
                     "{} — {} ({})",
                     self.description.as_deref().unwrap_or_default(),
                     self.name.as_deref().unwrap_or_default(),
@@ -672,9 +669,7 @@ impl<'a> ObjectInfo<'a> {
     }
 
     fn format_level(&self, level: zbus::Result<String>) -> String {
-        //TODO: use gettext
-        //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L351    }
-        match level.as_deref() {
+        gettext(match level.as_deref() {
             Ok("raid0") => "RAID-0 Array",
             Ok("raid1") => "RAID-1 Array",
             Ok("raid4") => "RAID-4 Array",
@@ -682,7 +677,6 @@ impl<'a> ObjectInfo<'a> {
             Ok("raid6") => "RAID-6 Array",
             Ok("raid10") => "RAID-10 Array",
             _ => "RAID Array",
-        }
-        .to_string()
+        })
     }
 }

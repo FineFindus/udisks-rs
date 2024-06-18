@@ -20,6 +20,7 @@ gio = { version = "0.19.2", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_repr = "0.1.18"
 enumflags2 = { version = "0.7.9", features = ["serde"] }
+gettext-rs = { version = "0.7", features = ["gettext-system"] }
 
 [dev-dependencies]
 tokio = { version = "1.36", features = ["full"] }
