@@ -157,17 +157,24 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to describe a partition of a block device.
             //              The %u is the partition number.
             //              The %s is the description for the block device (e.g. "5 GB Block Device").
-            self.description = Some(pgettext_f(
-                "part-block",
-                "Partition {} of {}",
-                [
+            //TODO: pgettext_f does not support non-string C placeholders, so we replace it
+            //manually to maintain compatibilty
+            self.description = Some(
+                pgettext_f(
+                    "part-block",
+                    "Partition %u of {}",
+                    [
+                        //Safe to unwrap, we have previously set this
+                        self.description.as_ref().unwrap(),
+                    ],
+                )
+                .replace(
+                    "%u",
                     &partition_number
                         .expect("Failed to read partition number")
                         .to_string(),
-                    //Safe to unwrap, we have previously set this
-                    self.description.as_ref().unwrap(),
-                ],
-            ));
+                ),
+            );
         }
 
         // Translators: String used for one-liner description of a block device.
@@ -227,17 +234,24 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to describe a partition of a loop device.
             //              The %u is the partition number.
             //              The %s is the description for the block device (e.g. "5 GB Loop Device").
-            self.description = Some(pgettext_f(
-                "part-loop",
-                "Partition {} of {}",
-                [
+            //TODO: pgettext_f does not support non-string C placeholders, so we replace it
+            //manually to maintain compatibilty
+            self.description = Some(
+                pgettext_f(
+                    "part-loop",
+                    "Partition %u of {}",
+                    [
+                        //Safe to unwrap, we have previously set this
+                        self.description.as_ref().unwrap(),
+                    ],
+                )
+                .replace(
+                    "%u",
                     &partition_number
                         .expect("Failed to read partition number")
                         .to_string(),
-                    //Safe to unwrap, we have previously set this
-                    self.description.as_ref().unwrap(),
-                ],
-            ));
+                ),
+            );
         }
 
         // Translators: String used for one-liner description of a loop device.
@@ -307,17 +321,27 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to describe a partition of a RAID Array.
             //              The %u is the partition number.
             //              The %s is the description for the drive (e.g. "2 TB RAID-5").
-            self.description = Some(pgettext_f(
-                "part-raid",
-                "Partition {} of {}",
-                [
+            //TODO: pgettext_f does not support non-string C placeholders, so we replace it
+            //manually to maintain compatibilty
+            self.description = Some(
+                pgettext_f(
+                    "part-raid",
+                    "Partition %u of {}",
+                    [
+                        &partition_number
+                            .expect("Failed to read partition number")
+                            .to_string(),
+                        //Safe to unwrap, we have previously set this
+                        self.description.as_ref().unwrap(),
+                    ],
+                )
+                .replace(
+                    "%u",
                     &partition_number
                         .expect("Failed to read partition number")
                         .to_string(),
-                    //Safe to unwrap, we have previously set this
-                    self.description.as_ref().unwrap(),
-                ],
-            ));
+                ),
+            );
         }
 
         let block = client.block_for_mdraid(&mdraid).await;
@@ -674,14 +698,19 @@ impl<'a> ObjectInfo<'a> {
             // Translators: Used to describe a partition of a drive.
             //                  The %u is the partition number.
             //                  The %s is the description for the drive (e.g. "2 GB Thumb Drive").
-            self.description = Some(pgettext_f(
-                "part-drive",
-                "Partition {} of {}",
-                [
+            //TODO: pgettext_f does not support non-string C placeholders, so we replace it
+            //manually to maintain compatibilty
+            self.description = Some(
+                pgettext_f(
+                    "part-drive",
+                    "Partition %u of {}",
+                    [self.description.as_deref().unwrap_or_default()],
+                )
+                .replace(
+                    "%u",
                     &partition.number().await.unwrap_or_default().to_string(),
-                    self.description.as_deref().unwrap_or_default(),
-                ],
-            ))
+                ),
+            )
         }
 
         //calculate and set one-liner
