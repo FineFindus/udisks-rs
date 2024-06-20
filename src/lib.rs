@@ -12,6 +12,7 @@ pub mod drive;
 pub mod encrypted;
 mod error;
 pub mod filesystem;
+pub(crate) mod gettext;
 mod id;
 pub mod job;
 pub mod r#loop;
@@ -40,18 +41,4 @@ pub fn standard_options(
     no_user_auth_interaction: bool,
 ) -> HashMap<&'static str, zbus::zvariant::Value<'static>> {
     HashMap::from([("auth.no_user_interaction", no_user_auth_interaction.into())])
-}
-
-pub(crate) const GETTEXT_PACKAGE: &str = "udisks2";
-
-pub(crate) fn dpgettext<T, U>(msgctxt: T, msgid: U) -> String
-where
-    T: Into<String>,
-    U: Into<String>,
-{
-    const MSG_SEPARATOR: char = '\u{004}';
-    gettextrs::dgettext(
-        GETTEXT_PACKAGE,
-        format!("{}{MSG_SEPARATOR}{}", msgctxt.into(), msgid.into()),
-    )
 }

@@ -1,10 +1,10 @@
-use gettextrs::{gettext, pgettext};
+use gettextrs::pgettext;
 use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
 use crate::{
     block::{self, BlockProxy},
-    drive, error,
-    dpgettext, drive,
+    dpgettext, drive, drive, error,
+    gettext::{dpgettext, pgettext_f},
     id::ID_TYPES,
     job, manager, mdraid,
     object::Object,
@@ -148,7 +148,7 @@ impl Client {
             "md-raid-add-device" => pgettext("job", "Adding Device to Array"),
             "md-raid-set-bitmap" => pgettext("job", "Setting Write-Intent Bitmap"),
             "md-raid-create" => pgettext("job", "Creating RAID Array"),
-            _ => pgettext("unknown-job", "Unknown (%s)").replace("%s", operation),
+            _ => pgettext_f("unknown-job", "Unknown ({})", [operation]),
         }
     }
 
@@ -643,7 +643,7 @@ impl Client {
         let partition_info;
         if !flags_str.is_empty() {
             // Translators: Partition info. First {} is the type, second {} is a list of flags
-            partition_info = pgettext!("partition-info", "{} ({})", type_str, flags_str)
+            partition_info = pgettext_f("partition-info", "{} ({})", [type_str, flags_str])
         } else if type_str.is_empty() {
             // Translators: The Partition info when unknown
             partition_info = pgettext("partition-info", "Unknown")
@@ -662,8 +662,6 @@ impl Client {
         let unit;
         if size < MEBIBYTE_FACTOR {
             display_size = size / KIBIBYTE_FACTOR;
-            //TODO: use gettext to translate like in C version
-            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1728
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
             unit = pgettext("byte-size-pow2", "KiB");
         } else if size < GIBIBYTE_FACTOR {
@@ -692,8 +690,6 @@ impl Client {
         let unit;
         if size < MEGABYTE_FACTOR {
             display_size = size / KILOBYTE_FACTOR;
-            //TODO: use gettext to translate like in C version
-            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1770
             /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
             unit = pgettext("byte-size-pow10", "KB");
         } else if size < GIGABYTE_FACTOR {
@@ -731,13 +727,23 @@ impl Client {
             return pow_size;
         }
 
-        // Translators: The first %s is the size in power-of-2 units, e.g. '64 KiB'
-        // the second %s is the size as a number e.g. '65,536' (always > 1)
-        // TODO: figure out a good way to support both translator comments
-        //https://github.com/storaged-project/udisks/blob/8b15d24d09a050fd1e3cfb48a32953543af1a168/udisks/udisksclient.c#L1829
-        // Translators: The first %s is the size in power-of-10 units, e.g. '100 kB'
-        // the second %s is the size as a number e.g. '100,000' (always > 1)
-        gettext!("{} ({} bytes)", pow_size, size)
+        if use_pow2 {
+            // Translators: The first %s is the size in power-of-2 units, e.g. '64 KiB'
+            // the second %s is the size as a number e.g. '65,536' (always > 1)
+            pgettext_f(
+                "byte-size-pow2",
+                "{} ({} bytes)",
+                [pow_size, size.to_string()],
+            )
+        } else {
+            // Translators: The first %s is the size in power-of-10 units, e.g. '100 kB'
+            // the second %s is the size as a number e.g. '100,000' (always > 1)
+            pgettext_f(
+                "byte-size-pow10",
+                "{} ({} bytes)",
+                [pow_size, size.to_string()],
+            )
+        }
     }
 
     /// Returns a human readable localized string for `usage`, `type` and `version`.
@@ -769,11 +775,11 @@ impl Client {
                     if !version.is_empty() {
                         // Translators: Shown for unknown filesystem types.
                         // First %s is the raw filesystem type obtained from udev, second %s is version.
-                        id_type = pgettext!("fs-type", "Unknown ({} {})", ty, version);
+                        id_type = pgettext_f("fs-type", "Unknown ({} {})", [ty, version]);
                     } else if !ty.is_empty() {
                         // Translators: Shown for unknown filesystem types.
                         // First %s is the raw filesystem type obtained from udev.
-                        id_type = pgettext!("fs-type", "Unknown ({})", ty);
+                        id_type = pgettext_f("fs-type", "Unknown ({})", [ty]);
                     } else {
                         // Translators: Shown for unknown filesystem types.
                         id_type = pgettext("fs-type", "Unknown");
