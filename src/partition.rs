@@ -1,3 +1,5 @@
+//! # DBus interface proxy for: `org.freedesktop.UDisks2.Partition`
+
 use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
 use zbus::{proxy, zvariant::Type};
