@@ -1,5 +1,4 @@
 //! Block device representing a partition.
-
 use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
 use zbus::{proxy, zvariant::Type};

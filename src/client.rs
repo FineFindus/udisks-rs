@@ -1,8 +1,10 @@
+use gettextrs::{gettext, pgettext};
 use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
 use crate::{
     block::{self, BlockProxy},
     drive, error,
+    dpgettext, drive,
     id::ID_TYPES,
     job, manager, mdraid,
     object::Object,
@@ -38,7 +40,6 @@ impl Client {
         let connection = zbus::Connection::system().await?;
         Self::new_for_connection(connection).await
     }
-
     /// Creates a new client based on the given [`zbus::Connection`].
     pub async fn new_for_connection(connection: zbus::Connection) -> error::Result<Self> {
         let object_manager = ObjectManagerProxy::builder(&connection)
@@ -147,7 +148,7 @@ impl Client {
             "md-raid-add-device" => pgettext("job", "Adding Device to Array"),
             "md-raid-set-bitmap" => pgettext("job", "Setting Write-Intent Bitmap"),
             "md-raid-create" => pgettext("job", "Creating RAID Array"),
-            _ => pgettext!("unknown-job", "Unknown ({})", operation),
+            _ => pgettext("unknown-job", "Unknown (%s)").replace("%s", operation),
         }
     }
 
@@ -747,17 +748,17 @@ impl Client {
             .find_map(|id| {
                 if id.version.is_none() && version.is_empty() {
                     return Some(if long_str {
-                        pgettext("fs-type", id.long_name)
+                        dpgettext("fs-type", id.long_name)
                     } else {
-                        pgettext("fs-type", id.short_name)
+                        dpgettext("fs-type", id.short_name)
                     });
                 } else if !version.is_empty()
                     && (id.version == Some(version) || id.version == Some("*"))
                 {
                     return Some(if long_str {
-                        pgettext("fs-type", id.long_name).replace("%s", version)
+                        dpgettext("fs-type", id.long_name).replace("%s", version)
                     } else {
-                        pgettext("fs-type", id.short_name).replace("%s", version)
+                        dpgettext("fs-type", id.short_name).replace("%s", version)
                     });
                 }
                 None
@@ -927,13 +928,11 @@ impl Client {
         &self,
         partition_table_type: &str,
         partition_type: &str,
-    ) -> Option<&'static str> {
+    ) -> Option<String> {
         partition_types::PARTITION_TYPES
             .iter()
             .find(|pt| pt.table_type == partition_table_type && pt.ty == partition_type)
-            //TODO: C version calls gettext here
-            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2653C26-L2653C26
-            .map(|partition_type| partition_type.name)
+            .map(|partition_type| dpgettext("part-type", partition_type.name))
     }
 
     /// Returns, if existing, the human-readable localized name of the [`PartitionTypeInfo`].
@@ -947,13 +946,11 @@ impl Client {
         partition_table_subtype: &str,
         partition_type: &str,
     ) -> Option<String> {
-        //TODO: user gettext
-        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2696
         PARTITION_TYPES
             .iter()
             .filter(|pt| pt.table_type == partition_table_type && pt.ty == partition_type)
             .filter(|pt| partition_table_subtype == pt.table_subtype)
-            .map(|pt| pt.name.to_string())
+            .map(|pt| dpgettext("part-type", pt.name))
             .next()
     }
 
@@ -971,9 +968,7 @@ impl Client {
         ]
         .iter()
         .find(|(ty, _)| ty == &partition_table_type)
-        //TODO: C version calls gettext here
-        //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2653C26-L2653C26
-        .map(|(_, name)| pgettext("part-type",name.to_string()))
+        .map(|(_, name)| name.to_string())
     }
 
     /// Returns a human-readable localized description for `partition_table_type` (e.g. `dos` or `gpt`)
@@ -987,8 +982,6 @@ impl Client {
         partition_subtypes::PARTITION_TABLE_SUBTYPES
             .iter()
             .find(|pt| pt.ty == partition_table_type && pt.subtype == partition_table_subtype)
-            //TODO: use gettext
-            //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L2280
-            .map(|pt| pt.name.to_string())
+            .map(|pt| dpgettext("partition-subtype", pt.name))
     }
 }
