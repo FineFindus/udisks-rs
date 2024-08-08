@@ -1,11 +1,11 @@
 use zbus::fdo::ObjectManagerProxy;
 use zbus::zvariant::OwnedObjectPath;
 
-use crate::nvme;
 use crate::{
     ata, block, drive, encrypted, filesystem, job, mdraid, partition, partitiontable, r#loop,
     swapspace,
 };
+use crate::{error, nvme};
 
 /// Utility struct for easily accessing interfaces.
 #[derive(Debug, Clone)]
@@ -36,18 +36,18 @@ macro_rules! get_interface {
         ///
         /// # Errors
         /// Returns [zbus::Error::InterfaceNotFound] if the interface could not be acquired.
-        pub async fn $name(&self) -> zbus::Result<$type> {
+        pub async fn $name(&self) -> error::Result<$type> {
             let objects = self.object_manager.get_managed_objects().await?;
             let interfaces = objects
                 .get(&self.path)
                 .ok_or(zbus::Error::InterfaceNotFound)?;
             if !interfaces.contains_key($key) {
-                return Err(zbus::Error::InterfaceNotFound);
+                return Err(zbus::Error::InterfaceNotFound.into());
             }
-            <$type>::builder(&self.connection)
+            Ok(<$type>::builder(&self.connection)
                 .path(self.path.clone())?
                 .build()
-                .await
+                .await?)
         })+
     };
 }

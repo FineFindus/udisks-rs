@@ -10,7 +10,11 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::proxy;
+use zbus::{
+    proxy,
+};
+
+use crate::error;
 
 #[proxy(
     interface = "org.freedesktop.UDisks2.Block",
@@ -26,20 +30,20 @@ trait Block {
             std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
         ),
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Format method
     fn format(
         &self,
         type_: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// GetSecretConfiguration method
     fn get_secret_configuration(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<
+    ) -> error::Result<
         Vec<(
             String,
             std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
@@ -51,25 +55,25 @@ trait Block {
         &self,
         mode: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<zbus::zvariant::OwnedFd>;
+    ) -> error::Result<zbus::zvariant::OwnedFd>;
 
     /// OpenForBackup method
     fn open_for_backup(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<zbus::zvariant::OwnedFd>;
+    ) -> error::Result<zbus::zvariant::OwnedFd>;
 
     /// OpenForBenchmark method
     fn open_for_benchmark(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<zbus::zvariant::OwnedFd>;
+    ) -> error::Result<zbus::zvariant::OwnedFd>;
 
     /// OpenForRestore method
     fn open_for_restore(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<zbus::zvariant::OwnedFd>;
+    ) -> error::Result<zbus::zvariant::OwnedFd>;
 
     /// RemoveConfigurationItem method
     fn remove_configuration_item(
@@ -79,13 +83,13 @@ trait Block {
             std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
         ),
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Rescan method
     fn rescan(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// UpdateConfigurationItem method
     fn update_configuration_item(
@@ -99,13 +103,13 @@ trait Block {
             std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
         ),
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Configuration property
     #[zbus(property)]
     fn configuration(
         &self,
-    ) -> zbus::Result<
+    ) -> error::Result<
         Vec<(
             String,
             std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
@@ -114,99 +118,99 @@ trait Block {
 
     /// CryptoBackingDevice property
     #[zbus(property)]
-    fn crypto_backing_device(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    fn crypto_backing_device(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Device property
     #[zbus(property)]
-    fn device(&self) -> zbus::Result<Vec<u8>>;
+    fn device(&self) -> error::Result<Vec<u8>>;
 
     /// DeviceNumber property
     #[zbus(property)]
-    fn device_number(&self) -> zbus::Result<u64>;
+    fn device_number(&self) -> error::Result<u64>;
 
     /// Drive property
     #[zbus(property)]
-    fn drive(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    fn drive(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// HintAuto property
     #[zbus(property)]
-    fn hint_auto(&self) -> zbus::Result<bool>;
+    fn hint_auto(&self) -> error::Result<bool>;
 
     /// HintIconName property
     #[zbus(property)]
-    fn hint_icon_name(&self) -> zbus::Result<String>;
+    fn hint_icon_name(&self) -> error::Result<String>;
 
     /// HintIgnore property
     #[zbus(property)]
-    fn hint_ignore(&self) -> zbus::Result<bool>;
+    fn hint_ignore(&self) -> error::Result<bool>;
 
     /// HintName property
     #[zbus(property)]
-    fn hint_name(&self) -> zbus::Result<String>;
+    fn hint_name(&self) -> error::Result<String>;
 
     /// HintPartitionable property
     #[zbus(property)]
-    fn hint_partitionable(&self) -> zbus::Result<bool>;
+    fn hint_partitionable(&self) -> error::Result<bool>;
 
     /// HintSymbolicIconName property
     #[zbus(property)]
-    fn hint_symbolic_icon_name(&self) -> zbus::Result<String>;
+    fn hint_symbolic_icon_name(&self) -> error::Result<String>;
 
     /// HintSystem property
     #[zbus(property)]
-    fn hint_system(&self) -> zbus::Result<bool>;
+    fn hint_system(&self) -> error::Result<bool>;
 
     /// Id property
     #[zbus(property)]
-    fn id(&self) -> zbus::Result<String>;
+    fn id(&self) -> error::Result<String>;
 
     /// IdLabel property
     #[zbus(property)]
-    fn id_label(&self) -> zbus::Result<String>;
+    fn id_label(&self) -> error::Result<String>;
 
     /// IdType property
     #[zbus(property)]
-    fn id_type(&self) -> zbus::Result<String>;
+    fn id_type(&self) -> error::Result<String>;
 
     /// IdUUID property
     #[zbus(property, name = "IdUUID")]
-    fn id_uuid(&self) -> zbus::Result<String>;
+    fn id_uuid(&self) -> error::Result<String>;
 
     /// IdUsage property
     #[zbus(property)]
-    fn id_usage(&self) -> zbus::Result<String>;
+    fn id_usage(&self) -> error::Result<String>;
 
     /// IdVersion property
     #[zbus(property)]
-    fn id_version(&self) -> zbus::Result<String>;
+    fn id_version(&self) -> error::Result<String>;
 
     /// MDRaid property
     #[zbus(property, name = "MDRaid")]
-    fn mdraid(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    fn mdraid(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// MDRaidMember property
     #[zbus(property, name = "MDRaidMember")]
-    fn mdraid_member(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    fn mdraid_member(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     //TODO: a lot of functions return Strings as c type strings (i.e. vec of u8 with \0 bytes)
     //they should be updated to return rust strings
     /// PreferredDevice property
     #[zbus(property)]
-    fn preferred_device(&self) -> zbus::Result<Vec<u8>>;
+    fn preferred_device(&self) -> error::Result<Vec<u8>>;
 
     /// ReadOnly property
     #[zbus(property)]
-    fn read_only(&self) -> zbus::Result<bool>;
+    fn read_only(&self) -> error::Result<bool>;
 
     /// Size property
     #[zbus(property)]
-    fn size(&self) -> zbus::Result<u64>;
+    fn size(&self) -> error::Result<u64>;
 
     /// Symlinks property
     #[zbus(property)]
-    fn symlinks(&self) -> zbus::Result<Vec<Vec<u8>>>;
+    fn symlinks(&self) -> error::Result<Vec<Vec<u8>>>;
 
     /// UserspaceMountOptions property
     #[zbus(property)]
-    fn userspace_mount_options(&self) -> zbus::Result<Vec<String>>;
+    fn userspace_mount_options(&self) -> error::Result<Vec<String>>;
 }

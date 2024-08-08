@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Encrypted",
     default_service = "org.freedesktop.UDisks2",
@@ -24,33 +26,33 @@ trait Encrypted {
         passphrase: &str,
         new_passphrase: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Lock method
     fn lock(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Resize method
     fn resize(
         &self,
         size: u64,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Unlock method
     fn unlock(
         &self,
         passphrase: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// ChildConfiguration property
     #[zbus(property)]
     fn child_configuration(
         &self,
-    ) -> zbus::Result<
+    ) -> error::Result<
         Vec<(
             String,
             std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
@@ -59,13 +61,13 @@ trait Encrypted {
 
     /// CleartextDevice property
     #[zbus(property)]
-    fn cleartext_device(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    fn cleartext_device(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// HintEncryptionType property
     #[zbus(property)]
-    fn hint_encryption_type(&self) -> zbus::Result<String>;
+    fn hint_encryption_type(&self) -> error::Result<String>;
 
     /// MetadataSize property
     #[zbus(property)]
-    fn metadata_size(&self) -> zbus::Result<u64>;
+    fn metadata_size(&self) -> error::Result<u64>;
 }

@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Loop",
     default_service = "org.freedesktop.UDisks2",
@@ -22,24 +24,24 @@ trait Loop {
     fn delete(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetAutoclear method
     fn set_autoclear(
         &self,
         value: bool,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Autoclear property
     #[zbus(property)]
-    fn autoclear(&self) -> zbus::Result<bool>;
+    fn autoclear(&self) -> error::Result<bool>;
 
     /// BackingFile property
     #[zbus(property)]
-    fn backing_file(&self) -> zbus::Result<Vec<u8>>;
+    fn backing_file(&self) -> error::Result<Vec<u8>>;
 
     /// SetupByUID property
     #[zbus(property, name = "SetupByUID")]
-    fn setup_by_uid(&self) -> zbus::Result<u32>;
+    fn setup_by_uid(&self) -> error::Result<u32>;
 }

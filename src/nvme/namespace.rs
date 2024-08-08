@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Namespace",
     default_service = "org.freedesktop.UDisks2",
@@ -22,49 +24,49 @@ trait Namespace {
     fn format_namespace(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// EUI64 property
     #[zbus(property, name = "EUI64")]
-    fn eui64(&self) -> zbus::Result<String>;
+    fn eui64(&self) -> error::Result<String>;
 
     /// FormatPercentRemaining property
     #[zbus(property)]
-    fn format_percent_remaining(&self) -> zbus::Result<i32>;
+    fn format_percent_remaining(&self) -> error::Result<i32>;
 
     /// FormattedLBASize property
     #[zbus(property, name = "FormattedLBASize")]
-    fn formatted_lbasize(&self) -> zbus::Result<(u16, u16, u8)>;
+    fn formatted_lbasize(&self) -> error::Result<(u16, u16, u8)>;
 
     /// LBAFormats property
     #[zbus(property, name = "LBAFormats")]
-    fn lbaformats(&self) -> zbus::Result<Vec<(u16, u16, u8)>>;
+    fn lbaformats(&self) -> error::Result<Vec<(u16, u16, u8)>>;
 
     /// NGUID property
     #[zbus(property, name = "NGUID")]
-    fn nguid(&self) -> zbus::Result<String>;
+    fn nguid(&self) -> error::Result<String>;
 
     /// NSID property
     #[zbus(property, name = "NSID")]
-    fn nsid(&self) -> zbus::Result<u32>;
+    fn nsid(&self) -> error::Result<u32>;
 
     /// NamespaceCapacity property
     #[zbus(property)]
-    fn namespace_capacity(&self) -> zbus::Result<u64>;
+    fn namespace_capacity(&self) -> error::Result<u64>;
 
     /// NamespaceSize property
     #[zbus(property)]
-    fn namespace_size(&self) -> zbus::Result<u64>;
+    fn namespace_size(&self) -> error::Result<u64>;
 
     /// NamespaceUtilization property
     #[zbus(property)]
-    fn namespace_utilization(&self) -> zbus::Result<u64>;
+    fn namespace_utilization(&self) -> error::Result<u64>;
 
     /// UUID property
     #[zbus(property, name = "UUID")]
-    fn uuid(&self) -> zbus::Result<String>;
+    fn uuid(&self) -> error::Result<String>;
 
     /// WWN property
     #[zbus(property, name = "WWN")]
-    fn wwn(&self) -> zbus::Result<String>;
+    fn wwn(&self) -> error::Result<String>;
 }

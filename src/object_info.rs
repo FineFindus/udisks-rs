@@ -1,9 +1,9 @@
-use std::ffi::CString;
+use std::{ffi::CString};
 
 use crate::{
     block,
     drive::{self, RotationRate},
-    mdraid,
+    error, mdraid,
     media::{self, DriveType},
     partition, r#loop, Client, Object,
 };
@@ -671,7 +671,7 @@ impl<'a> ObjectInfo<'a> {
         ));
     }
 
-    fn format_level(&self, level: zbus::Result<String>) -> String {
+    fn format_level(&self, level: error::Result<String>) -> String {
         //TODO: use gettext
         //https://github.com/storaged-project/udisks/blob/0b3879ab1d429b8312eaad0deb1b27e5545e39c1/udisks/udisksobjectinfo.c#L351    }
         match level.as_deref() {

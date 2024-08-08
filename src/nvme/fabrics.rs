@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Fabrics",
     default_service = "org.freedesktop.UDisks2",
@@ -22,21 +24,21 @@ trait Fabrics {
     fn disconnect(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// HostID property
     #[zbus(property, name = "HostID")]
-    fn host_id(&self) -> zbus::Result<Vec<u8>>;
+    fn host_id(&self) -> error::Result<Vec<u8>>;
 
     /// HostNQN property
     #[zbus(property, name = "HostNQN")]
-    fn host_nqn(&self) -> zbus::Result<Vec<u8>>;
+    fn host_nqn(&self) -> error::Result<Vec<u8>>;
 
     /// Transport property
     #[zbus(property)]
-    fn transport(&self) -> zbus::Result<String>;
+    fn transport(&self) -> error::Result<String>;
 
     /// TransportAddress property
     #[zbus(property)]
-    fn transport_address(&self) -> zbus::Result<Vec<u8>>;
+    fn transport_address(&self) -> error::Result<Vec<u8>>;
 }

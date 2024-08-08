@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Job",
     default_service = "org.freedesktop.UDisks2",
@@ -22,49 +24,49 @@ trait Job {
     fn cancel(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Completed signal
     #[zbus(signal)]
-    fn completed(&self, success: bool, message: &str) -> zbus::Result<()>;
+    fn completed(&self, success: bool, message: &str) -> error::Result<()>;
 
     /// Bytes property
     #[zbus(property)]
-    fn bytes(&self) -> zbus::Result<u64>;
+    fn bytes(&self) -> error::Result<u64>;
 
     /// Cancelable property
     #[zbus(property)]
-    fn cancelable(&self) -> zbus::Result<bool>;
+    fn cancelable(&self) -> error::Result<bool>;
 
     /// ExpectedEndTime property
     #[zbus(property)]
-    fn expected_end_time(&self) -> zbus::Result<u64>;
+    fn expected_end_time(&self) -> error::Result<u64>;
 
     /// Objects property
     #[zbus(property)]
-    fn objects(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+    fn objects(&self) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// Operation property
     #[zbus(property)]
-    fn operation(&self) -> zbus::Result<String>;
+    fn operation(&self) -> error::Result<String>;
 
     /// Progress property
     #[zbus(property)]
-    fn progress(&self) -> zbus::Result<f64>;
+    fn progress(&self) -> error::Result<f64>;
 
     /// ProgressValid property
     #[zbus(property)]
-    fn progress_valid(&self) -> zbus::Result<bool>;
+    fn progress_valid(&self) -> error::Result<bool>;
 
     /// Rate property
     #[zbus(property)]
-    fn rate(&self) -> zbus::Result<u64>;
+    fn rate(&self) -> error::Result<u64>;
 
     /// StartTime property
     #[zbus(property)]
-    fn start_time(&self) -> zbus::Result<u64>;
+    fn start_time(&self) -> error::Result<u64>;
 
     /// StartedByUID property
     #[zbus(property, name = "StartedByUID")]
-    fn started_by_uid(&self) -> zbus::Result<u32>;
+    fn started_by_uid(&self) -> error::Result<u32>;
 }

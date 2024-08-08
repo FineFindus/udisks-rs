@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Filesystem",
     default_service = "org.freedesktop.UDisks2",
@@ -22,33 +24,33 @@ trait Filesystem {
     fn check(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<bool>;
+    ) -> error::Result<bool>;
 
     /// Mount method
     fn mount(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<String>;
+    ) -> error::Result<String>;
 
     /// Repair method
     fn repair(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<bool>;
+    ) -> error::Result<bool>;
 
     /// Resize method
     fn resize(
         &self,
         size: u64,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetLabel method
     fn set_label(
         &self,
         label: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetUUID method
     #[zbus(name = "SetUUID")]
@@ -56,25 +58,25 @@ trait Filesystem {
         &self,
         uuid: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// TakeOwnership method
     fn take_ownership(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Unmount method
     fn unmount(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// MountPoints property
     #[zbus(property)]
-    fn mount_points(&self) -> zbus::Result<Vec<Vec<u8>>>;
+    fn mount_points(&self) -> error::Result<Vec<Vec<u8>>>;
 
     /// Size property
     #[zbus(property)]
-    fn size(&self) -> zbus::Result<u64>;
+    fn size(&self) -> error::Result<u64>;
 }

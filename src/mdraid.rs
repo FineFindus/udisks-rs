@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.MDRaid",
     default_service = "org.freedesktop.UDisks2",
@@ -23,53 +25,53 @@ trait MDRaid {
         &self,
         device: &zbus::zvariant::ObjectPath<'_>,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Delete method
     fn delete(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// RemoveDevice method
     fn remove_device(
         &self,
         device: &zbus::zvariant::ObjectPath<'_>,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// RequestSyncAction method
     fn request_sync_action(
         &self,
         sync_action: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetBitmapLocation method
     fn set_bitmap_location(
         &self,
         value: &[u8],
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Start method
     fn start(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Stop method
     fn stop(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// ActiveDevices property
     #[zbus(property)]
     #[allow(clippy::type_complexity)]
     fn active_devices(
         &self,
-    ) -> zbus::Result<
+    ) -> error::Result<
         Vec<(
             zbus::zvariant::OwnedObjectPath,
             i32,
@@ -81,13 +83,13 @@ trait MDRaid {
 
     /// BitmapLocation property
     #[zbus(property)]
-    fn bitmap_location(&self) -> zbus::Result<Vec<u8>>;
+    fn bitmap_location(&self) -> error::Result<Vec<u8>>;
 
     /// ChildConfiguration property
     #[zbus(property)]
     fn child_configuration(
         &self,
-    ) -> zbus::Result<
+    ) -> error::Result<
         Vec<(
             String,
             std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
@@ -96,49 +98,49 @@ trait MDRaid {
 
     /// ChunkSize property
     #[zbus(property)]
-    fn chunk_size(&self) -> zbus::Result<u64>;
+    fn chunk_size(&self) -> error::Result<u64>;
 
     /// Degraded property
     #[zbus(property)]
-    fn degraded(&self) -> zbus::Result<u32>;
+    fn degraded(&self) -> error::Result<u32>;
 
     /// Level property
     #[zbus(property)]
-    fn level(&self) -> zbus::Result<String>;
+    fn level(&self) -> error::Result<String>;
 
     /// Name property
     #[zbus(property)]
-    fn name(&self) -> zbus::Result<String>;
+    fn name(&self) -> error::Result<String>;
 
     /// NumDevices property
     #[zbus(property)]
-    fn num_devices(&self) -> zbus::Result<u32>;
+    fn num_devices(&self) -> error::Result<u32>;
 
     /// Running property
     #[zbus(property)]
-    fn running(&self) -> zbus::Result<bool>;
+    fn running(&self) -> error::Result<bool>;
 
     /// Size property
     #[zbus(property)]
-    fn size(&self) -> zbus::Result<u64>;
+    fn size(&self) -> error::Result<u64>;
 
     /// SyncAction property
     #[zbus(property)]
-    fn sync_action(&self) -> zbus::Result<String>;
+    fn sync_action(&self) -> error::Result<String>;
 
     /// SyncCompleted property
     #[zbus(property)]
-    fn sync_completed(&self) -> zbus::Result<f64>;
+    fn sync_completed(&self) -> error::Result<f64>;
 
     /// SyncRate property
     #[zbus(property)]
-    fn sync_rate(&self) -> zbus::Result<u64>;
+    fn sync_rate(&self) -> error::Result<u64>;
 
     /// SyncRemainingTime property
     #[zbus(property)]
-    fn sync_remaining_time(&self) -> zbus::Result<u64>;
+    fn sync_remaining_time(&self) -> error::Result<u64>;
 
     /// UUID property
     #[zbus(property, name = "UUID")]
-    fn uuid(&self) -> zbus::Result<String>;
+    fn uuid(&self) -> error::Result<String>;
 }

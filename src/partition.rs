@@ -2,6 +2,8 @@ use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
 use zbus::{proxy, zvariant::Type};
 
+use crate::error;
+
 ///Flags describing the partition.
 #[bitflags]
 #[repr(u64)]
@@ -44,14 +46,14 @@ trait Partition {
     fn delete(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Resize method
     fn resize(
         &self,
         size: u64,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Set the `flags` property.
     ///
@@ -60,21 +62,21 @@ trait Partition {
         &self,
         flags: BitFlags<PartitionFlags>,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetName method
     fn set_name(
         &self,
         name: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetType method
     fn set_type(
         &self,
         type_: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetUUID method
     #[zbus(name = "SetUUID")]
@@ -82,47 +84,47 @@ trait Partition {
         &self,
         uuid: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Flags describing the partition.
     ///
     /// See [`PartitionFlags`] for more information.
     #[zbus(property)]
-    fn flags(&self) -> zbus::Result<BitFlags<PartitionFlags>>;
+    fn flags(&self) -> error::Result<BitFlags<PartitionFlags>>;
 
     /// IsContained property
     #[zbus(property)]
-    fn is_contained(&self) -> zbus::Result<bool>;
+    fn is_contained(&self) -> error::Result<bool>;
 
     /// IsContainer property
     #[zbus(property)]
-    fn is_container(&self) -> zbus::Result<bool>;
+    fn is_container(&self) -> error::Result<bool>;
 
     /// Name property
     #[zbus(property)]
-    fn name(&self) -> zbus::Result<String>;
+    fn name(&self) -> error::Result<String>;
 
     /// Number property
     #[zbus(property)]
-    fn number(&self) -> zbus::Result<u32>;
+    fn number(&self) -> error::Result<u32>;
 
     /// Offset property
     #[zbus(property)]
-    fn offset(&self) -> zbus::Result<u64>;
+    fn offset(&self) -> error::Result<u64>;
 
     /// Size property
     #[zbus(property)]
-    fn size(&self) -> zbus::Result<u64>;
+    fn size(&self) -> error::Result<u64>;
 
     /// Table property
     #[zbus(property)]
-    fn table(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    fn table(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Type property
     #[zbus(property)]
-    fn type_(&self) -> zbus::Result<String>;
+    fn type_(&self) -> error::Result<String>;
 
     /// UUID property
     #[zbus(property, name = "UUID")]
-    fn uuid(&self) -> zbus::Result<String>;
+    fn uuid(&self) -> error::Result<String>;
 }

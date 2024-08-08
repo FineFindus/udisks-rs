@@ -10,6 +10,7 @@ pub mod block;
 mod client;
 pub mod drive;
 pub mod encrypted;
+mod error;
 pub mod filesystem;
 mod id;
 pub mod job;
@@ -28,6 +29,7 @@ pub mod partition;
 pub mod partitiontable;
 pub mod swapspace;
 pub use client::Client;
+pub use error::{Error, Iscsi, Result};
 
 /// Standard Options.
 ///

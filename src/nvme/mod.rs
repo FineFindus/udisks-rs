@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 pub mod controller;
 pub mod fabrics;
 pub mod namespace;
@@ -29,7 +31,7 @@ trait NVMe {
         transport: &str,
         transport_addr: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// SetHostID method
     #[zbus(name = "SetHostID")]
@@ -37,7 +39,7 @@ trait NVMe {
         &self,
         hostid: &[u8],
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetHostNQN method
     #[zbus(name = "SetHostNQN")]
@@ -45,13 +47,13 @@ trait NVMe {
         &self,
         hostnqn: &[u8],
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// HostID property
     #[zbus(property, name = "HostID")]
-    fn host_id(&self) -> zbus::Result<Vec<u8>>;
+    fn host_id(&self) -> error::Result<Vec<u8>>;
 
     /// HostNQN property
     #[zbus(property, name = "HostNQN")]
-    fn host_nqn(&self) -> zbus::Result<Vec<u8>>;
+    fn host_nqn(&self) -> error::Result<Vec<u8>>;
 }

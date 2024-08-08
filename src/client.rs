@@ -2,7 +2,7 @@ use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
 use crate::{
     block::{self, BlockProxy},
-    drive,
+    drive, error,
     id::ID_TYPES,
     job, manager, mdraid,
     object::Object,
@@ -34,13 +34,13 @@ pub struct Client {
 
 impl Client {
     /// Create a new client.
-    pub async fn new() -> zbus::Result<Self> {
+    pub async fn new() -> error::Result<Self> {
         let connection = zbus::Connection::system().await?;
         Self::new_for_connection(connection).await
     }
 
     /// Creates a new client based on the given [`zbus::Connection`].
-    pub async fn new_for_connection(connection: zbus::Connection) -> zbus::Result<Self> {
+    pub async fn new_for_connection(connection: zbus::Connection) -> error::Result<Self> {
         let object_manager = ObjectManagerProxy::builder(&connection)
             .destination("org.freedesktop.UDisks2")?
             .path("/org/freedesktop/UDisks2")?
@@ -155,7 +155,7 @@ impl Client {
     /// Gets a human-readable and localized text string describing the operation of job.
     ///
     /// For known job types, see the documentation for [`job::JobProxy::operation`].
-    pub async fn job_description(&self, job: &job::JobProxy<'_>) -> zbus::Result<String> {
+    pub async fn job_description(&self, job: &job::JobProxy<'_>) -> error::Result<String> {
         Ok(self.job_description_from_operation(&job.operation().await?))
     }
 
@@ -293,7 +293,7 @@ impl Client {
     pub async fn drive_for_block(
         &self,
         block: &block::BlockProxy<'_>,
-    ) -> zbus::Result<drive::DriveProxy<'static>> {
+    ) -> error::Result<drive::DriveProxy<'static>> {
         let drive = block.drive().await?;
         self.object(drive)?.drive().await
     }
@@ -331,7 +331,7 @@ impl Client {
     pub async fn partition_table(
         &self,
         partition: &partition::PartitionProxy<'_>,
-    ) -> zbus::Result<partitiontable::PartitionTableProxy<'_>> {
+    ) -> error::Result<partitiontable::PartitionTableProxy<'_>> {
         self.object(partition.table().await?)?
             .partition_table()
             .await
@@ -346,7 +346,7 @@ impl Client {
     pub async fn loop_for_block(
         &self,
         block: &block::BlockProxy<'_>,
-    ) -> zbus::Result<r#loop::LoopProxy> {
+    ) -> error::Result<r#loop::LoopProxy> {
         let object = self.object(block.inner().path().clone())?;
 
         if let Ok(loop_proxy) = object.r#loop().await {
@@ -429,7 +429,7 @@ impl Client {
         &self,
         mdraid: &mdraid::MDRaidProxy<'_>,
         //TODO: pass in a function
-        // member_get: impl Fn(&block::BlockProxy<'a>) -> Future<Output = zbus::Result<OwnedObjectPath>> + 'a,
+        // member_get: impl Fn(&block::BlockProxy<'a>) -> Future<Output = error::Result<OwnedObjectPath>> + 'a,
         members: bool,
         only_first_one: bool,
         skip_partitions: bool,
@@ -523,7 +523,7 @@ impl Client {
     pub async fn mdraid_for_block(
         &self,
         block: &block::BlockProxy<'_>,
-    ) -> zbus::Result<mdraid::MDRaidProxy<'_>> {
+    ) -> error::Result<mdraid::MDRaidProxy<'_>> {
         let object = self.object(block.mdraid().await?)?;
         object.mdraid().await
     }
@@ -583,7 +583,7 @@ impl Client {
     pub async fn partition_info(
         &self,
         partition: &partition::PartitionProxy<'_>,
-    ) -> zbus::Result<String> {
+    ) -> error::Result<String> {
         //TODO: C version is not marked as returning NULL
         //https://github.com/storaged-project/udisks/blob/4f24c900383d3dc28022f62cab3eb434d19b6b82/udisks/udisksclient.c#L1169
         let flags = partition.flags().await?;

@@ -13,7 +13,7 @@ generated interfaces.
 ```rust
 // we use tokio in this example, but you can use any runtime
 #[tokio::main]
-async fn main() -> zbus::Result<()> {
+async fn main() -> udisks2::Result<()> {
     let client = udisks2::Client::new().await?;
     let object = client
         .object("/org/freedesktop/UDisks2/block_devices/sda")

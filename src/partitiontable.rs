@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.PartitionTable",
     default_service = "org.freedesktop.UDisks2",
@@ -26,7 +28,7 @@ trait PartitionTable {
         type_: &str,
         name: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// CreatePartitionAndFormat method
     #[allow(clippy::too_many_arguments)]
@@ -39,13 +41,13 @@ trait PartitionTable {
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
         format_type: &str,
         format_options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
+    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Partitions property
     #[zbus(property)]
-    fn partitions(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+    fn partitions(&self) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// Type property
     #[zbus(property)]
-    fn type_(&self) -> zbus::Result<String>;
+    fn type_(&self) -> error::Result<String>;
 }

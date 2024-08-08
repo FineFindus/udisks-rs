@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Swapspace",
     default_service = "org.freedesktop.UDisks2",
@@ -23,7 +25,7 @@ trait Swapspace {
         &self,
         label: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SetUUID method
     #[zbus(name = "SetUUID")]
@@ -31,21 +33,21 @@ trait Swapspace {
         &self,
         uuid: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Start method
     fn start(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Stop method
     fn stop(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// Active property
     #[zbus(property)]
-    fn active(&self) -> zbus::Result<bool>;
+    fn active(&self) -> error::Result<bool>;
 }

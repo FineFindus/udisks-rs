@@ -1,5 +1,5 @@
 #[tokio::main]
-async fn main() -> zbus::Result<()> {
+async fn main() -> udisks2::Result<()> {
     let client = udisks2::Client::new().await?;
 
     for object in client

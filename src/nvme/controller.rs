@@ -12,6 +12,8 @@
 
 use zbus::proxy;
 
+use crate::error;
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
@@ -23,86 +25,86 @@ trait Controller {
         &self,
         action: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SmartGetAttributes method
     fn smart_get_attributes(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
+    ) -> error::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
 
     /// SmartSelftestAbort method
     fn smart_selftest_abort(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SmartSelftestStart method
     fn smart_selftest_start(
         &self,
         type_: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// SmartUpdate method
     fn smart_update(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> zbus::Result<()>;
+    ) -> error::Result<()>;
 
     /// ControllerID property
     #[zbus(property, name = "ControllerID")]
-    fn controller_id(&self) -> zbus::Result<u16>;
+    fn controller_id(&self) -> error::Result<u16>;
 
     /// FGUID property
     #[zbus(property, name = "FGUID")]
-    fn fguid(&self) -> zbus::Result<String>;
+    fn fguid(&self) -> error::Result<String>;
 
     /// NVMeRevision property
     #[zbus(property, name = "NVMeRevision")]
-    fn nvme_revision(&self) -> zbus::Result<String>;
+    fn nvme_revision(&self) -> error::Result<String>;
 
     /// SanitizePercentRemaining property
     #[zbus(property)]
-    fn sanitize_percent_remaining(&self) -> zbus::Result<i32>;
+    fn sanitize_percent_remaining(&self) -> error::Result<i32>;
 
     /// SanitizeStatus property
     #[zbus(property)]
-    fn sanitize_status(&self) -> zbus::Result<String>;
+    fn sanitize_status(&self) -> error::Result<String>;
 
     /// SmartCriticalWarning property
     #[zbus(property)]
-    fn smart_critical_warning(&self) -> zbus::Result<Vec<String>>;
+    fn smart_critical_warning(&self) -> error::Result<Vec<String>>;
 
     /// SmartPowerOnHours property
     #[zbus(property)]
-    fn smart_power_on_hours(&self) -> zbus::Result<u64>;
+    fn smart_power_on_hours(&self) -> error::Result<u64>;
 
     /// SmartSelftestPercentRemaining property
     #[zbus(property)]
-    fn smart_selftest_percent_remaining(&self) -> zbus::Result<i32>;
+    fn smart_selftest_percent_remaining(&self) -> error::Result<i32>;
 
     /// SmartSelftestStatus property
     #[zbus(property)]
-    fn smart_selftest_status(&self) -> zbus::Result<String>;
+    fn smart_selftest_status(&self) -> error::Result<String>;
 
     /// SmartTemperature property
     #[zbus(property)]
-    fn smart_temperature(&self) -> zbus::Result<u16>;
+    fn smart_temperature(&self) -> error::Result<u16>;
 
     /// SmartUpdated property
     #[zbus(property)]
-    fn smart_updated(&self) -> zbus::Result<u64>;
+    fn smart_updated(&self) -> error::Result<u64>;
 
     /// State property
     #[zbus(property)]
-    fn state(&self) -> zbus::Result<String>;
+    fn state(&self) -> error::Result<String>;
 
     /// SubsystemNQN property
     #[zbus(property, name = "SubsystemNQN")]
-    fn subsystem_nqn(&self) -> zbus::Result<Vec<u8>>;
+    fn subsystem_nqn(&self) -> error::Result<Vec<u8>>;
 
     /// UnallocatedCapacity property
     #[zbus(property)]
-    fn unallocated_capacity(&self) -> zbus::Result<u64>;
+    fn unallocated_capacity(&self) -> error::Result<u64>;
 }
