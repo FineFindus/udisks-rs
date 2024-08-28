@@ -44,26 +44,6 @@ impl Icon {
     pub fn name_symbolic(&self) -> Option<&String> {
         self.name_symbolic.as_ref()
     }
-
-    #[cfg(feature = "gio")]
-    /// Returns the GIcon version of the icon.
-    ///
-    /// If the [`Object`] has no associated icon, None is returned.
-    pub fn icon(&self) -> Option<gio::ThemedIcon> {
-        self.name
-            .as_ref()
-            .map(|icon| gio::ThemedIcon::with_default_fallbacks(icon))
-    }
-
-    #[cfg(feature = "gio")]
-    /// Returns the GICon version of the icon.
-    ///
-    /// If the [`Object`] has no associated symbolic icon, None is returned.
-    pub fn icon_symbolic(&self) -> Option<gio::ThemedIcon> {
-        self.name_symbolic
-            .as_ref()
-            .map(|icon| gio::ThemedIcon::with_default_fallbacks(icon))
-    }
 }
 
 /// Detailed information about the D-Bus interfaces (such as [`block::BlockProxy`] and [`drive::DriveProxy`])

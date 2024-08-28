@@ -10,13 +10,8 @@ repository = "https://github.com/FineFindus/udisks-rs"
 keywords = ["udisks", "udisks2", "manipulating-disk", "storage"]
 categories = ["api-bindings", "hardware-support", "os::linux-apis"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-[features]
-gio = ["dep:gio"]
-
 [dependencies]
 zbus = "4.0.0"
-gio = { version = "0.19.2", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_repr = "0.1.18"
 enumflags2 = { version = "0.7.9", features = ["serde"] }
