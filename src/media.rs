@@ -1,3 +1,5 @@
+use crate::drive::MediaCompatibility;
+
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum DriveType {
     Drive,
@@ -7,7 +9,7 @@ pub(crate) enum DriveType {
 }
 
 pub(crate) struct MediaData {
-    pub id: &'static str,
+    pub id: MediaCompatibility,
     pub media_name: &'static str,
     pub media_family: &'static str,
     pub media_icon: &'static str,
@@ -22,7 +24,7 @@ impl MediaData {
     //pattern or secondary struct
     #[allow(clippy::too_many_arguments)]
     const fn new(
-        id: &'static str,
+        id: MediaCompatibility,
         media_name: &'static str,
         media_family: &'static str,
         media_icon: &'static str,
@@ -50,7 +52,7 @@ impl MediaData {
 pub(crate) const MEDIA_DATA: [MediaData; 32] = [
     /* Translators: 'Thumb' here refers to "USB thumb drive", see http://en.wikipedia.org/wiki/Thumb_drive */
     MediaData::new(
-        "thumb",
+        MediaCompatibility::Thumb,
         "Thumb",
         "Thumb",
         "media-removable",
@@ -60,7 +62,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "media-removable-symbolic",
     ),
     MediaData::new(
-        "floppy",
+        MediaCompatibility::Floppy,
         "Floppy",
         "Floppy",
         "media-floppy",
@@ -70,7 +72,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "floppy_zip",
+        MediaCompatibility::FloppyZip,
         "Zip",
         "Zip",
         "media-floppy-jaz",
@@ -80,7 +82,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "floppy_jaz",
+        MediaCompatibility::FloppyJaz,
         "Jaz",
         "Jaz",
         "media-floppy-zip",
@@ -90,7 +92,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "flash",
+        MediaCompatibility::Flash,
         "Flash",
         "Flash",
         "media-flash",
@@ -100,7 +102,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "flash_ms",
+        MediaCompatibility::FlashMs,
         "MemoryStick",
         "MemoryStick",
         "media-flash-ms",
@@ -110,7 +112,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "flash_sm",
+        MediaCompatibility::FlashSm,
         "SmartMedia",
         "SmartMedia",
         "media-flash-sm",
@@ -120,7 +122,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "flash_cf",
+        MediaCompatibility::FlashCf,
         "CompactFlash",
         "CompactFlash",
         "media-flash-cf",
@@ -130,7 +132,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "flash_mmc",
+        MediaCompatibility::FlashMmc,
         "MMC",
         "SD",
         "media-flash-mmc",
@@ -140,7 +142,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "flash_sd",
+        MediaCompatibility::FlashSd,
         "SD",
         "SD",
         "media-flash-sd",
@@ -150,7 +152,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "flash_sdxc",
+        MediaCompatibility::FlashSdxc,
         "SDXC",
         "SD",
         "media-flash-sd-xc",
@@ -160,7 +162,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "flash_sdhc",
+        MediaCompatibility::FlashSdhc,
         "SDHC",
         "SD",
         "media-flash-sd-hc",
@@ -170,7 +172,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-removable-media-symbolic",
     ),
     MediaData::new(
-        "optical_cd",
+        MediaCompatibility::OpticalCd,
         "CD-ROM",
         "CD",
         "media-optical-cd-rom",
@@ -180,7 +182,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_cd_r",
+        MediaCompatibility::OpticalCdR,
         "CD-R",
         "CD",
         "media-optical-cd-r",
@@ -190,7 +192,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_cd_rw",
+        MediaCompatibility::OpticalCdRw,
         "CD-RW",
         "CD",
         "media-optical-cd-rw",
@@ -200,7 +202,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_dvd",
+        MediaCompatibility::OpticalDvd,
         "DVD",
         "DVD",
         "media-optical-dvd-rom",
@@ -210,7 +212,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_dvd_r",
+        MediaCompatibility::OpticalDvdR,
         "DVD-R",
         "DVD",
         "media-optical-dvd-r",
@@ -220,7 +222,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_dvd_rw",
+        MediaCompatibility::OpticalDvdRw,
         "DVD-RW",
         "DVD",
         "media-optical-dvd-rw",
@@ -230,7 +232,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_dvd_ram",
+        MediaCompatibility::OpticalDvdRam,
         "DVD-RAM",
         "DVD",
         "media-optical-dvd-ram",
@@ -240,7 +242,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_dvd_plus_r",
+        MediaCompatibility::OpticalDvdPlusR,
         "DVD+R",
         "DVD",
         "media-optical-dvd-r-plus",
@@ -250,7 +252,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_dvd_plus_rw",
+        MediaCompatibility::OpticalDvdPlusRw,
         "DVD+RW",
         "DVD",
         "media-optical-dvd-rw-plus",
@@ -260,7 +262,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_dvd_plus_r_dl",
+        MediaCompatibility::OpticalDvdPlusRDl,
         "DVD+R DL",
         "DVD",
         "media-optical-dvd-dl-r-plus",
@@ -270,7 +272,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_dvd_plus_rw_dl",
+        MediaCompatibility::OpticalDvdPlusRwDl,
         "DVD+RW DL",
         "DVD",
         "media-optical-dvd-dl-r-plus",
@@ -280,7 +282,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_bd",
+        MediaCompatibility::OpticalBd,
         "BD-ROM",
         "Blu-Ray",
         "media-optical-bd-rom",
@@ -290,7 +292,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_bd_r",
+        MediaCompatibility::OpticalBdR,
         "BD-R",
         "Blu-Ray",
         "media-optical-bd-r",
@@ -300,7 +302,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_bd_re",
+        MediaCompatibility::OpticalBdRe,
         "BD-RE",
         "Blu-Ray",
         "media-optical-bd-re",
@@ -310,7 +312,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_hddvd",
+        MediaCompatibility::OpticalHddvd,
         "HDDVD",
         "HDDVD",
         "media-optical-hddvd-rom",
@@ -320,7 +322,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_hddvd_r",
+        MediaCompatibility::OpticalHddvdR,
         "HDDVD-R",
         "HDDVD",
         "media-optical-hddvd-r",
@@ -330,7 +332,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_hddvd_rw",
+        MediaCompatibility::OpticalHddvdRw,
         "HDDVD-RW",
         "HDDVD",
         "media-optical-hddvd-rw",
@@ -340,7 +342,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_mo",
+        MediaCompatibility::OpticalMo,
         "MO",
         "CD",
         "media-optical-mo",
@@ -350,7 +352,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_mrw",
+        MediaCompatibility::OpticalMrw,
         "MRW",
         "CD",
         "media-optical-mrw",
@@ -360,7 +362,7 @@ pub(crate) const MEDIA_DATA: [MediaData; 32] = [
         "drive-optical-symbolic",
     ),
     MediaData::new(
-        "optical_mrw_w",
+        MediaCompatibility::OpticalMrwW,
         "MRW-W",
         "CD",
         "media-optical-mrw-w",

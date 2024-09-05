@@ -10,7 +10,13 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::{proxy, zvariant::OwnedValue};
+use std::str::FromStr;
+
+use serde::{de::IntoDeserializer, Deserialize, Serialize};
+use zbus::{
+    proxy,
+    zvariant::{OwnedValue, Type, Value},
+};
 
 use crate::error;
 
@@ -35,6 +41,114 @@ impl TryFrom<OwnedValue> for RotationRate {
             0 => RotationRate::NonRotating,
             v => RotationRate::Rotating(v),
         })
+    }
+}
+
+/// The physical kind of media a drive uses or the type of the drive.
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Eq, Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum MediaCompatibility {
+    /// The device is a thumb-drive with non-removable media (e.g. a USB stick)
+    Thumb,
+    /// Flash Card
+    Flash,
+    /// CompactFlash
+    FlashCf,
+    /// MemoryStick
+    FlashMs,
+    /// SmartMedia
+    FlashSm,
+    /// Secure Digital
+    FlashSd,
+    /// Secure Digital High Capacity
+    FlashSdhc,
+    /// Secure Digital eXtended Capacity
+    FlashSdxc,
+    /// Secure Digital Input Output
+    FlashSdio,
+    /// Secure Digital Input Output combo card with storage and I/O functionality
+    FlashSdCombo,
+    /// MultiMediaCard
+    FlashMmc,
+    /// Floppy Disk
+    Floppy,
+    /// Zip Disk
+    FloppyZip,
+    /// Jaz Disk
+    FloppyJaz,
+    /// Optical Disc
+    Optical,
+    /// Compact Disc
+    OpticalCd,
+    /// Compact Disc Recordable
+    OpticalCdR,
+    /// Compact Disc Rewritable
+    OpticalCdRw,
+    /// Digital Versatile Disc
+    OpticalDvd,
+    /// DVD-R
+    OpticalDvdR,
+    /// DVD-RW
+    OpticalDvdRw,
+    /// DVD-RAM
+    OpticalDvdRam,
+    /// DVD+R
+    OpticalDvdPlusR,
+    /// DVD+RW
+    OpticalDvdPlusRw,
+    /// DVD+R Dual Layer
+    OpticalDvdPlusRDl,
+    /// DVD+RW Dual Layer
+    OpticalDvdPlusRwDl,
+    /// Blu-ray Disc
+    OpticalBd,
+    /// Blu-ray Recordable
+    OpticalBdR,
+    /// Blu-ray Rewritable
+    OpticalBdRe,
+    /// HD-DVD
+    OpticalHddvd,
+    /// HD-DVD Recordable
+    OpticalHddvdR,
+    /// HD-DVD Rewritable
+    OpticalHddvdRw,
+    /// Magneto Optical
+    OpticalMo,
+    /// Can read Mount Rainer media
+    OpticalMrw,
+    /// Can write Mount Rainer media
+    OpticalMrwW,
+    /// Media is unknown
+    #[serde(rename(deserialize = ""))] // unknow types are blank
+    Unknown,
+}
+
+impl FromStr for MediaCompatibility {
+    type Err = serde::de::value::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let res: Result<_, Self::Err> = Self::deserialize(s.into_deserializer());
+        Ok(res.unwrap_or(Self::Unknown))
+    }
+}
+
+// TODO: why isn't this working just using pro macros
+impl TryFrom<Value<'_>> for MediaCompatibility {
+    type Error = <String as TryFrom<Value<'static>>>::Error;
+
+    fn try_from(value: Value<'_>) -> Result<Self, Self::Error> {
+        let val: String = value.downcast_ref()?;
+        Ok(Self::from_str(&val).unwrap_or(Self::Unknown))
+    }
+}
+
+impl TryFrom<OwnedValue> for MediaCompatibility {
+    type Error = <String as TryFrom<OwnedValue>>::Error;
+
+    fn try_from(v: OwnedValue) -> Result<Self, Self::Error> {
+        Self::try_from(Into::<Value<'_>>::into(v))
     }
 }
 
@@ -87,7 +201,7 @@ trait Drive {
 
     /// Media property
     #[zbus(property)]
-    fn media(&self) -> error::Result<String>;
+    fn media(&self) -> error::Result<MediaCompatibility>;
 
     /// MediaAvailable property
     #[zbus(property)]
@@ -99,7 +213,7 @@ trait Drive {
 
     /// MediaCompatibility property
     #[zbus(property)]
-    fn media_compatibility(&self) -> error::Result<Vec<String>>;
+    fn media_compatibility(&self) -> error::Result<Vec<MediaCompatibility>>;
 
     /// MediaRemovable property
     #[zbus(property)]

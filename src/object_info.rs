@@ -357,13 +357,13 @@ impl<'a> ObjectInfo<'a> {
 
         let media_removable = drive.media_removable().await.unwrap_or_default();
         let media_available = drive.media_available().await.unwrap_or_default();
-        let media = drive.media().await.unwrap_or_default();
+        let media = drive.media().await.unwrap();
         let media_compat = drive.media_compatibility().await.unwrap_or_default();
 
         let mut desc = String::new();
         let mut desc_type = None;
         for media_data in media::MEDIA_DATA {
-            if media_compat.contains(&media_data.id.to_string()) {
+            if media_compat.contains(&media_data.id) {
                 self.icon.set_if_none(
                     media_data.drive_icon.to_owned(),
                     media_data.drive_icon_symbolic.to_owned(),
