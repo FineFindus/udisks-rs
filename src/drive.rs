@@ -18,7 +18,7 @@ use crate::error;
 #[derive(Debug, Default, PartialEq, Eq)]
 pub enum RotationRate {
     /// The drive is known to be rotating media but rotation rate isn't known.
-    Unkown,
+    Unknown,
     /// The drive is known to be non-rotating media.
     #[default]
     NonRotating,
@@ -31,7 +31,7 @@ impl TryFrom<OwnedValue> for RotationRate {
 
     fn try_from(v: OwnedValue) -> Result<Self, Self::Error> {
         Ok(match v.try_into()? {
-            -1 => RotationRate::Unkown,
+            -1 => RotationRate::Unknown,
             0 => RotationRate::NonRotating,
             v => RotationRate::Rotating(v),
         })
