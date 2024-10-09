@@ -1,4 +1,4 @@
-use std::{ffi::CString};
+use std::ffi::CString;
 
 use crate::{
     block,
@@ -584,10 +584,9 @@ impl<'a> ObjectInfo<'a> {
 
         let mut block_for_partition = None;
         if let Some(ref partition) = partition {
-            let object = client.object(partition.inner().path().clone());
-            if let Ok(object) = object {
-                block_for_partition = object.block().await.ok();
-            }
+            // safe to unwrap as the table's object path does not need to be converted
+            let object = client.object(partition.inner().path().clone()).unwrap();
+            block_for_partition = object.block().await.ok();
         }
         block_for_partition = block_for_partition.or_else(|| block.clone());
 

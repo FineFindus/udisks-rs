@@ -366,9 +366,8 @@ impl Client {
         table: &partitiontable::PartitionTableProxy<'_>,
     ) -> Vec<partition::PartitionProxy<'_>> {
         let mut partitions = Vec::new();
-        let Ok(table_object) = self.object(table.inner().path().clone()) else {
-            return partitions;
-        };
+        // safe to unwrap as the table's object path does not need to be converted
+        let table_object = self.object(table.inner().path().clone()).unwrap();
         let table_object_path = table_object.object_path();
 
         for object in self
@@ -435,9 +434,8 @@ impl Client {
         skip_partitions: bool,
     ) -> Vec<block::BlockProxy> {
         let mut blocks = Vec::new();
-        let Ok(raid_object) = self.object(mdraid.inner().path().clone()) else {
-            return blocks;
-        };
+        // safe to unwrap as the table's object path does not need to be converted
+        let raid_object = self.object(mdraid.inner().path().clone()).unwrap();
 
         let raid_objpath = raid_object.object_path();
 
