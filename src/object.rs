@@ -21,13 +21,13 @@ pub struct Object {
 ///
 /// ```skip
 /// # fn main() {
-/// get_interface!(
+/// impl_get_interface!(
 ///  block, block::BlockProxy<'static>, "org.freedesktop.UDisks2.Block";
 /// );
 ///
 /// # }
 /// ```
-macro_rules! get_interface {
+macro_rules! impl_get_interface {
     ($($name:ident, $type:ty, $key:literal);+) => {
         $(
         #[doc = "Returns the `"]
@@ -70,7 +70,7 @@ impl Object {
         &self.path
     }
 
-    get_interface!(
+    impl_get_interface!(
         block, block::BlockProxy<'static>, "org.freedesktop.UDisks2.Block";
         drive, drive::DriveProxy<'static>, "org.freedesktop.UDisks2.Drive";
         drive_ata, ata::AtaProxy<'static>, "org.freedesktop.UDisks2.Drive.Ata";
