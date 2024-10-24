@@ -131,7 +131,7 @@ impl FromStr for MediaCompatibility {
     }
 }
 
-// TODO: why isn't this working just using pro macros (Type)
+//TODO: use macro when this is used for multiple types
 impl TryFrom<Value<'_>> for MediaCompatibility {
     type Error = <String as TryFrom<Value<'static>>>::Error;
 
