@@ -3,7 +3,7 @@ use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
 use crate::{
     block::{self, BlockProxy},
-    dpgettext, drive, drive, error,
+    drive, error,
     gettext::{dpgettext, pgettext_f},
     id::ID_TYPES,
     job, manager, mdraid,
