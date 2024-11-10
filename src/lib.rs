@@ -1,5 +1,8 @@
 #![doc = include_str!("../README.md")]
 
+#[cfg(not(target_os = "linux"))]
+compile_error!("UDisks only supports Linux");
+
 use std::collections::HashMap;
 
 //re-eport zbus
