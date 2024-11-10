@@ -31,3 +31,7 @@ async fn main() -> udisks2::Result<()> {
 ## Documentation
 
 While this crate provides documentation for the handwritten code, the generated types may be lacking. In this case it is recommended to use the official [documentation](https://storaged.org/doc/udisks2-api/latest/).
+
+### Internationalization
+
+This crate uses the same localization as `UDisks2`, which uses gettext. If the locale is left unset, English will be used.
