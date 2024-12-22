@@ -83,7 +83,7 @@ impl Object {
         partition, partition::PartitionProxy<'static>, "org.freedesktop.UDisks2.Partition";
         partition_table, partitiontable::PartitionTableProxy<'static>, "org.freedesktop.UDisks2.PartitionTable";
         mdraid, mdraid::MDRaidProxy<'static>, "org.freedesktop.UDisks2.Mdraid";
-        nvme_controller, nvme::controller::ControllerProxy<'static>, "org.freedesktop.UDisks2.Nvme.Controller";
+        nvme_controller, nvme::controller::ControllerProxy<'static>, "org.freedesktop.UDisks2.NVMe.Controller";
         nvme_namespace, nvme::namespace::NamespaceProxy<'static>, "org.freedesktop.UDisks2.NVMe.Namespace";
         nvme_fabrics, nvme::fabrics::FabricsProxy<'static>, "org.freedesktop.UDisks2.Nvme.Fabrics"
     );
