@@ -42,7 +42,7 @@ pub enum PartitionFlags {
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Partition"
 )]
-trait Partition {
+pub trait Partition {
     /// Deletes the partition.
     ///
     /// If the option `tear-down` is set to `true`, then the block device and all its children will be cleaned up before formatting.

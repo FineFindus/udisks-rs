@@ -19,7 +19,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/PartitionTable"
 )]
-trait PartitionTable {
+pub trait PartitionTable {
     /// CreatePartition method
     fn create_partition(
         &self,

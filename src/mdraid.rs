@@ -19,7 +19,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/MDRaid"
 )]
-trait MDRaid {
+pub trait MDRaid {
     /// AddDevice method
     fn add_device(
         &self,

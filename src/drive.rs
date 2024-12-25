@@ -154,7 +154,7 @@ impl TryFrom<OwnedValue> for MediaCompatibility {
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Drive"
 )]
-trait Drive {
+pub trait Drive {
     /// Ejects media from the drive. This is only meaningful to do on drives with removable media.
     /// There are not a lot of guarantees associated with this method so it should only be called in response to an user action.
     ///

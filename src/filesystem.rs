@@ -19,7 +19,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Filesystem"
 )]
-trait Filesystem {
+pub trait Filesystem {
     /// Check method
     fn check(
         &self,

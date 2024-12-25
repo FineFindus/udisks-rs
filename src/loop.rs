@@ -19,7 +19,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Loop"
 )]
-trait Loop {
+pub trait Loop {
     /// Delete method
     fn delete(
         &self,

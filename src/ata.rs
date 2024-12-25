@@ -19,7 +19,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Drive"
 )]
-trait Ata {
+pub trait Ata {
     /// PmGetState method
     fn pm_get_state(
         &self,

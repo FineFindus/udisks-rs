@@ -19,7 +19,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Jop"
 )]
-trait Job {
+pub trait Job {
     /// Cancel method
     fn cancel(
         &self,

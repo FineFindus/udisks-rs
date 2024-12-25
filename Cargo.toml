@@ -11,11 +11,11 @@ keywords = ["udisks", "udisks2", "manipulating-disk", "storage"]
 categories = ["api-bindings", "hardware-support", "os::linux-apis"]
 
 [dependencies]
-zbus = "4.0.0"
+zbus = "5.2"
 serde = { version = "1.0", features = ["derive"] }
-serde_repr = "0.1.18"
-enumflags2 = { version = "0.7.9", features = ["serde"] }
+serde_repr = "0.1"
+enumflags2 = { version = "0.7", features = ["serde"] }
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 
 [dev-dependencies]
-tokio = { version = "1.36", features = ["full"] }
+tokio = { version = "1.42", features = ["full"] }

@@ -19,7 +19,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Encrypted"
 )]
-trait Encrypted {
+pub trait Encrypted {
     /// ChangePassphrase method
     fn change_passphrase(
         &self,

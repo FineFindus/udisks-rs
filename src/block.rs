@@ -15,7 +15,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/Block"
 )]
-trait Block {
+pub trait Block {
     /// Adds a new configuration item.
     ///
     /// See [`Self::configuration`] for details.

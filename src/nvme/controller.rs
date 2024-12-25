@@ -19,7 +19,7 @@ use crate::error;
     default_service = "org.freedesktop.UDisks2",
     default_path = "/org/freedesktop/UDisks2/NVMe"
 )]
-trait Controller {
+pub trait Controller {
     /// SanitizeStart method
     fn sanitize_start(
         &self,
