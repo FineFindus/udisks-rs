@@ -424,12 +424,10 @@ impl Client {
         drive_siblings
     }
 
-    async fn block_or_blocks_for_mdraid(
+    async fn block_or_blocks_for_mdraid<'a>(
         &self,
         mdraid: &mdraid::MDRaidProxy<'_>,
-        //TODO: pass in a function
-        // member_get: impl Fn(&block::BlockProxy<'a>) -> Future<Output = error::Result<OwnedObjectPath>> + 'a,
-        members: bool,
+        member_get: impl AsyncFn(&block::BlockProxy) -> error::Result<OwnedObjectPath>,
         only_first_one: bool,
         skip_partitions: bool,
     ) -> Vec<block::BlockProxy> {
@@ -456,14 +454,7 @@ impl Client {
                 continue;
             }
 
-            // if member_get(&block).await.as_ref() == Ok(raid_objpath) {
-            let block_objpath = if members {
-                block.mdraid().await
-            } else {
-                block.mdraid_member().await
-            };
-
-            if block_objpath.as_ref() == Ok(raid_objpath) {
+            if member_get(&block).await.as_ref() == Ok(raid_objpath) {
                 blocks.push(block);
                 if only_first_one {
                     break;
@@ -486,7 +477,7 @@ impl Client {
         &self,
         mdraid: &mdraid::MDRaidProxy<'_>,
     ) -> Option<BlockProxy<'_>> {
-        self.block_or_blocks_for_mdraid(mdraid, false, true, true)
+        self.block_or_blocks_for_mdraid(mdraid, async |block| block.mdraid().await, true, true)
             .await
             .first()
             .cloned()
@@ -500,7 +491,7 @@ impl Client {
         &self,
         mdraid: &mdraid::MDRaidProxy<'_>,
     ) -> Vec<block::BlockProxy<'_>> {
-        self.block_or_blocks_for_mdraid(mdraid, false, false, true)
+        self.block_or_blocks_for_mdraid(mdraid, async |block| block.mdraid().await, false, true)
             .await
     }
 
@@ -509,8 +500,13 @@ impl Client {
         &self,
         mdraid: &mdraid::MDRaidProxy<'_>,
     ) -> Vec<block::BlockProxy<'_>> {
-        self.block_or_blocks_for_mdraid(mdraid, true, false, false)
-            .await
+        self.block_or_blocks_for_mdraid(
+            mdraid,
+            async |block| block.mdraid_member().await,
+            false,
+            false,
+        )
+        .await
     }
 
     /// Returns the [`mdraid::MDRaidProxy`] that the given block is the block device for.
