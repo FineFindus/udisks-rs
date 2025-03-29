@@ -6,12 +6,12 @@ use crate::{
     drive, error,
     gettext::{dpgettext, pgettext_f},
     id::ID_TYPES,
-    job, manager, mdraid,
+    job, r#loop, manager, mdraid,
     object::Object,
     object_info::ObjectInfo,
     partition, partition_subtypes,
-    partition_types::{self, PartitionTypeInfo, PARTITION_TYPES},
-    partitiontable, r#loop,
+    partition_types::{self, PARTITION_TYPES, PartitionTypeInfo},
+    partitiontable,
 };
 
 const KILOBYTE_FACTOR: f64 = 1000.0;
