@@ -80,6 +80,19 @@ impl Client {
         ))
     }
 
+    /// Returns an iterator over all valid UDisks [Object]s.
+    ///
+    /// This is a helper function, which acts as the equivalent to Gio's
+    /// [`g_dbus_object_manager_get_objects`](https://docs.gtk.org/gio/method.DBusObjectManager.get_objects.html).
+    async fn objects(&self) -> impl Iterator<Item = Object> {
+        self.object_manager
+            .get_managed_objects()
+            .await
+            .into_iter()
+            .flatten()
+            .filter_map(|(object_path, _)| self.object(object_path).ok())
+    }
+
     /// Gets all  the [`job::JobProxy`] instances for the given object.
     ///
     /// If no instances are found, the returned vector is empty.
@@ -89,14 +102,7 @@ impl Client {
 
         let mut blocks = Vec::new();
 
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(job) = object.job().await else {
                 continue;
             };
@@ -163,14 +169,7 @@ impl Client {
     ///
     /// If no block is found, [`None`] is returned,
     pub async fn block_for_dev(&self, block_device_number: u64) -> Option<block::BlockProxy> {
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(block) = object.block().await else {
                 continue;
             };
@@ -190,14 +189,7 @@ impl Client {
 
         let mut blocks = Vec::new();
 
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(block) = object.block().await else {
                 continue;
             };
@@ -214,14 +206,7 @@ impl Client {
     /// If no blocks are found, the returned vector is empty.
     pub async fn block_for_uuid(&self, uuid: &str) -> Vec<block::BlockProxy> {
         let mut blocks = Vec::new();
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(block) = object.block().await else {
                 continue;
             };
@@ -238,14 +223,7 @@ impl Client {
     /// Top-level blocks are blocks that do not have a partition associated with it.
     async fn top_level_blocks_for_drive(&self, drive_object_path: &OwnedObjectPath) -> Vec<Object> {
         let mut blocks = Vec::new();
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(block) = object.block().await else {
                 continue;
             };
@@ -306,14 +284,7 @@ impl Client {
         block: &block::BlockProxy<'_>,
     ) -> Option<block::BlockProxy<'_>> {
         let object_path = block.inner().path().to_owned().into();
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(block) = object.block().await else {
                 continue;
             };
@@ -370,14 +341,7 @@ impl Client {
         let table_object = self.object(table.inner().path().clone()).unwrap();
         let table_object_path = table_object.object_path();
 
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(partition) = object.partition().await else {
                 continue;
             };
@@ -401,14 +365,7 @@ impl Client {
             return drive_siblings;
         }
 
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(iter_drive) = object.drive().await else {
                 continue;
             };
@@ -437,14 +394,7 @@ impl Client {
 
         let raid_objpath = raid_object.object_path();
 
-        for object in self
-            .object_manager
-            .get_managed_objects()
-            .await
-            .into_iter()
-            .flatten()
-            .filter_map(|(object_path, _)| self.object(object_path).ok())
-        {
+        for object in self.objects().await {
             let Ok(block) = object.block().await else {
                 continue;
             };
