@@ -15,9 +15,10 @@ generated interfaces.
 #[tokio::main]
 async fn main() -> udisks2::Result<()> {
     let client = udisks2::Client::new().await?;
-    let object = client
-        .object("/org/freedesktop/UDisks2/block_devices/sda")
-        .expect("No sda device found");
+    let Ok(object) = client.object("/org/freedesktop/UDisks2/block_devices/sda") else {
+        eprintln!("No sda device found");
+        return Ok(());
+    };
     let block = object.block().await?;
     let drive = client.drive_for_block(&block).await?;
     println!(
