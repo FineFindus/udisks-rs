@@ -94,7 +94,7 @@ pub trait Block {
     /// The position in which the user-provided arguments are appended to the final mkfs command line is also not defined.
     /// Because of all this, `mkfs-args` should only be used as a last resort when no other dedicated option is available.
     ///
-    /// If the option `no-discard` is set to `true` then Udisks tells the formatting utility not to issue `BLKDISCARD` ioctls.
+    /// If the option `no-discard` is set to `true` then UDisks tells the formatting utility not to issue `BLKDISCARD` ioctls.
     ///
     /// If the option `config-items` is set, it should be an array of configuration items suitable for [`Self::add_configuration_item`].
     /// They will all be added after the formatting is done.
