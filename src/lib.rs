@@ -37,9 +37,8 @@ pub use error::{Error, Iscsi, Result};
 
 /// Standard Options.
 ///
-/// Many functions inlude a parameter `options`, which includes the following options:
-/// - `no_user_auth_interaction` if set to `true`, no user interaction will happen,
-///    when checking if the called function is authorized
+/// Many functions include a parameter `options`, which includes the following options:
+/// - `no_user_auth_interaction` if set to `true`, no user interaction will happen, when checking if the called function is authorized
 pub fn standard_options(
     no_user_auth_interaction: bool,
 ) -> HashMap<&'static str, zbus::zvariant::Value<'static>> {

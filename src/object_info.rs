@@ -3,12 +3,13 @@ use std::ffi::CString;
 use gettextrs::{gettext, pgettext};
 
 use crate::{
-    block,
+    Client, Object, block,
     drive::{self, RotationRate},
-    error, mdraid,
+    error,
     gettext::{dpgettext, gettext_f, pgettext_f},
+    r#loop, mdraid,
     media::{self, DriveType},
-    partition, r#loop, Client, Object,
+    partition,
 };
 
 /// Icon
@@ -173,7 +174,7 @@ impl<'a> ObjectInfo<'a> {
         self.sort_key = Some(format!(
             "02_block_{}_{}",
             // safe to unwrap, object path always have at least one `/`
-            self.object.object_path().split('/').last().unwrap(),
+            self.object.object_path().split('/').next_back().unwrap(),
             //TODO: use async closure when stable
             partition_number.unwrap_or(0)
         ))
@@ -258,7 +259,7 @@ impl<'a> ObjectInfo<'a> {
         self.sort_key = Some(format!(
             "03_loop_{}_{}",
             // safe to unwrap, object path always have at least one `/`
-            self.object.object_path().split('/').last().unwrap(),
+            self.object.object_path().split('/').next_back().unwrap(),
             //TODO: use async closure when stable
             partition_number.unwrap_or(0)
         ));
@@ -271,7 +272,12 @@ impl<'a> ObjectInfo<'a> {
         partition: Option<partition::PartitionProxy<'_>>,
     ) {
         let name = mdraid.name().await.unwrap_or_default();
-        self.name = Some(name.split(':').last().unwrap_or_else(|| &name).to_string());
+        self.name = Some(
+            name.split(':')
+                .next_back()
+                .unwrap_or_else(|| &name)
+                .to_string(),
+        );
         self.icon = Icon::new(
             Some("drive-multidisk".to_owned()),
             Some("drive-multidisk-symbolic".to_owned()),
