@@ -78,6 +78,58 @@ pub enum SelfTestType {
     Offline,
 }
 
+#[derive(Debug, Deserialize, Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum SelfTestStatus {
+    /// Last self-test was a success (or never ran)
+    Success,
+    /// Last self-test was aborted
+    Aborted,
+    /// Last self-test was interrupted
+    Interrupted,
+    /// Last self-test did not complete
+    Fatal,
+    /// Last self-test failed (Unknown)
+    ErrorUnknown,
+    /// Last self-test failed (Electrical)
+    ErrorElectrical,
+    /// Last self-test failed (Servo)
+    ErrorServo,
+    /// Last self-test failed (Read)
+    ErrorRead,
+    /// Last self-test failed (Damage)
+    ErrorHandling,
+    /// Self-test is currently in progress
+    Inprogress,
+}
+
+impl FromStr for SelfTestStatus {
+    type Err = serde::de::value::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Self::deserialize(s.into_deserializer())
+    }
+}
+
+impl TryFrom<Value<'_>> for SelfTestStatus {
+    type Error = <String as TryFrom<Value<'static>>>::Error;
+
+    fn try_from(value: Value<'_>) -> Result<Self, Self::Error> {
+        let val: String = value.downcast_ref()?;
+        Self::from_str(&val).map_err(|_| zbus::zvariant::Error::IncorrectType)
+    }
+}
+
+impl TryFrom<OwnedValue> for SelfTestStatus {
+    type Error = <String as TryFrom<OwnedValue>>::Error;
+
+    fn try_from(v: OwnedValue) -> Result<Self, Self::Error> {
+        Self::try_from(Into::<Value<'_>>::into(v))
+    }
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Drive.Ata",
     default_service = "org.freedesktop.UDisks2",
@@ -277,7 +329,7 @@ pub trait Ata {
 
     /// The status of the last self-test.
     #[zbus(property)]
-    fn smart_selftest_status(&self) -> error::Result<String>;
+    fn smart_selftest_status(&self) -> error::Result<SelfTestStatus>;
 
     /// Whether the drive supports SMART.
     #[zbus(property)]
