@@ -3,9 +3,33 @@
 //! Objects implementing this interface also implement the
 //! [`org.freedesktop.UDisks2.Drive`](crate::drive) interface.
 
-use zbus::proxy;
+use core::str;
+use std::str::FromStr;
+
+use serde::{Deserialize, Serialize, de::IntoDeserializer};
+use zbus::{
+    proxy,
+    zvariant::{OwnedValue, Type, Value},
+};
 
 use crate::error;
+
+/// Power mode status of a drive.
+///
+/// This is typically reported as "Drive is spun down" if the mode is [`PowerModeStatus::Standby`]
+/// and "Drive is spun up" otherwise.
+#[derive(Debug, zbus::zvariant::Type, serde_repr::Deserialize_repr)]
+#[repr(u8)]
+#[non_exhaustive]
+pub enum PowerModeStatus {
+    /// Standby mode.
+    ///
+    /// This is typically reported as "Drive is spun down".
+    Standby = 0x00,
+    Idle = 0x80,
+    /// Active/Idle
+    Active = 0xFF,
+}
 
 #[proxy(
     interface = "org.freedesktop.UDisks2.Drive.Ata",
@@ -23,7 +47,7 @@ pub trait Ata {
     fn pm_get_state(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<u8>;
+    ) -> error::Result<PowerModeStatus>;
 
     /// Force the drive to immediately enter the low power consumption __standby__ mode.
     ///
