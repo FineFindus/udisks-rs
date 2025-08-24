@@ -31,6 +31,37 @@ pub enum PowerModeStatus {
     Active = 0xFF,
 }
 
+#[derive(Debug, zbus::zvariant::Type, serde::Deserialize)]
+pub struct SmartAttribute {
+    /// Attribute Identifier.
+    pub id: u8,
+    /// The identifier as a string.
+    ///
+    /// Should be used as the authoritative identifier for the attribute
+    /// since it is derived from the numerical [`Self::id`] and the disk's `IDENTIFY` data and thus
+    /// handles ID collisions between drives of different make and model.
+    pub name: String,
+    /// 16-bit attribute flags (bit `0` is prefail/oldage, bit `1 is online/offline).
+    pub flags: u16,
+    /// The current value or `-1` if unknown.
+    pub value: i32,
+    /// The worst value or `-1` if unknown.
+    pub worst: i32,
+    /// The threshold or `-1` if unknown.
+    pub threshold: i32,
+    /// An interpretation of the value - must be ignored if [`Self::pretty_unit`] is `0`.
+    pub pretty: i64,
+    /// The unit of the [`Self::pretty`] value:
+    ///    - 0: unknown
+    ///    - 1: dimensionless
+    ///    - 2: milliseconds
+    ///    - 3: sectors
+    ///    - 4: millikelvin
+    pub pretty_unit: i32,
+    /// Currently unused, intended for future expansion.
+    pub expansion: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Drive.Ata",
     default_service = "org.freedesktop.UDisks2",
@@ -92,23 +123,10 @@ pub trait Ata {
     /// # Arguments
     /// * `options` - Options, including:
     ///   - `nowakeup` (type 'b'): Don't wake up sleeping drives
-    #[allow(clippy::type_complexity)]
     fn smart_get_attributes(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<
-        Vec<(
-            u8,
-            String,
-            u16,
-            i32,
-            i32,
-            i32,
-            i64,
-            i32,
-            std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
-        )>,
-    >;
+    ) -> error::Result<Vec<SmartAttribute>>;
 
     /// Abort a running SMART selftest.
     fn smart_selftest_abort(
