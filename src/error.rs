@@ -68,16 +68,28 @@ impl Display for Error {
             Error::Cancelled => write!(f, "The operation was cancelled."),
             Error::AlreadyCancelled => write!(f, "The operation has already been cancelled."),
             Error::NotAuthorized => write!(f, "Not authorized to perform the requested operation."),
-            Error::NotAuthorizedCanObtain => write!(f, "Like `Error::NotAuthorized` but authorization can be obtained through e.g. authentication."),
-            Error::NotAuthorizedDismissed => write!(f, "Like `Error::NotAuthorized` but an authentication was shown and the user dismissed it."),
+            Error::NotAuthorizedCanObtain => write!(
+                f,
+                "Like `Error::NotAuthorized` but authorization can be obtained through e.g. authentication."
+            ),
+            Error::NotAuthorizedDismissed => write!(
+                f,
+                "Like `Error::NotAuthorized` but an authentication was shown and the user dismissed it."
+            ),
             Error::AlreadyMounted => write!(f, "The device is already mounted."),
             Error::NotMounted => write!(f, "The device is not mounted."),
             Error::OptionNotPermitted => write!(f, "Not permitted to use the requested option."),
             Error::MountedByOtherUser => write!(f, "The device is mounted by another user."),
             Error::AlreadyUnmounting => write!(f, "The device is already unmounting."),
-            Error::NotSupported => write!(f, "The operation is not supported due to missing driver/tool support."),
+            Error::NotSupported => write!(
+                f,
+                "The operation is not supported due to missing driver/tool support."
+            ),
             Error::TimedOut => write!(f, "The operation timed out."),
-            Error::WouldWakeup => write!(f, "The operation would wake up a disk that is in a deep-sleep state."),
+            Error::WouldWakeup => write!(
+                f,
+                "The operation would wake up a disk that is in a deep-sleep state."
+            ),
             Error::DeviceBusy => write!(f, "Attempting to unmount a device that is busy."),
             Error::Iscsi(_) => write!(f, "An ISCSI error occured."),
             Error::Zbus(err) => err.fmt(f),
@@ -136,12 +148,12 @@ impl From<zbus::Error> for Error {
 
 impl From<zbus::fdo::Error> for Error {
     fn from(value: zbus::fdo::Error) -> Self {
-        Error::Zbus(value.into())
+        Self::Zbus(value.into())
     }
 }
 impl From<zbus::zvariant::Error> for Error {
     fn from(value: zbus::zvariant::Error) -> Self {
-        Error::Zbus(value.into())
+        Self::Zbus(value.into())
     }
 }
 

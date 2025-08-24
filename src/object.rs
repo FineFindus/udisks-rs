@@ -2,7 +2,7 @@ use zbus::fdo::ObjectManagerProxy;
 use zbus::zvariant::OwnedObjectPath;
 
 use crate::{
-    ata, block, drive, encrypted, filesystem, job, mdraid, partition, partitiontable, r#loop,
+    ata, block, drive, encrypted, filesystem, job, r#loop, mdraid, partition, partitiontable,
     swapspace,
 };
 use crate::{error, nvme};
