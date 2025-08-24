@@ -49,7 +49,8 @@ pub struct SmartAttribute {
     pub worst: i32,
     /// The threshold or `-1` if unknown.
     pub threshold: i32,
-    /// An interpretation of the value - must be ignored if [`Self::pretty_unit`] is `0`.
+    /// An interpretation of the value - must be ignored if [`Self::pretty_unit`] is
+    /// [`PrettyUnit::Unknown`].
     pub pretty: i64,
     /// The unit of the [`Self::pretty`] value.
     pub pretty_unit: PrettyUnit,
