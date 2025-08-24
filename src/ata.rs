@@ -6,10 +6,10 @@
 use core::str;
 use std::str::FromStr;
 
-use serde::{Deserialize, Serialize, de::IntoDeserializer};
+use serde::{Deserialize, de::IntoDeserializer};
 use zbus::{
     proxy,
-    zvariant::{OwnedValue, Type, Value},
+    zvariant::{OwnedValue, Value},
 };
 
 use crate::error;
@@ -51,19 +51,26 @@ pub struct SmartAttribute {
     pub threshold: i32,
     /// An interpretation of the value - must be ignored if [`Self::pretty_unit`] is `0`.
     pub pretty: i64,
-    /// The unit of the [`Self::pretty`] value:
-    ///    - 0: unknown
-    ///    - 1: dimensionless
-    ///    - 2: milliseconds
-    ///    - 3: sectors
-    ///    - 4: millikelvin
-    pub pretty_unit: i32,
+    /// The unit of the [`Self::pretty`] value.
+    pub pretty_unit: PrettyUnit,
     /// Currently unused, intended for future expansion.
     pub expansion: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 }
 
+/// The unit of the [`SmartAttribute::pretty`] value.
+#[derive(Debug, zbus::zvariant::Type, serde::Deserialize)]
+#[repr(i32)]
+#[non_exhaustive]
+pub enum PrettyUnit {
+    Unknown = 0,
+    Dimentionless = 1,
+    Milliseconds = 2,
+    Sectors = 3,
+    Millikelvin = 4,
+}
+
 /// Type of test to run.
-#[derive(Debug, Serialize, Type)]
+#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -78,7 +85,7 @@ pub enum SelfTestType {
     Offline,
 }
 
-#[derive(Debug, Deserialize, Type)]
+#[derive(Debug, serde::Deserialize, zbus::zvariant::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
