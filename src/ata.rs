@@ -85,6 +85,7 @@ pub enum SelfTestType {
     Offline,
 }
 
+/// Indicates the result of a SMART selftest.
 #[derive(Debug, serde::Deserialize, zbus::zvariant::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
