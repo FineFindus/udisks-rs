@@ -62,6 +62,22 @@ pub struct SmartAttribute {
     pub expansion: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
 }
 
+/// Type of test to run.
+#[derive(Debug, Serialize, Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum SelfTestType {
+    /// Short self-test
+    Short,
+    /// Extended self-test
+    Extended,
+    /// Conveyance self-test
+    Conveyance,
+    /// Offline self-test (since 2.11.0)
+    Offline,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Drive.Ata",
     default_service = "org.freedesktop.UDisks2",
@@ -139,7 +155,7 @@ pub trait Ata {
     /// The method returns immediately after the test has been started successfully.
     fn smart_selftest_start(
         &self,
-        type_: &str,
+        type_: SelfTestType,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> error::Result<()>;
 
