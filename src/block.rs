@@ -56,7 +56,7 @@ pub trait Block {
     /// If `type` supports it, you can specify a label with the `label` option in the `options` parameter; however,
     /// note that this may not be supported on all file systems and, if supported, the maximum allowed length may vary.
     /// Similarly, you can specify filesystem UUID with the `uuid` option in the options parameter given that the particular filesystem type supports this feature.
-    /// The format of the UUID string should match the [`Self::uuid`] property.
+    /// The format of the UUID string should match the [`Self::id_uuid`] property.
     ///
     /// If the file system in question supports owners and the option `take-ownership` is set to `true` then the root directory of the created file system will be owned by the caller of this method.
     ///
