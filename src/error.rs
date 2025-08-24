@@ -10,9 +10,9 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub enum Error {
     /// The operation failed.
     Failed,
-    /// The operation was cancelled.
+    /// The operation was canceled.
     Cancelled,
-    /// The operation has already been cancelled.
+    /// The operation has already been canceled.
     AlreadyCancelled,
     /// Not authorized to perform the requested operation.
     NotAuthorized,

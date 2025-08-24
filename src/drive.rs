@@ -118,7 +118,7 @@ pub enum MediaCompatibility {
     /// Can write Mount Rainer media
     OpticalMrwW,
     /// Media is unknown
-    #[serde(rename(deserialize = ""))] // unknow types are blank
+    #[serde(rename(deserialize = ""))] // unknown types are blank
     Unknown,
 }
 
