@@ -9,7 +9,7 @@
 
 use std::str::FromStr;
 
-use serde::{de::IntoDeserializer, Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::IntoDeserializer};
 use zbus::{
     proxy,
     zvariant::{OwnedValue, Type, Value},
