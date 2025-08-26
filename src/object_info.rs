@@ -82,8 +82,8 @@ pub struct ObjectInfo<'a> {
     ///
     /// A single line string, containing enough detail to be used as a comprehensive
     /// representation of the `object`. For instance, in the case of block devices
-    /// or drives, it includes critical information like the device's special file
-    /// path, such as `/dev/sda`.
+    /// or drives, it includes critical information like the device's special filepath,
+    /// such as `/dev/sda`.
     pub one_liner: Option<String>,
 
     /// Sort key
@@ -133,7 +133,7 @@ impl<'a> ObjectInfo<'a> {
 
         let mut partition_number = None;
         if let Some(partition) = partition {
-            //TODO: we're expecting it here to to be fine to load,
+            //TODO: we're expecting it here to be fine to load,
             //but further down we handle the error???
             partition_number = partition.number().await.ok();
 
@@ -141,7 +141,7 @@ impl<'a> ObjectInfo<'a> {
             //              The %u is the partition number.
             //              The %s is the description for the block device (e.g. "5 GB Block Device").
             //TODO: pgettext_f does not support non-string C placeholders, so we replace it
-            //manually to maintain compatibilty
+            //manually to maintain compatibility
             self.description = Some(
                 pgettext_f(
                     "part-block",
@@ -210,7 +210,7 @@ impl<'a> ObjectInfo<'a> {
 
         let mut partition_number = None;
         if let Some(partition) = partition {
-            //TODO: we're expecting it here to to be fine to load,
+            //TODO: we're expecting it here to be fine to load,
             //but further down we handle the error???
             partition_number = partition.number().await.ok();
 
@@ -218,7 +218,7 @@ impl<'a> ObjectInfo<'a> {
             //              The %u is the partition number.
             //              The %s is the description for the block device (e.g. "5 GB Loop Device").
             //TODO: pgettext_f does not support non-string C placeholders, so we replace it
-            //manually to maintain compatibilty
+            //manually to maintain compatibility
             self.description = Some(
                 pgettext_f(
                     "part-loop",
