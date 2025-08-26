@@ -9,7 +9,7 @@
 
 use zbus::proxy;
 
-use crate::error;
+use crate::{error, manager::RaidLevel};
 
 /// Sync action to request for [`MDRaidProxy::request_sync_action`].
 #[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
@@ -171,7 +171,7 @@ pub trait MDRaid {
 
     /// RAID level of the array.
     #[zbus(property)]
-    fn level(&self) -> error::Result<String>;
+    fn level(&self) -> error::Result<RaidLevel>;
 
     /// Name of the RAID array.
     #[zbus(property)]

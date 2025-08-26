@@ -29,7 +29,9 @@ pub enum ResizeFlags {
 /// Raid Levels
 ///
 /// Used for setting up a raid devices using [`ManagerProxy::mdraid_create`]
-#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[derive(
+    Debug, serde::Serialize, zbus::zvariant::Type, zbus::zvariant::Value, zbus::zvariant::OwnedValue,
+)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 pub enum RaidLevel {

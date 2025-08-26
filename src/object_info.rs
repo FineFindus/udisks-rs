@@ -7,7 +7,9 @@ use crate::{
     drive::{self, RotationRate},
     error,
     gettext::{dpgettext, gettext_f, pgettext_f},
-    r#loop, mdraid,
+    r#loop,
+    manager::RaidLevel,
+    mdraid,
     media::{self, DriveType},
     partition,
 };
@@ -753,16 +755,16 @@ impl<'a> ObjectInfo<'a> {
         ));
     }
 
-    fn format_level(&self, level: error::Result<String>) -> String {
+    fn format_level(&self, level: error::Result<RaidLevel>) -> String {
         pgettext(
             "mdraid-desc",
-            match level.as_deref() {
-                Ok("raid0") => "RAID-0 Array",
-                Ok("raid1") => "RAID-1 Array",
-                Ok("raid4") => "RAID-4 Array",
-                Ok("raid5") => "RAID-5 Array",
-                Ok("raid6") => "RAID-6 Array",
-                Ok("raid10") => "RAID-10 Array",
+            match level {
+                Ok(RaidLevel::Raid0) => "RAID-0 Array",
+                Ok(RaidLevel::Raid1) => "RAID-1 Array",
+                Ok(RaidLevel::Raid4) => "RAID-4 Array",
+                Ok(RaidLevel::Raid5) => "RAID-5 Array",
+                Ok(RaidLevel::Raid6) => "RAID-6 Array",
+                Ok(RaidLevel::Raid10) => "RAID-10 Array",
                 _ => "RAID Array",
             },
         )
