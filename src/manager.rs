@@ -26,6 +26,21 @@ pub enum ResizeFlags {
     BdFsOnlineGrow = 16,
 }
 
+/// Raid Levels
+///
+/// Used for setting up a raid devices using [`ManagerProxy::mdraid_create`]
+#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+pub enum RaidLevel {
+    Raid0,
+    Raid1,
+    Raid4,
+    Raid5,
+    Raid6,
+    Raid10,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Manager",
     default_service = "org.freedesktop.UDisks2",
@@ -155,7 +170,7 @@ pub trait Manager {
     fn mdraid_create(
         &self,
         blocks: &[zbus::zvariant::ObjectPath<'_>],
-        level: &str,
+        level: RaidLevel,
         name: &str,
         chunk: u64,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
