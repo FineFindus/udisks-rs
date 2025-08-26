@@ -11,6 +11,21 @@ use zbus::proxy;
 
 use crate::error;
 
+/// Sync action to request for [`MDRaidProxy::request_sync_action`].
+#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum SyncAction {
+    /// Verify data consistency without repair
+    Check,
+    /// Check and repair inconsistent data
+    Repair,
+    /// Cancel any ongoing sync operation
+    Idle,
+}
+
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.MDRaid",
     default_service = "org.freedesktop.UDisks2",
@@ -69,7 +84,7 @@ pub trait MDRaid {
     /// file shipped with the kernel sources.
     fn request_sync_action(
         &self,
-        sync_action: &str,
+        sync_action: SyncAction,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> error::Result<()>;
 
