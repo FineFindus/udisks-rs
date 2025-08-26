@@ -7,7 +7,7 @@
 //! [`org.freedesktop.UDisks2.Block:MDRaid`](crate::block::BlockProxy::mdraid) and [`org.freedesktop.UDisks2.Block:MDRaidMember`](crate::block::BlockProxy::mdraid_member)
 //! properties on the [`org.freedesktop.UDisks2.Block`](crate::block::BlockProxy) interface.
 
-use zbus::proxy;
+use zbus::{proxy, zvariant::OwnedObjectPath};
 
 use crate::{error, manager::RaidLevel};
 
@@ -25,6 +25,50 @@ pub enum SyncAction {
     Idle,
 }
 
+/// Information about an active device associated with a raid array.
+///
+/// Can be obtained from [`MDRaidProxy::active_devices`].
+#[derive(
+    Debug,
+    zbus::zvariant::Type,
+    zbus::zvariant::Value,
+    zbus::zvariant::OwnedValue,
+    serde::Deserialize,
+)]
+pub struct ActiveDevice {
+    /// The object path for the underlying block device
+    /// (guaranteed to implement the [`org.freedesktop.UDisks2.Block`](crate::block::BlockProxy) interface).
+    pub object_path: OwnedObjectPath,
+    /// Slot number the device currently fills (between `0` and [`MDRaidProxy::num_devices`]).
+    ///
+    /// `-1` if the device is not currently part of the array (i.e. `spare` or `faulty`).
+    pub slot: i32,
+    /// State of the device.
+    pub state: Vec<DeviceState>,
+    /// Ongoing count of read errors that have been detected on this device but have not caused the device to be evicted from the array.
+    pub num_read_errors: u64,
+    /// Reserved for future expansion (currently unused).
+    pub expansion: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+}
+
+/// State of the [`ActiveDevice`].
+#[derive(
+    Debug,
+    serde::Deserialize,
+    zbus::zvariant::Type,
+    zbus::zvariant::Value,
+    zbus::zvariant::OwnedValue,
+)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum DeviceState {
+    Faulty,
+    InSync,
+    WriteMostly,
+    Blocked,
+    Spare,
+}
 
 #[proxy(
     interface = "org.freedesktop.UDisks2.MDRaid",
@@ -117,18 +161,7 @@ pub trait MDRaid {
     ///
     /// It is empty if the array is not running.
     #[zbus(property)]
-    #[allow(clippy::type_complexity)]
-    fn active_devices(
-        &self,
-    ) -> error::Result<
-        Vec<(
-            zbus::zvariant::OwnedObjectPath,
-            i32,
-            Vec<String>,
-            u64,
-            std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
-        )>,
-    >;
+    fn active_devices(&self) -> error::Result<Vec<ActiveDevice>>;
 
     /// The location of a write-intent bitmap (empty if the array is not running), if any.
     ///
