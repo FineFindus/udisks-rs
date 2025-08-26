@@ -1,9 +1,30 @@
 //! Interface for top-level manager singleton object
 //! located at the object path `/org/freedesktop/UDisks2/Manager`.
 
-use zbus::proxy;
+use enumflags2::BitFlags;
+use zbus::{proxy, zvariant::Type};
 
 use crate::error;
+
+/// Mode flags indicating if growing and/or shriking resize is available if mounted/unmounted.
+///
+/// The mode corresponds to bitwise-OR combined BDFSResizeFlags of the libblockdev FS plugin.
+///
+/// Can be obtained from [`ManagerProxy::can_resize`].
+#[derive(Debug, Clone, Copy, Type)]
+#[enumflags2::bitflags]
+#[repr(u64)]
+#[non_exhaustive]
+pub enum ResizeFlags {
+    /// Shrinking resize allowed when unmounted
+    BdFsOfflineShrink = 2,
+    /// Growing resize allowed when unmounted
+    BdFsOfflineGrow = 4,
+    /// Shrinking resize allowed when mounted
+    BdFsOnlineShrink = 8,
+    /// Growing resize allowed when mounted
+    BdFsOnlineGrow = 16,
+}
 
 #[proxy(
     interface = "org.freedesktop.UDisks2.Manager",
@@ -61,7 +82,7 @@ pub trait Manager {
     ///
     /// Returns an error for unknown filesystems or filesystems that do not
     /// support resizing.
-    fn can_resize(&self, type_: &str) -> error::Result<(bool, u64, String)>;
+    fn can_resize(&self, type_: &str) -> error::Result<(bool, BitFlags<ResizeFlags>, String)>;
 
     /// Loads and activates a single module by name.
     ///
