@@ -69,3 +69,12 @@ jobs:
       - name: Run tests
         continue-on-error: false
         run: cargo test --locked --verbose
+
+  semver-checks:
+    name: Check Semantic Versioning violations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Check semver
+        uses: obi1kenobi/cargo-semver-checks-action@v2
