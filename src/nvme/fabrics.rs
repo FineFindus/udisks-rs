@@ -6,6 +6,24 @@ use zbus::proxy;
 
 use crate::error;
 
+/// Transport values for [`FabricsProxy::transport`].
+#[derive(Debug, serde::Deserialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum Transport {
+    /// PCI Express Transport
+    Pcie,
+    /// RDMA Transport
+    Rdma,
+    /// Fibre Channel Transport
+    Fc,
+    /// TCP Transport
+    Tcp,
+    /// Intra-host Transport (i.e loopback)
+    Loop,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Fabrics",
     default_service = "org.freedesktop.UDisks2",
@@ -36,11 +54,11 @@ pub trait Fabrics {
     ///
     /// Available since version 2.10.0.
     #[zbus(property)]
-    fn transport(&self) -> error::Result<String>;
+    fn transport(&self) -> error::Result<Transport>;
 
     /// Network address of the controller.
     ///
-    /// For transports using IP addressing (e.g. rdma)
+    /// For transports using IP addressing (e.g. [`Transport::Rdma`])
     /// this should be an IP-based address (e.g. IPv4).
     ///
     /// Available since version 2.10.0.

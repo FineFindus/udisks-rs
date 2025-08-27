@@ -17,9 +17,13 @@ pub mod namespace;
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
 pub enum Transport {
+    /// RDMA Transport
     Rdma,
+    /// Fibre Channel Transport
     Fc,
+    /// TCP Transport
     Tcp,
+    /// Intra-host Transport (i.e loopback)
     Loop,
 }
 
