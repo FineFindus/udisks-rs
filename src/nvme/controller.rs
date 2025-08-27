@@ -136,6 +136,40 @@ pub struct SmartAttribute {
     pub critical_temp_time: u32,
 }
 
+#[derive(Debug, serde::Deserialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum SmartSelftestStatus {
+    /// Operation completed without error (or never ran).
+    Success,
+    /// Operation was aborted by a Device Self-test command.
+    Aborted,
+    /// Operation was aborted by a Controller Level Reset.
+    CtrlReset,
+    /// Operation was aborted due to a removal of a namespace
+    /// from the namespace inventory.
+    NsRemoved,
+    /// Operation was aborted due to the processing of a
+    /// Format NVM command.
+    AbortedFormat,
+    /// A fatal error or unknown test error occurred while the
+    /// controller was executing the device self-test operation
+    /// and the operation did not complete.
+    FatalError,
+    /// Operation completed with a segment that failed and the
+    /// segment that failed is not known.
+    UnknownSegFail,
+    /// Operation completed with one or more failed segments.
+    KnownSegFail,
+    /// Operation was aborted for unknown reason.
+    AbortedUnknown,
+    /// Operation was aborted due to a sanitize operation.
+    AbortedSanitize,
+    /// Self-test operation is currently in progress.
+    Inprogress,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
@@ -282,7 +316,7 @@ pub trait Controller {
     ///
     /// Available since version 2.10.0.
     #[zbus(property)]
-    fn smart_selftest_status(&self) -> error::Result<String>;
+    fn smart_selftest_status(&self) -> error::Result<SmartSelftestStatus>;
 
     /// Temperature (in Kelvin) that represents the current composite temperature
     /// of the controller and associated namespaces or 0 if unknown.
