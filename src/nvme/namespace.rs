@@ -6,6 +6,45 @@ use zbus::proxy;
 
 use crate::error;
 
+#[derive(
+    Debug,
+    zbus::zvariant::Type,
+    serde::Deserialize,
+    zbus::zvariant::OwnedValue,
+    zbus::zvariant::Value,
+)]
+pub struct LBAFormat {
+    /// LBA Data Size in bytes.
+    pub size: u16,
+    /// Number of metadata bytes provided per LBA.
+    pub metadata_size: u16,
+    /// Relative performance relative to other formats returned from
+    /// [`NamespaceProxy::lbaformats`].
+    pub performance: LBAPerformance,
+}
+
+#[derive(
+    Debug,
+    zbus::zvariant::Type,
+    serde_repr::Deserialize_repr,
+    zbus::zvariant::OwnedValue,
+    zbus::zvariant::Value,
+)]
+#[repr(u8)]
+#[non_exhaustive]
+pub enum LBAPerformance {
+    /// Unknown relative performance index.
+    Unkown,
+    /// Best performance.
+    Best,
+    /// Better performance.
+    Better,
+    /// Good performance.
+    Good,
+    /// Degraded performance.
+    Degraded,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Namespace",
     default_service = "org.freedesktop.UDisks2",
@@ -54,13 +93,13 @@ pub trait Namespace {
     ///
     /// Available since version 2.10.0.
     #[zbus(property, name = "FormattedLBASize")]
-    fn formatted_lbasize(&self) -> error::Result<(u16, u16, u8)>;
+    fn formatted_lbasize(&self) -> error::Result<LBAFormat>;
 
     /// List of LBA formats supported by the controller.
     ///
     /// Available since version 2.10.0.
     #[zbus(property, name = "LBAFormats")]
-    fn lbaformats(&self) -> error::Result<Vec<(u16, u16, u8)>>;
+    fn lbaformats(&self) -> error::Result<Vec<LBAFormat>>;
 
     /// Namespace Globally Unique Identifier.
     ///
