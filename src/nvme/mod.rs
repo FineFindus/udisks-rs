@@ -11,6 +11,18 @@ pub mod controller;
 pub mod fabrics;
 pub mod namespace;
 
+/// Transport options for [`NVMeProxy::connect`].
+#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum Transport {
+    Rdma,
+    Fc,
+    Tcp,
+    Loop,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Manager.NVMe",
     default_service = "org.freedesktop.UDisks2",
@@ -122,7 +134,7 @@ pub trait NVMe {
     fn connect(
         &self,
         subsysnqn: &[u8],
-        transport: &str,
+        transport: Transport,
         transport_addr: &str,
         //TODO: use a struct for additional json overwrites?
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
