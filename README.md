@@ -4,8 +4,9 @@ An unofficial Rust client crate for [`udisks2`](https://github.com/storaged-proj
 UDisks allows accessing and manipulating disks, storage devices and similar technologies.
 
 ## Version
-Based on https://github.com/storaged-project/udisks/commit/4b1250cdf5897391e449ca0ad3836598c3b00dad for the
-client and https://github.com/storaged-project/udisks/commit/3e499ea0248ee73043aedab834f32501019830a8 for the
+
+Based on [`4b1250cdf5897391e449ca0ad3836598c3b00dad`](https://github.com/storaged-project/udisks/commit/4b1250cdf5897391e449ca0ad3836598c3b00dad) for the
+client and [`3e499ea0248ee73043aedab834f32501019830a8`](https://github.com/storaged-project/udisks/commit/3e499ea0248ee73043aedab834f32501019830a8) for the
 generated interfaces.
 
 ## Example
