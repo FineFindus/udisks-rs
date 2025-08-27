@@ -6,6 +6,20 @@ use zbus::proxy;
 
 use crate::error;
 
+/// Indicates the type of sanitize action to take in [`ControllerProxy::sanitize_start`].
+#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "kebab-case")]
+pub enum SanitizeAction {
+    BlockErase,
+    /// Allows additional values via the `options` parameter to be set:
+    ///  * `overwrite_pass_count` (`u8`) - Number of overwrite passes (1-15), defaults to 16 when not specified
+    ///  * `overwrite_pattern` (type `u32`) - 32-bit pattern, defaults to zero if not specified
+    ///  * `overwrite_invert_pattern` (type `bool`) - Indicates that the overwrite pattern should be inverted between passes
+    Overwrite,
+    CryptoErase,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
@@ -36,7 +50,7 @@ pub trait Controller {
     /// Available since version 2.10.0.
     fn sanitize_start(
         &self,
-        action: &str,
+        action: SanitizeAction,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> error::Result<()>;
 
