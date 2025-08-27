@@ -34,4 +34,10 @@ async fn main() -> udisks2::Result<()> {
 
 ### Internationalization
 
-This crate uses the same localization as `UDisks2`, which uses gettext. If the locale is left unset, English will be used.
+Some functions in the crate provide the option to return translated text, which may be directly used in user interface. This crate uses the same localization as `UDisks2` (via [`gettext`](https://github.com/gettext-rs/gettext-rs)). If the locale is left unset, English will be used.
+
+To setup localization, to e.g. German:
+```rust
+gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "de_DE.UTF-8");
+gettextrs::textdomain("udisks2").expect("Failed to set textdomain");
+```
