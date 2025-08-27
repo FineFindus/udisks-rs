@@ -189,6 +189,17 @@ pub enum State {
     Dead,
 }
 
+/// Type of selftest to run.
+#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "kebab-case")]
+#[non_exhaustive]
+pub enum SelfTestType {
+    Short,
+    Extended,
+    VendorSpecific,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
@@ -252,7 +263,7 @@ pub trait Controller {
     /// Available since version 2.10.0.
     fn smart_selftest_start(
         &self,
-        type_: &str,
+        type_: SelfTestType,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> error::Result<()>;
 
