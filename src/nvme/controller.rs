@@ -63,6 +63,79 @@ pub enum SmartCriticalWarning {
     PmrReadonly,
 }
 
+/// SMART attributes obtained from [`ControllerProxy::smart_get_attributes`].
+#[derive(Debug, zbus::zvariant::DeserializeDict, zbus::zvariant::Type)]
+#[zvariant(signature = "dict")]
+#[non_exhaustive]
+pub struct SmartAttribute {
+    /// Available Spare.
+    ///
+    /// A normalized percentage (0% to 100%) of the remaining spare capacity available.
+    pub avail_spare: u8,
+    /// Available Spare Threshold.
+    ///
+    /// A normalized percentage (0% to 100%) of the available spare threshold.
+    pub spare_thresh: u8,
+    /// Percentage Used.
+    ///
+    /// A vendor specific estimate of the percentage drive life used based
+    /// on the actual usage and the manufacturer's prediction.
+    /// A value of 100 indicates that the estimated endurance has been consumed,
+    /// but may not indicate an NVM subsystem failure.
+    /// The value is allowed to exceed 100.
+    pub percent_used: u8,
+    /// An estimated calculation of total data read in bytes based on calculation
+    /// of data units read from the host.
+    pub total_data_read: u64,
+    /// An estimated calculation of total data written in bytes based on calculation
+    /// of data units written by the host.
+    pub total_data_written: u64,
+    /// Amount of time the controller is busy with I/O commands, reported in minutes.
+    pub ctrl_busy_time: u64,
+    /// The number of power cycles.
+    pub power_cycles: u64,
+    /// The number of unsafe shutdowns as a result of a Shutdown Notification
+    /// not received prior to loss of power.
+    pub unsafe_shutdowns: u64,
+    /// Media and Data Integrity Errors.
+    ///
+    /// The number of occurrences where the controller detected an unrecovered data
+    /// integrity error (e.g. uncorrectable ECC, CRC checksum failure, or LBA tag mismatch).
+    pub media_errors: u64,
+    /// Number of Error Information Log Entries.
+    ///
+    /// The number of Error Information log entries over the life of the controller.
+    pub num_err_log_entries: u64,
+    /// Array of the current temperature reported by temperature sensors 1-8 in Kelvins
+    /// or 0 when the particular sensor is not available.
+    pub temp_sensors: Vec<u16>,
+    /// Warning Composite Temperature Threshold (WCTEMP).
+    ///
+    /// Indicates the minimum Composite Temperature ([`ControllerProxy::smart_temperature`])
+    /// value that indicates an overheating condition during which controller operation continues.
+    pub wctemp: u16,
+    /// Critical Composite Temperature Threshold (CCTEMP).
+    ///
+    /// indicates the minimum Composite Temperature ([`ControllerProxy::smart_temperature`])
+    /// value that indicates a critical overheating condition (e.g., may prevent continued
+    /// normal operation, possibility of data loss, automatic device shutdown,
+    /// extreme performance throttling, or permanent damage).
+    pub cctemp: u16,
+    /// Warning Composite Temperature Time.
+    ///
+    /// The amount of time in minutes that the Composite Temperature
+    /// ([`ControllerProxy::smart_temperature`]) is greater than or equal
+    /// to the Warning Composite Temperature Threshold ([`Self::wctemp`])
+    /// and less than the Critical Composite Temperature Threshold ([`Self::cctemp`]).
+    pub warning_temp_time: u32,
+    /// Critical Composite Temperature Time.
+    ///
+    /// The amount of time in minutes that the Composite Temperature
+    /// ([`ControllerProxy::smart_temperature`]) is greater than or equal
+    /// to the Critical Composite Temperature Threshold ([`Self::cctemp`]).
+    pub critical_temp_time: u32,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
@@ -103,7 +176,7 @@ pub trait Controller {
     fn smart_get_attributes(
         &self,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
+    ) -> error::Result<SmartAttribute>;
 
     /// Aborts a running device selftest.
     ///
