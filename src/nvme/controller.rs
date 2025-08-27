@@ -170,6 +170,25 @@ pub enum SmartSelftestStatus {
     Inprogress,
 }
 
+/// Controller operating state.
+///
+/// Can be obtained from [`ControllerProxy::state`].
+#[derive(Debug, serde::Deserialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum State {
+    /// Controller is up and running.
+    Live,
+    New,
+    Resetting,
+    Connecting,
+    Deleting,
+    #[serde(rename(serialize = "deleting (no IO)"))]
+    DeletingNoIO,
+    Dead,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
@@ -344,7 +363,7 @@ pub trait Controller {
     ///
     /// Available since version 2.10.0.
     #[zbus(property)]
-    fn state(&self) -> error::Result<String>;
+    fn state(&self) -> error::Result<State>;
 
     /// NVM Subsystem NVMe Qualified Name.
     ///
