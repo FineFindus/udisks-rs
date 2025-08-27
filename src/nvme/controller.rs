@@ -36,6 +36,33 @@ pub enum SanitizeStatus {
     Inprogress,
 }
 
+#[derive(
+    Debug, serde::Serialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue, zbus::zvariant::Value,
+)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum SmartCriticalWarning {
+    /// The available spare capacity has fallen below the threshold.
+    Spare,
+    /// A temperature is either greater than or equal to an over temperature threshold;
+    /// or less than or equal to an under temperature threshold.
+    Temperature,
+    /// The NVM subsystem reliability has been degraded due to significant media
+    /// related errors or any internal error that degrades NVM subsystem reliability.
+    Degraded,
+    /// All of the media has been placed in read only mode.
+    ///
+    /// Unrelated to the write protection state of a namespace.
+    Readonly,
+    /// The volatile memory backup device has failed.
+    ///
+    /// Only valid if the controller has a volatile memory backup solution
+    VolatileMem,
+    /// Persistent Memory Region has become read-only or unreliable.
+    PmrReadonly,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
@@ -162,7 +189,7 @@ pub trait Controller {
     ///
     /// Available since version 2.10.0.
     #[zbus(property)]
-    fn smart_critical_warning(&self) -> error::Result<Vec<String>>;
+    fn smart_critical_warning(&self) -> error::Result<Vec<SmartCriticalWarning>>;
 
     /// Amount of time the disk has been powered on (according to SMART data),
     /// or `0` if unknown.
