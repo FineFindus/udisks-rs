@@ -6,10 +6,10 @@
 //! and other observers.
 //!
 //! The objects that a job affects (such as block devices or drives) can be
-//! determined by looking at the [`objects`](Self::objects) property. This can be used
+//! determined by looking at the [`JobProxy::objects`] property. This can be used
 //! to draw a spinner in the user interface next to an icon for the drive or device.
 //!
-//! When a job completes, the [`completed`](Self::completed) signal is emitted.
+//! When a job completes, the [`JobProxy::completed`] signal is emitted.
 use zbus::proxy;
 
 use crate::error;
