@@ -20,6 +20,22 @@ pub enum SanitizeAction {
     CryptoErase,
 }
 
+/// Information about the most recent sanitize operation.
+#[derive(Debug, serde::Serialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+#[non_exhaustive]
+pub enum SanitizeStatus {
+    /// The NVM subsystem has never been sanitized (or the status is unknown).
+    NeverSanitized,
+    /// Operation completed successfully.
+    Success,
+    /// The most recent sanitize operation failed.
+    Failure,
+    /// A sanitize operation is currently in progress.
+    Inprogress,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.NVMe.Controller",
     default_service = "org.freedesktop.UDisks2",
@@ -136,7 +152,7 @@ pub trait Controller {
     ///
     /// Available since version 2.10.0.
     #[zbus(property)]
-    fn sanitize_status(&self) -> error::Result<String>;
+    fn sanitize_status(&self) -> error::Result<SanitizeStatus>;
 
     /// Critical warnings issued for the current state of the controller.
     ///
