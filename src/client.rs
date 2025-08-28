@@ -1,3 +1,5 @@
+// Based on https://github.com/storaged-project/udisks/commit/4b1250cdf5897391e449ca0ad3836598c3b00dad
+
 use gettextrs::pgettext;
 use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
 
