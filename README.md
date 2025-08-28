@@ -7,7 +7,7 @@ UDisks allows accessing and manipulating disks, storage devices and similar tech
 
 ## Version
 
-Based on `udsisks` version [`2.10.1`](https://github.com/storaged-project/udisks/releases/tag/udisks-2.10.1).
+Based on `udsisks` version [`2.10.2`](https://github.com/storaged-project/udisks/releases/tag/udisks-2.10.2).
 
 ## Example
 
