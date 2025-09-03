@@ -170,7 +170,10 @@ impl Client {
     /// Gets the [`block::BlockProxy`] for the given `block_device_number`.
     ///
     /// If no block is found, [`None`] is returned,
-    pub async fn block_for_dev(&self, block_device_number: u64) -> Option<block::BlockProxy> {
+    pub async fn block_for_dev(
+        &self,
+        block_device_number: u64,
+    ) -> Option<block::BlockProxy<'static>> {
         for object in self.objects().await {
             let Ok(block) = object.block().await else {
                 continue;
@@ -186,7 +189,7 @@ impl Client {
     /// Gets all the [`block::BlockProxy`] instances with the given label.
     ///
     /// If no instances are found, the returned vector is empty.
-    pub async fn block_for_label(&self, label: &str) -> Vec<block::BlockProxy> {
+    pub async fn block_for_label(&self, label: &str) -> Vec<block::BlockProxy<'static>> {
         //TODO refactor once it is possible to use iterators with async
 
         let mut blocks = Vec::new();
@@ -206,7 +209,7 @@ impl Client {
     /// Gets all the [`block::BlockProxy`]s for the given `uuid`.
     ///
     /// If no blocks are found, the returned vector is empty.
-    pub async fn block_for_uuid(&self, uuid: &str) -> Vec<block::BlockProxy> {
+    pub async fn block_for_uuid(&self, uuid: &str) -> Vec<block::BlockProxy<'static>> {
         let mut blocks = Vec::new();
         for object in self.objects().await {
             let Ok(block) = object.block().await else {
@@ -251,7 +254,7 @@ impl Client {
         &self,
         drive: &drive::DriveProxy<'_>,
         _physical: bool,
-    ) -> Option<block::BlockProxy> {
+    ) -> Option<block::BlockProxy<'static>> {
         let object = self.object(drive.inner().path().clone()).ok()?;
 
         for object in self
@@ -319,7 +322,7 @@ impl Client {
     pub async fn loop_for_block(
         &self,
         block: &block::BlockProxy<'_>,
-    ) -> error::Result<r#loop::LoopProxy> {
+    ) -> error::Result<r#loop::LoopProxy<'static>> {
         let object = self.object(block.inner().path().clone())?;
 
         if let Ok(loop_proxy) = object.r#loop().await {
@@ -389,7 +392,7 @@ impl Client {
         member_get: impl AsyncFn(&block::BlockProxy) -> error::Result<OwnedObjectPath>,
         only_first_one: bool,
         skip_partitions: bool,
-    ) -> Vec<block::BlockProxy> {
+    ) -> Vec<block::BlockProxy<'static>> {
         let mut blocks = Vec::new();
         // safe to unwrap as the table's object path does not need to be converted
         let raid_object = self.object(mdraid.inner().path().clone()).unwrap();
