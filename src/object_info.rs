@@ -533,7 +533,7 @@ impl<'a> ObjectInfo<'a> {
                 // Translators: Used to describe a card reader. The %s is the card type e.g. 'CompactFlash'.
                 pgettext_f("drive-card-reader", "{} Card Reader", [desc])
             }
-            Some(DriveType::Drive) | Some(DriveType::Disk) | Some(DriveType::Disc) => {
+            Some(DriveType::Drive | DriveType::Disk | DriveType::Disc) => {
                 if size.as_ref().is_some_and(|_| !media_removable) {
                     // Translators: Used to describe drive. The first %s is the size e.g. '20 GB' and the
                     // second %s is the drive type e.g. 'Thumb'.
