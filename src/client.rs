@@ -72,7 +72,7 @@ impl Client {
     /// Convenience function for looking up an [Object] for `object_path`.
     ///
     /// # Errors
-    /// Returns an error if the given object path cannot be converted to an [zbus::zvariant::OwnedObjectPath]
+    /// Returns an error if the given object path cannot be converted to a [zbus::zvariant::OwnedObjectPath]
     pub fn object<P: TryInto<OwnedObjectPath>>(&self, object_path: P) -> Result<Object, P::Error> {
         let path = object_path.try_into()?;
         Ok(Object::new(
@@ -95,7 +95,7 @@ impl Client {
             .filter_map(|(object_path, _)| self.object(object_path).ok())
     }
 
-    /// Gets all  the [`job::JobProxy`] instances for the given object.
+    /// Gets all the [`job::JobProxy`] instances for the given object.
     ///
     /// If no instances are found, the returned vector is empty.
     pub async fn jobs_for_object(&self, object: &Object) -> Vec<OwnedObjectPath> {
@@ -423,7 +423,7 @@ impl Client {
     /// Returns the RAID device (e.g. `/dev/md0`) for the given mdraid.
     ///
     /// In the case of a [split-brain syndrome](https://en.wikipedia.org/wiki/Split-brain_(computing)),
-    /// it is undefined which RAID device is returned. For example this can happen if `/dev/sda` and `/dev/sdb`
+    /// it is undefined which RAID device is returned. For example, this can happen if `/dev/sda` and `/dev/sdb`
     /// are components of a two-disk RAID-1 and `/dev/md0` and `/dev/md1` are two degraded arrays,
     /// each one using exactly one of the two devices. Use [`Client::all_blocks_for_mdraid`] to get all RAID devices.
     ///
@@ -441,7 +441,7 @@ impl Client {
     /// Returns all RAID devices (e.g. `/dev/md0` and `/dev/md1`) for the given mdraid.
     ///
     /// This is usually only useful [split-brain syndrome](https://en.wikipedia.org/wiki/Split-brain_(computing)),
-    /// and is normally used only to convey the problem in an user interface. See [`Client::block_for_mdraid`] for an example.
+    /// and is normally used only to convey the problem in a user interface. See [`Client::block_for_mdraid`] for an example.
     pub async fn all_blocks_for_mdraid(
         &self,
         mdraid: &mdraid::MDRaidProxy<'_>,
@@ -521,7 +521,7 @@ impl Client {
         object_info
     }
 
-    /// Returns informating about the given partition that is suitable for presentation in an user
+    /// Returns information about the given partition that is suitable for presentation in a user
     /// interface in a single line of text.
     ///
     /// The returned string is localized and includes things like the partition type, flags (if
