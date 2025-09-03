@@ -38,11 +38,20 @@ pub struct Client {
 
 impl Client {
     /// Create a new client.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error the connection to UDisks or the connection to the manager fails.
     pub async fn new() -> error::Result<Self> {
         let connection = zbus::Connection::system().await?;
         Self::new_for_connection(connection).await
     }
+
     /// Creates a new client based on the given [`zbus::Connection`].
+    ///
+    /// # Errors
+    ///
+    /// Returns an error the connection to UDisks or the connection to the manager fails.
     pub async fn new_for_connection(connection: zbus::Connection) -> error::Result<Self> {
         let object_manager = ObjectManagerProxy::builder(&connection)
             .destination("org.freedesktop.UDisks2")?
