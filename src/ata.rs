@@ -41,7 +41,7 @@ pub struct SmartAttribute {
     /// since it is derived from the numerical [`Self::id`] and the disk's `IDENTIFY` data and thus
     /// handles ID collisions between drives of different make and model.
     pub name: String,
-    /// 16-bit attribute flags (bit `0` is prefail/oldage, bit `1 is online/offline).
+    /// 16-bit attribute flags (bit `0` is prefail/oldage, bit `1` is online/offline).
     pub flags: u16,
     /// The current value or `-1` if unknown.
     pub value: i32,

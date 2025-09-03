@@ -222,7 +222,7 @@ pub trait Block {
     /// (e.g. `fstab`) and details contains the actual configuration data.
     ///
     /// Use the [`Self::add_configuration_item`], [`Self::remove_configuration_item`] and [`Self::update_configuration_item`]
-    /// methods to add, remove and update configuration items.
+    /// methods to add, remove, and update configuration items.
     ///
     /// Use [`Self::get_secret_configuration`] to get the secrets (e.g. `passphrases`) that may be part of the configuration
     /// but isn't exported in this property for security reasons.
