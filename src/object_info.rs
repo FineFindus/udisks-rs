@@ -295,10 +295,10 @@ impl<'a> ObjectInfo<'a> {
             self.description = Some(pgettext_f(
                 "mdraid-desc",
                 "{} {}",
-                [size, self.format_level(level)],
+                [size, self.format_level(&level)],
             ));
         } else {
-            self.description = Some(self.format_level(level));
+            self.description = Some(self.format_level(&level));
         }
 
         let mut partition_number = None;
@@ -755,7 +755,7 @@ impl<'a> ObjectInfo<'a> {
         ));
     }
 
-    fn format_level(&self, level: error::Result<RaidLevel>) -> String {
+    fn format_level(&self, level: &error::Result<RaidLevel>) -> String {
         pgettext(
             "mdraid-desc",
             match level {
