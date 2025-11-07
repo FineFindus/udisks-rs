@@ -140,6 +140,13 @@ impl Client {
             "encrypted-lock" => pgettext("job", "Locking Device"),
             "encrypted-modify" => pgettext("job", "Modifying Encrypted Device"),
             "encrypted-resize" => pgettext("job", "Resizing Encrypted Device"),
+            "encrypted-convert" => pgettext("job", "Converting Encrypted Device"),
+            "encrypted-header-backup" => {
+                pgettext("job", "Backing Up Header of an Encrypted Device")
+            }
+            "block-restore-encypted-header" => {
+                pgettext("job", "Restoring Header of an Encrypted Device")
+            }
             "swapspace-start" => pgettext("job", "Starting Swap Device"),
             "swapspace-stop" => pgettext("job", "Stopping Swap Device"),
             "swapspace-modify" => pgettext("job", "Modifying Swap Device"),

@@ -27,6 +27,14 @@ pub trait Loop {
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> error::Result<()>;
 
+    /// Forces the loop driver to reread the size of the file associated with this device.
+    ///
+    /// Available since version 2.11.0.
+    fn set_capacity(
+        &self,
+        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> error::Result<()>;
+
     /// When autoclear is enabled (`true`), the kernel will automatically
     /// clear the loop device when the last closer closes the device.
     /// This typically happens when the loop device is unmounted.

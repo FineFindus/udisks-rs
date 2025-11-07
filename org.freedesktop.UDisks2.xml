@@ -1,4 +1,4 @@
-<!-- Based on https://github.com/storaged-project/udisks/commit/3e499ea0248ee73043aedab834f32501019830a8 -->
+<!-- Based on https://github.com/storaged-project/udisks/commit/c4a197f9a10a8243ddc3015c647cbe65ae7f5059 -->
 <!DOCTYPE node PUBLIC
 "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
 "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
@@ -242,6 +242,19 @@
     </method>
 
     <!--
+        GetDrives:
+        @options: Options (currently unused except for <link linkend="udisks-std-options">standard options</link>).
+        @since: 2.11
+
+        Get list of all drives (object paths of objects implementing the #org.freedesktop.UDisks2.Drive interface) known to UDisks.
+
+    -->
+    <method name="GetDrives">
+      <arg name="options" direction="in" type="a{sv}"/>
+      <arg name="drive_objects" direction="out" type="ao"/>
+    </method>
+
+    <!--
         ResolveDevice:
         @devspec: Dictionary with specification of a device.
         @options: Options (currently unused except for <link linkend="udisks-std-options">standard options</link>).
@@ -285,7 +298,7 @@
           </varlistentry>
         </variablelist>
 
-        It is possbile to specify multiple keys. In this case, only devices matching all values will be returned.
+        It is possible to specify multiple keys. In this case, only devices matching all values will be returned.
 
     -->
     <method name="ResolveDevice">
@@ -896,10 +909,13 @@
         <literal>org.freedesktop.UDisks2.Error.WouldWakeup</literal> is
         returned.
 
-        The option @atasmart_blob can be used to inject libatasmart
-        compatible blobs for testing how clients react to different
-        kinds of SMART data. This option may be removed in the future
-        without it being considered an ABI break.
+        The option @atasmart_blob (of type 's' representing a path to
+        the blob file) can be used to inject libatasmart-compatible
+        blobs for testing how clients react to different kinds of SMART
+        data. Only valid when backed with the
+        <literal>libblockdev_libatasmart</literal> plugin. This option
+        may be removed in the future without it being considered an ABI
+        break. Deprecated since 2.11.0.
     -->
     <method name="SmartUpdate">
       <arg name="options" direction="in" type="a{sv}"/>
@@ -946,7 +962,8 @@
 
         Starts a SMART selftest. The @type parameter is for the type
         of test to start - valid values are <literal>short</literal>,
-        <literal>extended</literal> and <literal>conveyance</literal>.
+        <literal>extended</literal>, <literal>conveyance</literal> and
+        <literal>offline</literal> (since 2.11.0).
 
         Note that the method returns immediately after the test has
         been started successfully.
@@ -1218,7 +1235,7 @@
          @since: 2.10.0
 
          Critical warnings issued for the current state of the controller. An empty array
-         indicates a healthy state. This is the primary health assesment property to watch for.
+         indicates a healthy state. This is the primary health assessment property to watch for.
 
          Known values include:
          <variablelist>
@@ -1817,7 +1834,7 @@
           <listitem><para><ulink url="http://en.wikipedia.org/wiki/RAID">RAID</ulink> or similar. Known values include <literal>LVM2_member</literal> (for LVM2 components), <literal>linux_raid_member</literal> (for MD-RAID components.)</para></listitem>
         </varlistentry>
         <varlistentry><term>other</term>
-          <listitem><para>Something else. Known values include <literal>swap</literal> (for swap space), <literal>suspend</literal> (data used when resuming from suspend-to-disk.</para></listitem>
+          <listitem><para>Something else. Known values include <literal>swap</literal> (for swap space), <literal>suspend</literal> (data used when resuming from suspend-to-disk).</para></listitem>
         </varlistentry>
         </variablelist>
         See the note for the #org.freedesktop.UDisks2.Block:IdUsage property about usage.
@@ -2020,7 +2037,7 @@
         If 'fsname' is omitted in a 'fstab' entry, or 'device' is
         omitted in a 'crypttab' entry, it defaults to "UUID=..." when
         the block device has a filesystem UUID, or to the name of the
-        device in the filesystem..
+        device in the filesystem.
 
         If 'name' is omitted in a 'crypttab' entry, it defaults to
         "luks-&lt;UUID&gt;".
@@ -2095,7 +2112,7 @@
     <!--
         Format:
         @type: The type of file system, partition table or other content to format the device with.
-        @options: Options - known options (in addition to <link linkend="udisks-std-options">standard options</link>) includes <parameter>label</parameter> (of type 's'), <parameter>uuid</parameter> (of type 's'), <parameter>take-ownership</parameter> (of type 'b'), <parameter>encrypt.passphrase</parameter> (of type 's' or 'ay'), <parameter>encrypt.type</parameter> (of type 's'), <parameter>erase</parameter> (of type 's'), <parameter>mkfs-args</parameter> (of type 'as'), <parameter>no-block</parameter> (of type 'b') and <parameter>update-partition-type</parameter> (of type 'b').
+        @options: Options - known options (in addition to <link linkend="udisks-std-options">standard options</link>) includes <parameter>label</parameter> (of type 's'), <parameter>uuid</parameter> (of type 's'), <parameter>take-ownership</parameter> (of type 'b'), <parameter>encrypt.passphrase</parameter> (of type 's' or 'ay'), <parameter>encrypt.type</parameter> (of type 's'), <parameter>encrypt.label</parameter> (of type 's'), <parameter>encrypt.pbkdf</parameter> (of type 's'), <parameter>encrypt.memory</parameter> (of type 'u'), <parameter>encrypt.iterations</parameter> (of type 'u'), <parameter>encrypt.time</parameter> (of type 'u'), <parameter>encrypt.threads</parameter> (of type 'u'), <parameter>erase</parameter> (of type 's'), <parameter>mkfs-args</parameter> (of type 'as'), <parameter>no-block</parameter> (of type 'b') and <parameter>update-partition-type</parameter> (of type 'b').
 
         Formats the device with a file system, partition table or
         other well-known content.
@@ -2133,6 +2150,28 @@
         Option <parameter>encrypt.type</parameter> can be used to
         specify encryption "technology" that will be used. Currently
         only <quote>luks1</quote> and <quote>luks2</quote> are supported.
+        Option <parameter>encrypt.label</parameter> can be used to specify
+        label for the LUKS format.
+        Following additional options for LUKS key derivation function can
+        be used:
+
+        <variablelist>
+        <varlistentry><term>encrypt.pbkdf</term>
+          <listitem><para>key derivation function, one of "pbkdf2", "argon2i", "argon2id"</para></listitem>
+        </varlistentry>
+        <varlistentry><term>encrypt.iterations</term>
+          <listitem><para>number of iterations for PBKDF</para></listitem>
+        </varlistentry>
+        <varlistentry><term>encrypt.memory</term>
+          <listitem><para>memory cost in KiB for Argon2</para></listitem>
+        </varlistentry>
+        <varlistentry><term>encrypt.time</term>
+          <listitem><para>time cost for PBKDF in ms</para></listitem>
+        </varlistentry>
+        <varlistentry><term>encrypt.threads</term>
+          <listitem><para>parallel cost for PBKDF (number of threads, up to 4)</para></listitem>
+        </varlistentry>
+        </variablelist>
 
         If the option <parameter>erase</parameter> is used then the
         underlying device will be erased. Valid values include
@@ -2317,6 +2356,20 @@
         the device closes it.
     -->
     <method name="Rescan">
+      <arg name="options" direction="in" type="a{sv}"/>
+    </method>
+
+    <!--
+        RestoreEncryptedHeader:
+        @backup_file: Path from where to backup header and keyslots.
+        @options: Options (currently unused except for <link linkend="udisks-std-options">standard options</link>).
+        @since: 2.11.0
+
+        Writes header and keyslots from the specified file to the specified device.
+        The specified file must exist.
+    -->
+    <method name="RestoreEncryptedHeader">
+      <arg name="backup_file" direction="in" type="s"/>
       <arg name="options" direction="in" type="a{sv}"/>
     </method>
 
@@ -2971,6 +3024,34 @@
       <arg name="options" direction="in" type="a{sv}"/>
     </method>
 
+    <!--
+        Convert:
+        @target_version: The LUKS version to convert to. Either 'luks1' or 'luks2'.
+        @options: Options (currently unused except for <link linkend="udisks-std-options">standard options</link>).
+        @since: 2.11.0
+
+        Converts the encrypted device to a different version of LUKS. Other encryption formats are not supported.
+        The device must be locked.
+    -->
+    <method name="Convert">
+      <arg name="target_version" direction="in" type="s"/>
+      <arg name="options" direction="in" type="a{sv}"/>
+    </method>
+
+    <!--
+        HeaderBackup:
+        @backup_file: Path where to backup header and keyslots to.
+        @options: Options (currently unused except for <link linkend="udisks-std-options">standard options</link>).
+        @since: 2.11.0
+
+        Saves header and keyslots to the specified file.
+        The target file is not overwritten if exists, and an error is returned.
+    -->
+    <method name="HeaderBackup">
+      <arg name="backup_file" direction="in" type="s"/>
+      <arg name="options" direction="in" type="a{sv}"/>
+    </method>
+
   </interface>
 
   <!-- ********************************************************************** -->
@@ -3028,6 +3109,18 @@
       <arg name="value" direction="in" type="b"/>
       <arg name="options" direction="in" type="a{sv}"/>
     </method>
+
+    <!--
+        SetCapacity:
+        @options: Options (currently unused except for <link linkend="udisks-std-options">standard options</link>).
+        @since: 2.11.0
+
+        Forces the loop driver to reread the size of the file associated
+        with this device.
+    -->
+    <method name="SetCapacity">
+      <arg name="options" direction="in" type="a{sv}"/>
+    </method>
   </interface>
 
   <!-- ********************************************************************** -->
@@ -3038,7 +3131,7 @@
       @since: 2.0.0
 
       Objects implementing this interface represent
-      <ulink url="https://raid.wiki.kernel.org/index.php/Linux_Raid">Linux Software RAID arrays</ulink>
+      <ulink url="https://docs.kernel.org/admin-guide/md.html">Linux Software RAID arrays</ulink>
       detected on the system. Both running and not-running arrays are represented.
 
       Block devices point to objects implementing this interface, see
@@ -3140,6 +3233,18 @@
          file shipped with the kernel sources.
     -->
     <property name="Degraded" type="u" access="read"/>
+
+    <!-- ConsistencyPolicy:
+         @since: 2.11.0
+         The consistency policy of the array.
+
+         If the RAID array does not support consistency policies (for
+         example RAID-0 arrays), this is empty.
+
+         This property corresponds to the
+         <literal>consistency_policy</literal> sysfs file.
+    -->
+    <property name="ConsistencyPolicy" type="s" access="read"/>
 
     <!-- BitmapLocation:
          The location of a write-intent bitmap (empty if the array is not running), if any.
@@ -3277,7 +3382,7 @@
     <!--
         RequestSyncAction:
         @sync_action: The action to request.
-        @options: Options (currently unused except for <link linkend="udisks-std-options">standard options</link>).
+        @options: Options - known options (in addition to <link linkend="udisks-std-options">standard options</link>) includes <parameter>no-inhibit-lock</parameter> (of type 'b').
 
         This method call can be used to trigger and cancel data
         redundancy checks and repairs. Currently only the values
@@ -3290,6 +3395,10 @@
         <literal>sync_action</literal> sysfs file, see the
         <filename><ulink url="https://www.kernel.org/doc/Documentation/admin-guide/md.rst">Documentation/admin-guide/md.rst</ulink></filename>
         file shipped with the kernel sources.
+
+        If the @option parameter contains the key @no-inhibit-lock with the value
+        %TRUE, no system inhibit lock is attempted to be acquired that would otherwise
+        prevent the system to shutdown, reboot, sleep or hibernate.
     -->
     <method name="RequestSyncAction">
       <arg name="sync_action" direction="in" type="s"/>
@@ -3380,6 +3489,8 @@
              <listitem><para>Modifying encrypted device.</para></listitem></varlistentry>
            <varlistentry><term>encrypted-resize</term>
              <listitem><para>Resizing encrypted device.</para></listitem></varlistentry>
+           <varlistentry><term>encrypted-convert</term>
+             <listitem><para>Converting encrypted device.</para></listitem></varlistentry>
            <varlistentry><term>swapspace-start</term>
              <listitem><para>Starting swapspace.</para></listitem></varlistentry>
            <varlistentry><term>swapspace-stop</term>

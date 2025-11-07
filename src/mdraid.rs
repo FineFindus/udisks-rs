@@ -194,6 +194,15 @@ pub trait MDRaid {
     #[zbus(property)]
     fn chunk_size(&self) -> error::Result<u64>;
 
+    /// Consistency policy of the array.
+    ///
+    /// If the RAID array does not support consistency policies (for
+    /// example RAID-0 arrays), this is empty.
+    ///
+    /// This property corresponds to the `consistency_policy` sysfs file.
+    #[zbus(property)]
+    fn consistency_policy(&self) -> zbus::Result<String>;
+
     /// Number of devices by which the array is degraded (0 if not degraded or not running).
     ///
     /// This property corresponds to the `chunk_size` sysfs file, see the

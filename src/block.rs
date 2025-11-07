@@ -197,6 +197,16 @@ pub trait Block {
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> error::Result<()>;
 
+    /// Writes header and keyslots from the specified file to the specified device.
+    ///
+    /// The specified file must exist.
+    /// Available since version 2.11.0.
+    fn restore_encrypted_header(
+        &self,
+        backup_file: &str,
+        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> error::Result<()>;
+
     /// Removes a configuration item and adds a new one.
     ///
     /// This is equivalent to calling [`Self::remove_configuration_item`] followed by [`Self::add_configuration_item`]

@@ -137,6 +137,15 @@ pub trait Manager {
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
+    /// Get list of all drives (object paths of objects implementing the
+    /// `org.freedesktop.UDisks2.Drive` interface) known to UDisks.
+    ///
+    /// Available since version 2.11.0.
+    fn get_drives(
+        &self,
+        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+
     /// Creates a block device for the file represented by the given file description.
     ///
     /// Additionally, `offset` [`u64`], `size` [`u64`], `read-only` [`bool`], `no-part-scan` [`bool`] and `sector-size` [`u64`]

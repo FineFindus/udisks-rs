@@ -5,6 +5,17 @@ use zbus::proxy;
 
 use crate::error;
 
+/// LUKS version.
+///
+/// Used for setting up a raid devices using [`EncryptedProxy::convert`]
+#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[zvariant(signature = "s")]
+#[serde(rename_all = "snake_case")]
+pub enum LuksVersion {
+    Luks1,
+    Luks2,
+}
+
 #[proxy(
     interface = "org.freedesktop.UDisks2.Encrypted",
     default_service = "org.freedesktop.UDisks2",
@@ -26,6 +37,28 @@ pub trait Encrypted {
         passphrase: &str,
         new_passphrase: &str,
         options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+    ) -> error::Result<()>;
+
+    /// Converts the encrypted device to a different version of LUKS.
+    ///
+    /// Other encryption formats are not supported. The device must be locked.
+    ///
+    /// Available since version 2.11.0.
+    fn convert(
+        &self,
+        target_version: LuksVersion,
+        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+    ) -> error::Result<()>;
+
+    /// Saves header and keyslots to the specified file.
+    ///
+    /// The target file is not overwritten if exists, and an error is returned.
+    ///
+    /// Available since version 2.11.0.
+    fn header_backup(
+        &self,
+        backup_file: &str,
+        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
     ) -> error::Result<()>;
 
     /// Locks the encrypted device.
