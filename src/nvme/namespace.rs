@@ -6,13 +6,7 @@ use zbus::proxy;
 
 use crate::error;
 
-#[derive(
-    Debug,
-    zbus::Type,
-    serde::Deserialize,
-    zbus::OwnedVariant,
-    zbus::Variant,
-)]
+#[derive(Debug, zbus::Type, serde::Deserialize, zbus::OwnedVariant, zbus::Variant)]
 pub struct LBAFormat {
     /// LBA Data Size in bytes.
     pub size: u16,
@@ -23,13 +17,7 @@ pub struct LBAFormat {
     pub performance: LBAPerformance,
 }
 
-#[derive(
-    Debug,
-    zbus::Type,
-    serde_repr::Deserialize_repr,
-    zbus::OwnedVariant,
-    zbus::Variant,
-)]
+#[derive(Debug, zbus::Type, serde_repr::Deserialize_repr, zbus::OwnedVariant, zbus::Variant)]
 #[repr(u8)]
 #[non_exhaustive]
 pub enum LBAPerformance {
