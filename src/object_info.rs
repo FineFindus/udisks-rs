@@ -653,23 +653,23 @@ impl<'a> ObjectInfo<'a> {
         // Apply UDISKS_NAME, UDISKS_ICON_NAME, UDISKS_SYMBOLIC_ICON_NAME hints, if available
         let block = client.block_for_drive(drive, true).await;
         if let Some(ref block) = block {
-            if let Ok(hint) = block.hint_name().await {
-                if !hint.is_empty() {
-                    self.description = Some(hint.clone());
-                    self.media_description = Some(hint);
-                }
+            if let Ok(hint) = block.hint_name().await
+                && !hint.is_empty()
+            {
+                self.description = Some(hint.clone());
+                self.media_description = Some(hint);
             }
-            if let Ok(hint_icon) = block.hint_icon_name().await {
-                if !hint_icon.is_empty() {
-                    self.icon.name = Some(hint_icon.clone());
-                    self.media_icon.name = Some(hint_icon);
-                }
+            if let Ok(hint_icon) = block.hint_icon_name().await
+                && !hint_icon.is_empty()
+            {
+                self.icon.name = Some(hint_icon.clone());
+                self.media_icon.name = Some(hint_icon);
             }
-            if let Ok(hint_icon_symbolic) = block.hint_symbolic_icon_name().await {
-                if !hint_icon_symbolic.is_empty() {
-                    self.icon.name_symbolic = Some(hint_icon_symbolic.clone());
-                    self.media_icon.name_symbolic = Some(hint_icon_symbolic);
-                }
+            if let Ok(hint_icon_symbolic) = block.hint_symbolic_icon_name().await
+                && !hint_icon_symbolic.is_empty()
+            {
+                self.icon.name_symbolic = Some(hint_icon_symbolic.clone());
+                self.media_icon.name_symbolic = Some(hint_icon_symbolic);
             }
         }
 

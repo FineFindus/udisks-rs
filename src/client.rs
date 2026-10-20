@@ -607,16 +607,15 @@ impl Client {
             _ => partition.type_().await?,
         };
 
-        let partition_info;
-        if !flags_str.is_empty() {
+        let partition_info = if !flags_str.is_empty() {
             // Translators: Partition info. First {} is the type, second {} is a list of flags
-            partition_info = pgettext_f("partition-info", "{} ({})", [type_str, flags_str])
+            pgettext_f("partition-info", "{} ({})", [type_str, flags_str])
         } else if type_str.is_empty() {
             // Translators: The Partition info when unknown
-            partition_info = pgettext("partition-info", "Unknown")
+            pgettext("partition-info", "Unknown")
         } else {
-            partition_info = type_str;
-        }
+            type_str
+        };
 
         Ok(partition_info)
     }
@@ -625,25 +624,15 @@ impl Client {
         //TODO: refactor
         let size = size as f64;
 
-        let display_size;
-        let unit;
-        if size < MEBIBYTE_FACTOR {
-            display_size = size / KIBIBYTE_FACTOR;
-            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = pgettext("byte-size-pow2", "KiB");
+        let (display_size, unit) = if size < MEBIBYTE_FACTOR {
+            (size / KIBIBYTE_FACTOR, pgettext("byte-size-pow2", "KiB"))
         } else if size < GIBIBYTE_FACTOR {
-            display_size = size / MEBIBYTE_FACTOR;
-            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = pgettext("byte-size-pow2", "MiB");
+            (size / MEBIBYTE_FACTOR, pgettext("byte-size-pow2", "MiB"))
         } else if size < TEBIBYTE_FACTOR {
-            display_size = size / GIBIBYTE_FACTOR;
-            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = pgettext("byte-size-pow2", "GiB");
+            (size / GIBIBYTE_FACTOR, pgettext("byte-size-pow2", "GiB"))
         } else {
-            display_size = size / TEBIBYTE_FACTOR;
-            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = pgettext("byte-size-pow2", "TiB");
-        }
+            (size / TEBIBYTE_FACTOR, pgettext("byte-size-pow2", "TiB"))
+        };
 
         let digits = if display_size < 10.0 { 1 } else { 0 };
 
@@ -653,25 +642,15 @@ impl Client {
     fn pow10_size(&self, size: u64) -> String {
         let size = size as f64;
 
-        let display_size;
-        let unit;
-        if size < MEGABYTE_FACTOR {
-            display_size = size / KILOBYTE_FACTOR;
-            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = pgettext("byte-size-pow10", "KB");
+        let (display_size, unit) = if size < MEGABYTE_FACTOR {
+            (size / KILOBYTE_FACTOR, pgettext("byte-size-pow10", "KB"))
         } else if size < GIGABYTE_FACTOR {
-            display_size = size / MEGABYTE_FACTOR;
-            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = pgettext("byte-size-pow10", "MB");
+            (size / MEGABYTE_FACTOR, pgettext("byte-size-pow10", "MB"))
         } else if size < TERABYTE_FACTOR {
-            display_size = size / GIGABYTE_FACTOR;
-            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = pgettext("byte-size-pow10", "GB");
+            (size / GIGABYTE_FACTOR, pgettext("byte-size-pow10", "GB"))
         } else {
-            display_size = size / TERABYTE_FACTOR;
-            /* Translators: SI prefix and standard unit symbol, translate cautiously (or not at all) */
-            unit = pgettext("byte-size-pow10", "TB");
-        }
+            (size / TERABYTE_FACTOR, pgettext("byte-size-pow10", "TB"))
+        };
 
         let digits = if display_size < 10.0 { 1 } else { 0 };
 
