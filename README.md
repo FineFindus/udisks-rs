@@ -16,11 +16,11 @@ Based on `udisks` version [`2.11.0`](https://github.com/storaged-project/udisks/
 #[tokio::main]
 async fn main() -> udisks2::Result<()> {
     let client = udisks2::Client::new().await?;
-    let Ok(object) = client.object("/org/freedesktop/UDisks2/block_devices/sda") else {
-        eprintln!("No sda device found");
+    let object = client.object("/org/freedesktop/UDisks2/block_devices/sda")?;
+    let Ok(block) = object.block().await else {
+        eprintln!("No block for sda found");
         return Ok(());
     };
-    let block = object.block().await?;
     let drive = client.drive_for_block(&block).await?;
     println!(
         "Size: {}",
