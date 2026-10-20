@@ -17,7 +17,7 @@ pub trait Swapspace {
     fn set_label(
         &self,
         label: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Set UUID for the swap device.
@@ -25,19 +25,19 @@ pub trait Swapspace {
     fn set_uuid(
         &self,
         uuid: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Activates the swap device.
     fn start(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Deactivates the swap device.
     fn stop(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Whether the device is currently in use by the OS.

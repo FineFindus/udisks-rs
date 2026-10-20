@@ -38,11 +38,8 @@ pub trait Block {
     fn add_configuration_item(
         &self,
         //TODO: use struct
-        item: &(
-            &str,
-            std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-        ),
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        item: &(&str, std::collections::HashMap<&str, zbus::Variant<'_>>),
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     //TODO: use enum for type
@@ -114,17 +111,17 @@ pub trait Block {
     fn format(
         &self,
         type_: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Returns the same value as [`Self::configuration`], but without secret information filtered out.
     fn get_secret_configuration(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<
         Vec<(
             String,
-            std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+            std::collections::HashMap<String, zbus::OwnedVariant>,
         )>,
     >;
 
@@ -139,16 +136,16 @@ pub trait Block {
         &self,
         //TODO: use enum/struct
         mode: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedFd>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedFd>;
 
     /// Returns a read-only file descriptor for the device intended for a byte-by-byte imaging of the device.
     /// This can only be done if the device is not already in use.
     #[deprecated = "Use OpenDevice with O_EXCL and O_CLOEXEC flags instead."]
     fn open_for_backup(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedFd>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedFd>;
 
     /// Returns a file descriptor for the device that is suitable to be used for benchmarking the device
     /// (transfer rate, access time etc.).
@@ -161,8 +158,8 @@ pub trait Block {
     #[deprecated = "Use OpenDevice with O_DIRECT, O_SYNC and O_CLOEXEC flags instead."]
     fn open_for_benchmark(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedFd>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedFd>;
 
     /// Returns a writable file descriptor for the device intended for a byte-by-byte restore
     /// of a disk image onto the device.
@@ -171,19 +168,16 @@ pub trait Block {
     #[deprecated = "Use OpenDevice with O_EXCL and O_CLOEXEC flags instead."]
     fn open_for_restore(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedFd>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedFd>;
 
     /// Removes an existing configuration item.
     ///
     /// See the [`Self::configuration`] property for details about valid configuration items.
     fn remove_configuration_item(
         &self,
-        item: &(
-            &str,
-            std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-        ),
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        item: &(&str, std::collections::HashMap<&str, zbus::Variant<'_>>),
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Request that the kernel and core OS rescans the contents of the device and update their state to reflect this
@@ -194,7 +188,7 @@ pub trait Block {
     /// with a writable file descriptor for the device closes it.
     fn rescan(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Writes header and keyslots from the specified file to the specified device.
@@ -204,7 +198,7 @@ pub trait Block {
     fn restore_encrypted_header(
         &self,
         backup_file: &str,
-        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, &zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Removes a configuration item and adds a new one.
@@ -215,15 +209,9 @@ pub trait Block {
     /// See the [`Self::configuration`] property for details about valid configuration items.
     fn update_configuration_item(
         &self,
-        old_item: &(
-            &str,
-            std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-        ),
-        new_item: &(
-            &str,
-            std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-        ),
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        old_item: &(&str, std::collections::HashMap<&str, zbus::Variant<'_>>),
+        new_item: &(&str, std::collections::HashMap<&str, zbus::Variant<'_>>),
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// The configuration for the device.
@@ -264,14 +252,14 @@ pub trait Block {
     ) -> error::Result<
         Vec<(
             String,
-            std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+            std::collections::HashMap<String, zbus::OwnedVariant>,
         )>,
     >;
 
     /// The [org.freedesktop.UDisks2.Block](crate::block) object that is backing the device
     /// or `/` if unknown or if the block device is not the cleartext device for an encrypted device.
     #[zbus(property)]
-    fn crypto_backing_device(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+    fn crypto_backing_device(&self) -> error::Result<zbus::OwnedObjectPath>;
 
     ///The special device file for the block device e.g. `/dev/sda2`.
     #[zbus(property)]
@@ -284,7 +272,7 @@ pub trait Block {
     /// The [`org.freedesktop.UDisks2.Drive `](crate::drive) object that the block device belongs to.
     /// Returns '/' if no such object exists.
     #[zbus(property)]
-    fn drive(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+    fn drive(&self) -> error::Result<zbus::OwnedObjectPath>;
 
     /// Whether the device should be automatically started (e.g. mounted, unlocked etc.).
     ///
@@ -412,13 +400,13 @@ pub trait Block {
     /// this is set to the [`org.freedesktop.UDisks2.MDRaid`](crate::mdraid) object that it correspond to.
     /// Returns '/' if no such object exists.
     #[zbus(property, name = "MDRaid")]
-    fn mdraid(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+    fn mdraid(&self) -> error::Result<zbus::OwnedObjectPath>;
 
     /// If the block device is a member of a MD-RAID array,
     /// this is set to the [`org.freedesktop.UDisks2.MDRaid`](crate::mdraid) object that it correspond to.
     /// Returns '/' if no such object exists.
     #[zbus(property, name = "MDRaidMember")]
-    fn mdraid_member(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+    fn mdraid_member(&self) -> error::Result<zbus::OwnedObjectPath>;
 
     //TODO: a lot of functions return Strings as c type strings (i.e. vec of u8 with \0 bytes)
     //they should be updated to return rust strings

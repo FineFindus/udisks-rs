@@ -28,7 +28,7 @@ pub trait Job {
     /// [`Self::cancelable`].
     fn cancel(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Emitted when a job completes.
@@ -58,7 +58,7 @@ pub trait Job {
 
     /// Objects related to this job, if any.
     #[zbus(property)]
-    fn objects(&self) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+    fn objects(&self) -> error::Result<Vec<zbus::OwnedObjectPath>>;
 
     /// Type of operation that the job represents.
     ///

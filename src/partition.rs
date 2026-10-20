@@ -1,39 +1,40 @@
 //! Block device representing a partition.
-use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
-use zbus::{proxy, zvariant::Type};
+use zbus::{Type, proxy};
 
 use crate::error;
 
 /// Flags describing the partition.
-#[bitflags]
-#[repr(u64)]
 #[derive(Type, Debug, PartialEq, Eq, Copy, Clone, Serialize, Deserialize)]
-pub enum PartitionFlags {
-    /// The partition is marked as a system partition.
-    ///
-    /// Known flag for `gpt` partitions.
-    SystemPartition = 1 << 0,
-    /// The partition is marked as a Legacy BIOS Bootable partition.
-    ///
-    /// Known flag for `gpt` partitions.
-    LegacyBIOSBootable = 1 << 2,
-    /// The partition is marked as bootable.
-    ///
-    /// Known flag for `dos` partitions.
-    Bootable = 0x80,
-    /// The partition is marked as read-only.
-    ///
-    /// Known flag for `gpt` partitions.
-    ReadOnly = 1 << 60,
-    /// The partition is marked as hidden.
-    ///
-    /// Known flag for `gpt` partitions.
-    Hidden = 1 << 62,
-    /// The partition is marked as Do not automount.
-    ///
-    /// Known flag for `gpt` partitions.
-    NoAutoMount = 1 << 63,
+pub struct PartitionFlags(u64);
+
+bitflags::bitflags! {
+    impl PartitionFlags: u64 {
+        /// The partition is marked as a system partition.
+        ///
+        /// Known flag for `gpt` partitions.
+        const SYSTEM_PARTITION = 1 << 0;
+        /// The partition is marked as a Legacy BIOS Bootable partition.
+        ///
+        /// Known flag for `gpt` partitions.
+        const LegacyBIOSBootable = 1 << 2;
+        /// The partition is marked as bootable.
+        ///
+        /// Known flag for `dos` partitions.
+        const Bootable = 0x80;
+        /// The partition is marked as read-only.
+        ///
+        /// Known flag for `gpt` partitions.
+        const ReadOnly = 1 << 60;
+        /// The partition is marked as hidden.
+        ///
+        /// Known flag for `gpt` partitions.
+        const Hidden = 1 << 62;
+        /// The partition is marked as Do not automount.
+        ///
+        /// Known flag for `gpt` partitions.
+        const NoAutoMount = 1 << 63;
+    }
 }
 
 /// Generated code for the [`org.freedesktop.UDisks2.Partition`](https://storaged.org/doc/udisks2-api/latest/gdbus-org.freedesktop.UDisks2.Partition.html) D-Bus interface.
@@ -51,7 +52,7 @@ pub trait Partition {
     /// will be removed even if their block device is currently unavailable.
     fn delete(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Resizes the partition.
@@ -63,7 +64,7 @@ pub trait Partition {
     fn resize(
         &self,
         size: u64,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Set the `flags` property.
@@ -71,22 +72,22 @@ pub trait Partition {
     /// See [`PartitionFlags`] for more information.
     fn set_flags(
         &self,
-        flags: BitFlags<PartitionFlags>,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        flags: PartitionFlags,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets the partition name (label).
     fn set_name(
         &self,
         name: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets the partition type. See the "Type" property for a description of known partition types.
     fn set_type(
         &self,
         type_: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets the partition UUID (GPT only).
@@ -94,14 +95,14 @@ pub trait Partition {
     fn set_uuid(
         &self,
         uuid: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Flags describing the partition.
     ///
     /// See [`PartitionFlags`] for more information.
     #[zbus(property)]
-    fn flags(&self) -> error::Result<BitFlags<PartitionFlags>>;
+    fn flags(&self) -> error::Result<PartitionFlags>;
 
     /// IsContained property
     #[zbus(property)]
@@ -136,7 +137,7 @@ pub trait Partition {
     /// Object path of the [org.freedesktop.UDisks2.PartitionTable]
     /// object that the partition entry belongs to.
     #[zbus(property)]
-    fn table(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+    fn table(&self) -> error::Result<zbus::OwnedObjectPath>;
 
     /// Type of the partition.
     ///

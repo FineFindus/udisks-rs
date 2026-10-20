@@ -151,11 +151,6 @@ impl From<zbus::fdo::Error> for Error {
         Self::Zbus(value.into())
     }
 }
-impl From<zbus::zvariant::Error> for Error {
-    fn from(value: zbus::zvariant::Error) -> Self {
-        Self::Zbus(value.into())
-    }
-}
 
 impl From<Infallible> for Error {
     fn from(i: Infallible) -> Self {

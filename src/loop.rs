@@ -13,7 +13,7 @@ pub trait Loop {
     /// Deletes the loop device.
     fn delete(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets the [`Self::autoclear`] property.
@@ -24,7 +24,7 @@ pub trait Loop {
     fn set_autoclear(
         &self,
         value: bool,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Forces the loop driver to reread the size of the file associated with this device.
@@ -32,7 +32,7 @@ pub trait Loop {
     /// Available since version 2.11.0.
     fn set_capacity(
         &self,
-        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, &zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// When autoclear is enabled (`true`), the kernel will automatically

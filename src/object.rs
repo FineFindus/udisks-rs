@@ -1,5 +1,5 @@
+use zbus::OwnedObjectPath;
 use zbus::fdo::ObjectManagerProxy;
-use zbus::zvariant::OwnedObjectPath;
 
 use crate::{
     ata, block, drive, encrypted, filesystem, job, r#loop, mdraid, partition, partitiontable,
@@ -45,7 +45,7 @@ macro_rules! impl_get_interface {
                 return Err(zbus::Error::InterfaceNotFound.into());
             }
             Ok(<$type>::builder(&self.connection)
-                .path(self.path.clone())?
+                .path(self.path.clone())
                 .build()
                 .await?)
         })+

@@ -1,7 +1,7 @@
 // Based on https://github.com/storaged-project/udisks/commit/4b1250cdf5897391e449ca0ad3836598c3b00dad
 
 use gettextrs::pgettext;
-use zbus::{fdo::ObjectManagerProxy, zvariant::OwnedObjectPath};
+use zbus::{OwnedObjectPath, fdo::ObjectManagerProxy};
 
 use crate::{
     block::{self, BlockProxy},
@@ -54,8 +54,8 @@ impl Client {
     /// Returns an error the connection to UDisks or the connection to the manager fails.
     pub async fn new_for_connection(connection: zbus::Connection) -> error::Result<Self> {
         let object_manager = ObjectManagerProxy::builder(&connection)
-            .destination("org.freedesktop.UDisks2")?
-            .path("/org/freedesktop/UDisks2")?
+            .destination("org.freedesktop.UDisks2")
+            .path("/org/freedesktop/UDisks2")
             .build()
             .await?;
 
@@ -81,7 +81,7 @@ impl Client {
     /// Convenience function for looking up an [Object] for `object_path`.
     ///
     /// # Errors
-    /// Returns an error if the given object path cannot be converted to a [zbus::zvariant::OwnedObjectPath]
+    /// Returns an error if the given object path cannot be converted to a [zbus::OwnedObjectPath]
     pub fn object<P: TryInto<OwnedObjectPath>>(&self, object_path: P) -> Result<Object, P::Error> {
         let path = object_path.try_into()?;
         Ok(Object::new(
@@ -561,7 +561,7 @@ impl Client {
             Ok("gpt") => {
                 let flag_map = [
                     (
-                        partition::PartitionFlags::SystemPartition,
+                        partition::PartitionFlags::SYSTEM_PARTITION,
                         // Translators: Corresponds to the GPT "system" flag for a partition,
                         // see http://en.wikipedia.org/wiki/GUID_Partition_Table
                         pgettext("gpt-part-flag", "System"),

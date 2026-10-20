@@ -1,36 +1,37 @@
 //! Interface for top-level manager singleton object
 //! located at the object path `/org/freedesktop/UDisks2/Manager`.
 
-use enumflags2::BitFlags;
-use zbus::{proxy, zvariant::Type};
+use serde::{Deserialize, Serialize};
+use zbus::{Type, proxy};
 
 use crate::error;
 
-/// Mode flags indicating if growing and/or shriking resize is available if mounted/unmounted.
+/// Mode flags indicating if growing and/or shrinking resize is available if mounted/unmounted.
 ///
 /// The mode corresponds to bitwise-OR combined BDFSResizeFlags of the libblockdev FS plugin.
 ///
 /// Can be obtained from [`ManagerProxy::can_resize`].
-#[derive(Debug, Clone, Copy, Type)]
-#[enumflags2::bitflags]
-#[repr(u64)]
-#[non_exhaustive]
-pub enum ResizeFlags {
-    /// Shrinking resize allowed when unmounted
-    BdFsOfflineShrink = 2,
-    /// Growing resize allowed when unmounted
-    BdFsOfflineGrow = 4,
-    /// Shrinking resize allowed when mounted
-    BdFsOnlineShrink = 8,
-    /// Growing resize allowed when mounted
-    BdFsOnlineGrow = 16,
+#[derive(Type, Debug, PartialEq, Eq, Copy, Clone, Serialize, Deserialize)]
+pub struct ResizeFlags(u64);
+
+bitflags::bitflags! {
+    impl ResizeFlags: u64 {
+        /// Shrinking resize allowed when unmounted
+        const BdFsOfflineShrink = 2;
+        /// Growing resize allowed when unmounted
+        const BdFsOfflineGrow = 4;
+        /// Shrinking resize allowed when mounted
+        const BdFsOnlineShrink = 8;
+        /// Growing resize allowed when mounted
+        const BdFsOnlineGrow = 16;
+    }
 }
 
 /// Raid Levels
 ///
 /// Used for setting up a raid devices using [`ManagerProxy::mdraid_create`]
 #[derive(
-    Debug, serde::Serialize, zbus::zvariant::Type, zbus::zvariant::Value, zbus::zvariant::OwnedValue,
+    Debug, serde::Serialize, serde::Deserialize, zbus::Type, zbus::Variant, zbus::OwnedVariant,
 )]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
@@ -99,7 +100,7 @@ pub trait Manager {
     ///
     /// Returns an error for unknown filesystems or filesystems that do not
     /// support resizing.
-    fn can_resize(&self, type_: &str) -> error::Result<(bool, BitFlags<ResizeFlags>, String)>;
+    fn can_resize(&self, type_: &str) -> error::Result<(bool, ResizeFlags, String)>;
 
     /// Loads and activates a single module by name.
     ///
@@ -134,8 +135,8 @@ pub trait Manager {
     /// Array of object paths for objects implementing the `org.freedesktop.UDisks2.Block` interface
     fn get_block_devices(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<Vec<zbus::OwnedObjectPath>>;
 
     /// Get list of all drives (object paths of objects implementing the
     /// `org.freedesktop.UDisks2.Drive` interface) known to UDisks.
@@ -143,8 +144,8 @@ pub trait Manager {
     /// Available since version 2.11.0.
     fn get_drives(
         &self,
-        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
-    ) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+        options: std::collections::HashMap<&str, &zbus::Variant<'_>>,
+    ) -> error::Result<Vec<zbus::OwnedObjectPath>>;
 
     /// Creates a block device for the file represented by the given file description.
     ///
@@ -153,9 +154,9 @@ pub trait Manager {
     /// Returns an object path to the object implementing the [`org.freedesktop.UDisks2.Block`](crate::block::BlockProxy) interface.
     fn loop_setup(
         &self,
-        fd: zbus::zvariant::Fd<'_>,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+        fd: zbus::Fd<'_>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedObjectPath>;
 
     /// Creates a new RAID array on the block devices specified by
     /// the given blocks.
@@ -180,12 +181,12 @@ pub trait Manager {
     #[zbus(name = "MDRaidCreate")]
     fn mdraid_create(
         &self,
-        blocks: &[zbus::zvariant::ObjectPath<'_>],
+        blocks: &[zbus::ObjectPath<'_>],
         level: RaidLevel,
         name: &str,
         chunk: u64,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedObjectPath>;
 
     /// Get device(s) matching specification given in `devspec`.
     ///
@@ -200,9 +201,9 @@ pub trait Manager {
     fn resolve_device(
         &self,
         //TODO: use a struct for the options
-        devspec: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+        devspec: std::collections::HashMap<&str, zbus::Variant<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<Vec<zbus::OwnedObjectPath>>;
 
     /// Default block encryption type.
     #[zbus(property)]

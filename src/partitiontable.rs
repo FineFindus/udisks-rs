@@ -39,8 +39,8 @@ pub trait PartitionTable {
         size: u64,
         type_: &str,
         name: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedObjectPath>;
 
     /// This is a combination of
     /// [`Self::create_partition`] and [`BlockProxy::format`](crate::block::BlockProxy::format).
@@ -53,10 +53,10 @@ pub trait PartitionTable {
         size: u64,
         type_: &str,
         name: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
         format_type: &str,
-        format_options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+        format_options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedObjectPath>;
 
     /// List of object paths of the
     /// [`org.freedesktop.UDisks2.Partition`](crate::partition::PartitionProxy)
@@ -64,7 +64,7 @@ pub trait PartitionTable {
     ///
     /// Available since version 2.7.2
     #[zbus(property)]
-    fn partitions(&self) -> error::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
+    fn partitions(&self) -> error::Result<Vec<zbus::OwnedObjectPath>>;
 
     /// Type of partition table detected.
     #[zbus(property)]

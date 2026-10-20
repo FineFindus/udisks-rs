@@ -7,12 +7,12 @@
 //! [`org.freedesktop.UDisks2.Block:MDRaid`](crate::block::BlockProxy::mdraid) and [`org.freedesktop.UDisks2.Block:MDRaidMember`](crate::block::BlockProxy::mdraid_member)
 //! properties on the [`org.freedesktop.UDisks2.Block`](crate::block::BlockProxy) interface.
 
-use zbus::{proxy, zvariant::OwnedObjectPath};
+use zbus::{OwnedObjectPath, proxy};
 
 use crate::{error, manager::RaidLevel};
 
 /// Sync action to request for [`MDRaidProxy::request_sync_action`].
-#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[derive(Debug, serde::Serialize, zbus::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -28,13 +28,7 @@ pub enum SyncAction {
 /// Information about an active device associated with a raid array.
 ///
 /// Can be obtained from [`MDRaidProxy::active_devices`].
-#[derive(
-    Debug,
-    zbus::zvariant::Type,
-    zbus::zvariant::Value,
-    zbus::zvariant::OwnedValue,
-    serde::Deserialize,
-)]
+#[derive(Debug, zbus::Type, zbus::Variant, zbus::OwnedVariant, serde::Deserialize)]
 pub struct ActiveDevice {
     /// The object path for the underlying block device
     /// (guaranteed to implement the [`org.freedesktop.UDisks2.Block`](crate::block::BlockProxy) interface).
@@ -48,17 +42,11 @@ pub struct ActiveDevice {
     /// Ongoing count of read errors that have been detected on this device but have not caused the device to be evicted from the array.
     pub num_read_errors: u64,
     /// Reserved for future expansion (currently unused).
-    pub expansion: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+    pub expansion: std::collections::HashMap<String, zbus::OwnedVariant>,
 }
 
 /// State of the [`ActiveDevice`].
-#[derive(
-    Debug,
-    serde::Deserialize,
-    zbus::zvariant::Type,
-    zbus::zvariant::Value,
-    zbus::zvariant::OwnedValue,
-)]
+#[derive(Debug, serde::Deserialize, zbus::Type, zbus::Variant, zbus::OwnedVariant)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -82,8 +70,8 @@ pub trait MDRaid {
     /// interface.
     fn add_device(
         &self,
-        device: &zbus::zvariant::ObjectPath<'_>,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        device: &zbus::ObjectPath<'_>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Stops the RAID array and destroys all RAID metadata on member devices.
@@ -97,7 +85,7 @@ pub trait MDRaid {
     /// will be removed even if their block device is currently unavailable.
     fn delete(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Removes `device` from the array.
@@ -112,8 +100,8 @@ pub trait MDRaid {
     /// interface.
     fn remove_device(
         &self,
-        device: &zbus::zvariant::ObjectPath<'_>,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        device: &zbus::ObjectPath<'_>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// This method call can be used to trigger and cancel data
@@ -129,7 +117,7 @@ pub trait MDRaid {
     fn request_sync_action(
         &self,
         sync_action: SyncAction,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets whether the array has a write-intent bitmap.
@@ -139,7 +127,7 @@ pub trait MDRaid {
         &self,
         //TODO: support using an enum
         value: &[u8],
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Starts the RAID array.
@@ -148,13 +136,13 @@ pub trait MDRaid {
     /// the array will be started even if some members are missing.
     fn start(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Stops the RAID array.
     fn stop(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Vector of block devices that are currently associated with the array.
@@ -182,7 +170,7 @@ pub trait MDRaid {
     ) -> error::Result<
         Vec<(
             String,
-            std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+            std::collections::HashMap<String, zbus::OwnedVariant>,
         )>,
     >;
 

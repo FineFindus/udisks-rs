@@ -12,7 +12,7 @@ pub mod fabrics;
 pub mod namespace;
 
 /// Transport options for [`NVMeProxy::connect`].
-#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[derive(Debug, serde::Serialize, zbus::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -141,8 +141,8 @@ pub trait NVMe {
         transport: Transport,
         transport_addr: &str,
         //TODO: use a struct for additional json overwrites?
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedObjectPath>;
 
     /// Sets the system-wide Host ID string,
     ///
@@ -151,7 +151,7 @@ pub trait NVMe {
     fn set_host_id(
         &self,
         hostid: &[u8],
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets the system-wide Host NQN string,
@@ -161,7 +161,7 @@ pub trait NVMe {
     fn set_host_nqn(
         &self,
         hostnqn: &[u8],
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Host ID configured for the system.

@@ -7,10 +7,7 @@ use core::str;
 use std::str::FromStr;
 
 use serde::{Deserialize, de::IntoDeserializer};
-use zbus::{
-    proxy,
-    zvariant::{OwnedValue, Value},
-};
+use zbus::{Variant, proxy};
 
 use crate::error;
 
@@ -18,7 +15,7 @@ use crate::error;
 ///
 /// This is typically reported as "Drive is spun down" if the mode is [`PowerModeStatus::Standby`]
 /// and "Drive is spun up" otherwise.
-#[derive(Debug, zbus::zvariant::Type, serde_repr::Deserialize_repr)]
+#[derive(Debug, zbus::Type, serde_repr::Deserialize_repr)]
 #[repr(u8)]
 #[non_exhaustive]
 pub enum PowerModeStatus {
@@ -31,7 +28,7 @@ pub enum PowerModeStatus {
     Active = 0xFF,
 }
 
-#[derive(Debug, zbus::zvariant::Type, serde::Deserialize)]
+#[derive(Debug, zbus::Type, serde::Deserialize)]
 pub struct SmartAttribute {
     /// Attribute Identifier.
     pub id: u8,
@@ -55,11 +52,11 @@ pub struct SmartAttribute {
     /// The unit of the [`Self::pretty`] value.
     pub pretty_unit: PrettyUnit,
     /// Currently unused, intended for future expansion.
-    pub expansion: std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+    pub expansion: std::collections::HashMap<String, zbus::OwnedVariant>,
 }
 
 /// The unit of the [`SmartAttribute::pretty`] value.
-#[derive(Debug, zbus::zvariant::Type, serde::Deserialize)]
+#[derive(Debug, zbus::Type, serde::Deserialize)]
 #[repr(i32)]
 #[non_exhaustive]
 pub enum PrettyUnit {
@@ -71,7 +68,7 @@ pub enum PrettyUnit {
 }
 
 /// Type of test to run.
-#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[derive(Debug, serde::Serialize, zbus::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -87,7 +84,7 @@ pub enum SelfTestType {
 }
 
 /// Indicates the result of a SMART selftest.
-#[derive(Debug, serde::Deserialize, zbus::zvariant::Type)]
+#[derive(Debug, serde::Deserialize, zbus::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -122,20 +119,12 @@ impl FromStr for SelfTestStatus {
     }
 }
 
-impl TryFrom<Value<'_>> for SelfTestStatus {
-    type Error = <String as TryFrom<Value<'static>>>::Error;
+impl TryFrom<Variant<'_>> for SelfTestStatus {
+    type Error = <String as TryFrom<Variant<'static>>>::Error;
 
-    fn try_from(value: Value<'_>) -> Result<Self, Self::Error> {
+    fn try_from(value: Variant<'_>) -> Result<Self, Self::Error> {
         let val: String = value.downcast_ref()?;
-        Self::from_str(&val).map_err(|_| zbus::zvariant::Error::IncorrectType)
-    }
-}
-
-impl TryFrom<OwnedValue> for SelfTestStatus {
-    type Error = <String as TryFrom<OwnedValue>>::Error;
-
-    fn try_from(v: OwnedValue) -> Result<Self, Self::Error> {
-        Self::try_from(Into::<Value<'_>>::into(v))
+        Self::from_str(&val).map_err(|_| zbus::Error::IncorrectType)
     }
 }
 
@@ -154,7 +143,7 @@ pub trait Ata {
     /// ATA command "CHECK POWER MODE" to the drive.
     fn pm_get_state(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<PowerModeStatus>;
 
     /// Force the drive to immediately enter the low power consumption __standby__ mode.
@@ -163,7 +152,7 @@ pub trait Ata {
     /// "STANDBY IMMEDIATE" to the drive.
     fn pm_standby(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Force the drive to immediately wake up from standby mode.
@@ -172,7 +161,7 @@ pub trait Ata {
     /// This is done by reading data from the disk.
     fn pm_wakeup(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Perform a secure erase of the entire drive.
@@ -192,7 +181,7 @@ pub trait Ata {
     ///   - `enhanced`: Set to `true` for enhanced secure erase
     fn security_erase_unit(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Get the SMART attributes from the drive.
@@ -202,13 +191,13 @@ pub trait Ata {
     ///   - `nowakeup` (type 'b'): Don't wake up sleeping drives
     fn smart_get_attributes(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<Vec<SmartAttribute>>;
 
     /// Abort a running SMART selftest.
     fn smart_selftest_abort(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Start a SMART selftest.
@@ -217,7 +206,7 @@ pub trait Ata {
     fn smart_selftest_start(
         &self,
         type_: SelfTestType,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Enable or disable SMART for the drive.
@@ -230,7 +219,7 @@ pub trait Ata {
     fn smart_set_enabled(
         &self,
         value: bool,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Read SMART data from the drive and update relevant properties.
@@ -245,7 +234,7 @@ pub trait Ata {
     ///   - `nowakeup` (type 'b'): Don't wake up sleeping drives
     fn smart_update(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Whether Automatic Acoustic Management (AAM) is enabled.

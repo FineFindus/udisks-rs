@@ -22,7 +22,7 @@ pub trait Filesystem {
     /// Mounted or unsupported filesystems will result in an error.
     fn check(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<bool>;
 
     /// Mount the filesystem.
@@ -65,7 +65,7 @@ pub trait Filesystem {
     /// will be unmounted (if needed) and/or the mount point will be cleaned up.
     fn mount(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<String>;
 
     /// Tries to repair the filesystem, returning whether the repair was successful.
@@ -77,7 +77,7 @@ pub trait Filesystem {
     /// Mounted or unsupported filesystems will result in an error.
     fn repair(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<bool>;
 
     /// Resizes the filesystem to the specified size.
@@ -89,14 +89,14 @@ pub trait Filesystem {
     fn resize(
         &self,
         size: u64,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets the filesystem label.
     fn set_label(
         &self,
         label: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets the filesystem UUID.
@@ -106,7 +106,7 @@ pub trait Filesystem {
     fn set_uuid(
         &self,
         uuid: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Changes ownership of the filesystem to the UID and GID of the calling user.
@@ -120,7 +120,7 @@ pub trait Filesystem {
     /// Available since version 2.7.2.
     fn take_ownership(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Unmount a mounted device.
@@ -139,7 +139,7 @@ pub trait Filesystem {
     /// [`error::Error::DeviceBusy`] unless the `force` option is used.
     fn unmount(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// An array of filesystems paths for where the filesystem on

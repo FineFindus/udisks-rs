@@ -7,7 +7,7 @@ use zbus::proxy;
 use crate::error;
 
 /// Indicates the type of sanitize action to take in [`ControllerProxy::sanitize_start`].
-#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[derive(Debug, serde::Serialize, zbus::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "kebab-case")]
 pub enum SanitizeAction {
@@ -21,7 +21,7 @@ pub enum SanitizeAction {
 }
 
 /// Information about the most recent sanitize operation.
-#[derive(Debug, serde::Serialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, zbus::Type, zbus::OwnedVariant)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -37,7 +37,7 @@ pub enum SanitizeStatus {
 }
 
 #[derive(
-    Debug, serde::Serialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue, zbus::zvariant::Value,
+    Debug, serde::Serialize, serde::Deserialize, zbus::Type, zbus::OwnedVariant, zbus::Variant,
 )]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
@@ -64,7 +64,7 @@ pub enum SmartCriticalWarning {
 }
 
 /// SMART attributes obtained from [`ControllerProxy::smart_get_attributes`].
-#[derive(Debug, zbus::zvariant::DeserializeDict, zbus::zvariant::Type)]
+#[derive(Debug, zbus::zvariant::DeserializeDict, zbus::Type)]
 #[zvariant(signature = "dict")]
 #[non_exhaustive]
 pub struct SmartAttribute {
@@ -136,7 +136,7 @@ pub struct SmartAttribute {
     pub critical_temp_time: u32,
 }
 
-#[derive(Debug, serde::Deserialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue)]
+#[derive(Debug, serde::Deserialize, zbus::Type, zbus::OwnedVariant)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -173,7 +173,7 @@ pub enum SmartSelftestStatus {
 /// Controller operating state.
 ///
 /// Can be obtained from [`ControllerProxy::state`].
-#[derive(Debug, serde::Deserialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue)]
+#[derive(Debug, serde::Deserialize, zbus::Type, zbus::OwnedVariant)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -190,7 +190,7 @@ pub enum State {
 }
 
 /// Type of selftest to run.
-#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[derive(Debug, serde::Serialize, zbus::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "kebab-case")]
 #[non_exhaustive]
@@ -231,7 +231,7 @@ pub trait Controller {
     fn sanitize_start(
         &self,
         action: SanitizeAction,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Get the SMART/Health Information attributes.
@@ -239,7 +239,7 @@ pub trait Controller {
     /// Available since version 2.10.0.
     fn smart_get_attributes(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<SmartAttribute>;
 
     /// Aborts a running device selftest.
@@ -247,7 +247,7 @@ pub trait Controller {
     /// Available since version 2.10.0.
     fn smart_selftest_abort(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Starts a device selftest operation on all active namespaces accessible through the controller
@@ -264,7 +264,7 @@ pub trait Controller {
     fn smart_selftest_start(
         &self,
         type_: SelfTestType,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Reads SMART/Health Information from the NVMe controller and update relevant properties.
@@ -275,7 +275,7 @@ pub trait Controller {
     /// Available since version 2.10.0.
     fn smart_update(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// NVM subsystem unique controller identifier.

@@ -36,6 +36,6 @@ Some functions in the crate provide the option to return translated text, which 
 
 To setup localization, to e.g. German:
 ```rust
-gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "de_DE.UTF-8");
+unsafe { gettextrs::setlocale(gettextrs::LocaleCategory::LcAll, "de_DE.UTF-8") };
 gettextrs::textdomain("udisks2").expect("Failed to set textdomain");
 ```

@@ -7,7 +7,7 @@ use zbus::proxy;
 use crate::error;
 
 /// Transport values for [`FabricsProxy::transport`].
-#[derive(Debug, serde::Deserialize, zbus::zvariant::Type, zbus::zvariant::OwnedValue)]
+#[derive(Debug, serde::Deserialize, zbus::Type, zbus::OwnedVariant)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 #[non_exhaustive]
@@ -35,7 +35,7 @@ pub trait Fabrics {
     /// Available since version 2.10.0.
     fn disconnect(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Actual Host UUID used for the connection.

@@ -10,10 +10,7 @@
 use std::str::FromStr;
 
 use serde::{Deserialize, Serialize, de::IntoDeserializer};
-use zbus::{
-    proxy,
-    zvariant::{OwnedValue, Type, Value},
-};
+use zbus::{OwnedVariant, Type, Variant, proxy};
 
 use crate::error;
 
@@ -29,14 +26,21 @@ pub enum RotationRate {
     Rotating(i32),
 }
 
-impl TryFrom<OwnedValue> for RotationRate {
-    type Error = <i32 as TryFrom<OwnedValue>>::Error;
+impl zbus::Type for RotationRate {
+    const SIGNATURE: &'static zbus::Signature = i32::SIGNATURE;
+}
 
-    fn try_from(v: OwnedValue) -> Result<Self, Self::Error> {
-        Ok(match v.try_into()? {
-            -1 => RotationRate::Unknown,
-            0 => RotationRate::NonRotating,
-            v => RotationRate::Rotating(v),
+impl<'de> Deserialize<'de> for RotationRate {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let value = i32::deserialize(deserializer)?;
+
+        Ok(match value {
+            -1 => Self::Unknown,
+            0 => Self::NonRotating,
+            rpm => Self::Rotating(rpm),
         })
     }
 }
@@ -132,20 +136,20 @@ impl FromStr for MediaCompatibility {
 }
 
 //TODO: use macro when this is used for multiple types
-impl TryFrom<Value<'_>> for MediaCompatibility {
-    type Error = <String as TryFrom<Value<'static>>>::Error;
+impl TryFrom<Variant<'_>> for MediaCompatibility {
+    type Error = <String as TryFrom<Variant<'static>>>::Error;
 
-    fn try_from(value: Value<'_>) -> Result<Self, Self::Error> {
+    fn try_from(value: Variant<'_>) -> Result<Self, Self::Error> {
         let val: String = value.downcast_ref()?;
         Ok(Self::from_str(&val).unwrap_or(Self::Unknown))
     }
 }
 
-impl TryFrom<OwnedValue> for MediaCompatibility {
-    type Error = <String as TryFrom<OwnedValue>>::Error;
+impl TryFrom<OwnedVariant> for MediaCompatibility {
+    type Error = <String as TryFrom<OwnedVariant>>::Error;
 
-    fn try_from(v: OwnedValue) -> Result<Self, Self::Error> {
-        Self::try_from(Into::<Value<'_>>::into(v))
+    fn try_from(v: OwnedVariant) -> Result<Self, Self::Error> {
+        Self::try_from(Into::<Variant<'_>>::into(v))
     }
 }
 
@@ -161,7 +165,7 @@ pub trait Drive {
     /// On some hardware the media may be physically ejected while on other hardware may simply eject the disc. On some hardware it may not do anything physical but it may cause e.g. a display on the hardware to show e.g. “It is now safe to remove the device”.
     fn eject(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Arranges for the drive to be safely removed and powered off.
@@ -177,7 +181,7 @@ pub trait Drive {
     /// This method only works if the [`Self::can_power_off`] property is set to `true`.
     fn power_off(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Sets the configuration for the drive.
@@ -186,8 +190,8 @@ pub trait Drive {
     /// See the [Self::configuration] property for details about valid values and the location of the configuration file that value will be written to.
     fn set_configuration(
         &self,
-        value: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        value: std::collections::HashMap<&str, zbus::Variant<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     ///  Whether the drive can be safely removed / powered off. See the [Self::power_off] function for more information.
@@ -200,9 +204,8 @@ pub trait Drive {
     /// when it's connected (i.e. start-up, hotplug or resume).
     //TODO: since the confi. are known, use a struct?
     #[zbus(property)]
-    fn configuration(
-        &self,
-    ) -> error::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;
+    fn configuration(&self)
+    -> error::Result<std::collections::HashMap<String, zbus::OwnedVariant>>;
 
     /// Physical connection bus used for the drive as seen by the user.
     /// This is typically used to draw a USB or

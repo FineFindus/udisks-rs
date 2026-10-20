@@ -8,10 +8,10 @@ use crate::error;
 
 #[derive(
     Debug,
-    zbus::zvariant::Type,
+    zbus::Type,
     serde::Deserialize,
-    zbus::zvariant::OwnedValue,
-    zbus::zvariant::Value,
+    zbus::OwnedVariant,
+    zbus::Variant,
 )]
 pub struct LBAFormat {
     /// LBA Data Size in bytes.
@@ -25,10 +25,10 @@ pub struct LBAFormat {
 
 #[derive(
     Debug,
-    zbus::zvariant::Type,
+    zbus::Type,
     serde_repr::Deserialize_repr,
-    zbus::zvariant::OwnedValue,
-    zbus::zvariant::Value,
+    zbus::OwnedVariant,
+    zbus::Variant,
 )]
 #[repr(u8)]
 #[non_exhaustive]
@@ -68,7 +68,7 @@ pub trait Namespace {
     /// Available since version 2.10.0.
     fn format_namespace(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// IEEE Extended Unique Identifier.

@@ -44,6 +44,6 @@ pub mod partition_types;
 ///   when checking if the called function is authorized
 pub fn standard_options(
     no_user_auth_interaction: bool,
-) -> HashMap<&'static str, zbus::zvariant::Value<'static>> {
+) -> HashMap<&'static str, zbus::Variant<'static>> {
     HashMap::from([("auth.no_user_interaction", no_user_auth_interaction.into())])
 }

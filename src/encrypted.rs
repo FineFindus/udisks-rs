@@ -8,7 +8,7 @@ use crate::error;
 /// LUKS version.
 ///
 /// Used for setting up a raid devices using [`EncryptedProxy::convert`]
-#[derive(Debug, serde::Serialize, zbus::zvariant::Type)]
+#[derive(Debug, serde::Serialize, zbus::Type)]
 #[zvariant(signature = "s")]
 #[serde(rename_all = "snake_case")]
 pub enum LuksVersion {
@@ -36,7 +36,7 @@ pub trait Encrypted {
         &self,
         passphrase: &str,
         new_passphrase: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Converts the encrypted device to a different version of LUKS.
@@ -47,7 +47,7 @@ pub trait Encrypted {
     fn convert(
         &self,
         target_version: LuksVersion,
-        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, &zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Saves header and keyslots to the specified file.
@@ -58,13 +58,13 @@ pub trait Encrypted {
     fn header_backup(
         &self,
         backup_file: &str,
-        options: std::collections::HashMap<&str, &zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, &zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Locks the encrypted device.
     fn lock(
         &self,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Resize the encrypted device.
@@ -78,7 +78,7 @@ pub trait Encrypted {
     fn resize(
         &self,
         size: u64,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
     ) -> error::Result<()>;
 
     /// Tries to unlock the encrypted device using the provided passphrase.
@@ -102,8 +102,8 @@ pub trait Encrypted {
     fn unlock(
         &self,
         passphrase: &str,
-        options: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
-    ) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+        options: std::collections::HashMap<&str, zbus::Variant<'_>>,
+    ) -> error::Result<zbus::OwnedObjectPath>;
 
     /// Configuration items belonging to the clear text device of this encrypted block and its children.
     ///
@@ -116,13 +116,13 @@ pub trait Encrypted {
     ) -> error::Result<
         Vec<(
             String,
-            std::collections::HashMap<String, zbus::zvariant::OwnedValue>,
+            std::collections::HashMap<String, zbus::OwnedVariant>,
         )>,
     >;
 
     /// For an unlocked device, the object path of its cleartext device.
     #[zbus(property)]
-    fn cleartext_device(&self) -> error::Result<zbus::zvariant::OwnedObjectPath>;
+    fn cleartext_device(&self) -> error::Result<zbus::OwnedObjectPath>;
 
     /// If not blank, the type of the encryption used to encrypt this device.
     ///
