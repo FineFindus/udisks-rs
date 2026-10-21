@@ -7,8 +7,7 @@ use std::{
 
 // https://github.com/storaged-project/udisks/blob/master/tools/umount-udisks.c
 
-#[tokio::main]
-async fn main() -> ExitCode {
+fn main() -> ExitCode {
     let mut args = std::env::args();
     let bin_name = args.next().unwrap();
 
@@ -29,12 +28,12 @@ async fn main() -> ExitCode {
         }
     };
 
-    let Ok(client) = udisks2::Client::new().await else {
+    let Ok(client) = zbus::block_on(udisks2::Client::new()) else {
         eprintln!("Error connecting to the udisks daemon");
         return ExitCode::FAILURE;
     };
 
-    let Some(object) = lookup_object_for_block(&client, block_device).await else {
+    let Some(object) = zbus::block_on(lookup_object_for_block(&client, block_device)) else {
         eprintln!(
             "Error finding object for block device {}:{}",
             major(block_device),
@@ -43,7 +42,7 @@ async fn main() -> ExitCode {
         return ExitCode::FAILURE;
     };
 
-    let Ok(filesystem) = object.filesystem().await else {
+    let Ok(filesystem) = zbus::block_on(object.filesystem()) else {
         eprintln!(
             "Block device {}:{} is not a mountable filesystem",
             major(block_device),
@@ -52,7 +51,7 @@ async fn main() -> ExitCode {
         return ExitCode::FAILURE;
     };
 
-    if let Err(err) = filesystem.unmount(HashMap::new()).await {
+    if let Err(err) = zbus::block_on(filesystem.unmount(HashMap::new())) {
         eprintln!(
             "Error unmounting block device {}:{}: {}",
             major(block_device),
@@ -85,6 +84,7 @@ async fn lookup_object_for_block(
     }
     None
 }
+
 pub fn major(dev: u64) -> u32 {
     let mut major = 0;
     major |= (dev & 0x00000000000fff00) >> 8;
