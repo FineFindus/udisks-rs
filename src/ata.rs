@@ -15,7 +15,7 @@ use crate::error;
 ///
 /// This is typically reported as "Drive is spun down" if the mode is [`PowerModeStatus::Standby`]
 /// and "Drive is spun up" otherwise.
-#[derive(Debug, zbus::Type, serde_repr::Deserialize_repr)]
+#[derive(Debug, zbus::Type, serde::Deserialize)]
 #[repr(u8)]
 #[non_exhaustive]
 pub enum PowerModeStatus {
