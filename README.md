@@ -12,21 +12,22 @@ Based on `udisks` version [`2.11.0`](https://github.com/storaged-project/udisks/
 ## Example
 
 ```rust
-// we use tokio in this example, but you can use any runtime
-#[tokio::main]
-async fn main() -> udisks2::Result<()> {
-    let client = udisks2::Client::new().await?;
-    let object = client.object("/org/freedesktop/UDisks2/block_devices/sda")?;
-    let Ok(block) = object.block().await else {
-        eprintln!("No block for sda found");
-        return Ok(());
-    };
-    let drive = client.drive_for_block(&block).await?;
-    println!(
-        "Size: {}",
-        client.size_for_display(drive.size().await?, true, true)
-    );
-    Ok(())
+// we use zbus::block_on in this example, but you can use any runtime
+fn main() -> udisks2::Result<()> {
+    zbus::block_on(async move {
+        let client = udisks2::Client::new().await?;
+        let object = client.object("/org/freedesktop/UDisks2/block_devices/sda")?;
+        let Ok(block) = object.block().await else {
+            eprintln!("No block for sda found");
+            return Ok(());
+        };
+        let drive = client.drive_for_block(&block).await?;
+        println!(
+            "Size: {}",
+            client.size_for_display(drive.size().await?, true, true)
+        );
+        Ok(())
+    })
 }
 ```
 
