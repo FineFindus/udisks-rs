@@ -17,6 +17,3 @@ serde = { version = "1.0", features = ["derive"] }
 serde_repr = "0.1"
 gettext-rs = { version = "0.8", features = ["gettext-system"] }
 bitflags = "2.13"
-
-[dev-dependencies]
-tokio = { version = "1.47", features = ["full"] }
