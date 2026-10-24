@@ -61,7 +61,7 @@ fn main() -> ExitCode {
         return ExitCode::FAILURE;
     }
 
-    return ExitCode::SUCCESS;
+    ExitCode::SUCCESS
 }
 
 async fn lookup_object_for_block(
@@ -76,11 +76,11 @@ async fn lookup_object_for_block(
         .flatten()
         .filter_map(|(object_path, _)| client.object(object_path).ok())
     {
-        if let Ok(block) = object.block().await {
-            if Ok(block_device) == block.device_number().await {
-                return Some(object);
-            }
-        };
+        if let Ok(block) = object.block().await
+            && Ok(block_device) == block.device_number().await
+        {
+            return Some(object);
+        }
     }
     None
 }
@@ -94,7 +94,7 @@ pub fn major(dev: u64) -> u32 {
 
 pub fn minor(dev: u64) -> u32 {
     let mut minor = 0;
-    minor |= (dev & 0x00000000000000ff) >> 0;
+    minor |= dev & 0x00000000000000ff;
     minor |= (dev & 0x00000ffffff00000) >> 12;
     minor as u32
 }

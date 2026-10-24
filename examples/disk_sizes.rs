@@ -5,8 +5,8 @@ fn main() -> udisks2::Result<()> {
             .object_manager()
             .get_managed_objects()
             .await?
-            .into_iter()
-            .filter_map(|(object_path, _)| client.object(object_path).ok())
+            .into_keys()
+            .filter_map(|object_path| client.object(object_path).ok())
         {
             //only use objects that have a drive
             let Ok(drive) = object.drive().await else {
